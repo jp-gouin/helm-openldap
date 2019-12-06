@@ -1,0 +1,166 @@
+# Default values for openldap.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 3
+# Define deployment strategy - IMPORTANT: use rollingUpdate: null when use Recreate strategy.
+# It prevents from merging with existing map keys which are forbidden.
+strategy: {}
+  # type: RollingUpdate
+  # rollingUpdate:
+  #   maxSurge: 1
+  #   maxUnavailable: 0
+  #
+  # or
+  #
+  # type: Recreate
+  # rollingUpdate: null
+image:
+  # From repository https://github.com/osixia/docker-openldap
+  repository: osixia/openldap
+  tag: 1.2.4
+  pullPolicy: Always
+  pullSecret: harbor
+
+# Spcifies an existing secret to be used for admin and config user passwords
+existingSecret: ""
+
+# settings for enabling TLS
+tls:
+  enabled: false
+  secret: ""  # The name of a kubernetes.io/tls type secret to use for TLS
+  CA:
+    enabled: false
+    secret: ""  # The name of a generic secret to use for custom CA certificate (ca.crt)
+## Add additional labels to all resources
+extraLabels: {}
+## Add additional annotations to pods
+podAnnotations: {}
+service:
+  annotations: {}
+  clusterIP: ""
+
+  ldapPort: 389
+  sslLdapPort: 636  # Only used if tls.enabled is true
+  ## List of IP addresses at which the service is available
+  ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+  ##
+  externalIPs: []
+
+  loadBalancerIP: ""
+  loadBalancerSourceRanges: []
+  type: NodePort
+
+# Default configuration for openldap as environment variables. These get injected directly in the container.
+# Use the env variables from https://github.com/osixia/docker-openldap#beginner-guide
+env:
+ LDAP_LOG_LEVEL: "256"
+ LDAP_ORGANISATION: "Example Inc."
+ LDAP_DOMAIN: "example.org"
+ LDAP_READONLY_USER: "false"
+ LDAP_READONLY_USER_USERNAME: "readonly"
+ LDAP_READONLY_USER_PASSWORD: "readonly"
+ LDAP_RFC2307BIS_SCHEMA: "false"
+ LDAP_BACKEND: "mdb"
+ LDAP_TLS: "true"
+ LDAP_TLS_CRT_FILENAME: "ldap.crt"
+ LDAP_TLS_KEY_FILENAME: "ldap.key"
+ LDAP_TLS_DH_PARAM_FILENAME: "dhparam.pem"
+ LDAP_TLS_CA_CRT_FILENAME: "ca.crt"
+ LDAP_TLS_ENFORCE: "false"
+ CONTAINER_LOG_LEVEL: "4"
+ LDAP_TLS_REQCERT: "never"
+ KEEP_EXISTING_CONFIG: "false"
+ LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
+ LDAP_SSL_HELPER_PREFIX: "ldap"
+ LDAP_TLS_VERIFY_CLIENT: "never"
+ LDAP_TLS_PROTOCOL_MIN: "3.0"
+ LDAP_TLS_CIPHER_SUITE: "NORMAL"
+
+  
+
+# Default Passwords to use, stored as a secret. If unset, passwords are auto-generated.
+# You can override these at install time with
+# helm install openldap --set openldap.adminPassword=<passwd>,openldap.configPassword=<passwd>
+# adminPassword: admin
+# configPassword: config
+
+# Custom openldap configuration files used to override default settings
+# customLdifFiles:
+  # 01-default-users.ldif: |-
+    # Predefine users here
+replication:
+  enabled: true    
+## Persist data to a persistent volume
+persistence:
+  enabled: true
+  ## database data Persistent Volume Storage Class
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  # storageClass: "-"
+  accessModes:
+    - ReadWriteOnce
+  size: 8Gi
+
+resources: {}
+ # requests:
+ #   cpu: "100m"
+ #   memory: "256Mi"
+ # limits:
+ #   cpu: "500m"
+ #   memory: "512Mi"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+## test container details
+test:
+  enabled: false
+  image:
+    repository: dduportal/bats
+    tag: 0.4.0
+ltb-passwd:
+  enabled : true
+  ingress:
+    enabled: true
+    annotations: {}
+    host: "ssl-ldap2.local"
+  ldap:
+    server: ldaps://openldap.openldap
+    searchBase: dc=example,dc=org
+    binduserSecret: openldap
+  env:
+  - name: SECRETEKEY
+    value: "LDAP_ADMIN_PASSWORD"
+  - name: LDAP_LOGIN_ATTRIBUTE
+    value: "cn"
+
+phpldapadmin:
+  enabled: true
+  ingress:
+    enabled: true
+    annotations: {}
+    path: /
+    ## Ingress Host
+    hosts:
+    - phpldapadmin.local
+  env:
+    PHPLDAPADMIN_LDAP_HOSTS: | 
+      "#PYTHON2BASH:
+        [{'openldap.openldap': 
+          [{'server': [
+            {'tls': False},
+            {'port':636}
+          ]},
+            {'login': 
+              [{'bind_id': 'cn=admin,dc=example,dc=org'}]
+            }]
+        }]"
+     

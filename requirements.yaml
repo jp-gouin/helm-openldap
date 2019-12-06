@@ -1,0 +1,7 @@
+dependencies:
+- name: ltb-passwd
+  version: 0.1.x
+  condition: ltb-passwd.enabled
+- name: phpldapadmin
+  version: 0.1.x
+  condition: phpldapadmin.enabled

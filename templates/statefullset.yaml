@@ -1,0 +1,140 @@
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name:  {{ template "openldap.fullname" . }}
+  labels:
+    app: {{ template "openldap.name" . }}
+    chart: {{ template "openldap.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.extraLabels }}
+{{ toYaml .Values.extraLabels | indent 4 }}
+{{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+{{- if .Values.strategy }}
+  strategy:
+{{ toYaml .Values.strategy | indent 4 }}
+{{- end }}
+  selector:
+    matchLabels:
+      app: {{ template "openldap.name" . }}
+      release: {{ .Release.Name }}
+  serviceName: {{ template "openldap.fullname" . }}-headless
+  template:
+    metadata:
+      annotations:
+        checksum/configmap-env: {{ include (print $.Template.BasePath "/configmap-env.yaml") . | sha256sum }}
+{{- if .Values.customLdifFiles}}
+        checksum/configmap-customldif: {{ include (print $.Template.BasePath "/configmap-customldif.yaml") . | sha256sum }}
+{{- end }}
+{{- if .Values.podAnnotations}}
+{{ toYaml .Values.podAnnotations | indent 8}}
+{{- end }}
+      labels:
+        app: {{ template "openldap.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+{{- if .Values.customLdifFiles }}
+          args: [--copy-service]
+{{- end }}
+          ports:
+            - name: ldap-port
+              containerPort: 389
+            - name: ssl-ldap-port
+              containerPort: 636
+          envFrom:
+            - configMapRef:
+                name: {{ template "openldap.fullname" . }}-env
+            - secretRef:
+                name: {{ template "openldap.secretName" . }}
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/ldap
+              subPath: data
+            - name: data
+              mountPath: /etc/ldap/slapd.d
+              subPath: config-data
+            - name: certs
+              mountPath: /container/service/slapd/assets/certs
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: HOSTNAME
+              value: $(POD_NAME).{{ template "openldap.name" . }}-headless
+          {{- if .Values.tls.enabled }}
+            - name: LDAP_TLS_CRT_FILENAME
+              value: tls.crt
+            - name: LDAP_TLS_KEY_FILENAME
+              value: tls.key
+          {{- if .Values.tls.CA.enabled }}
+            - name: LDAP_TLS_CA_CRT_FILENAME
+              value: ca.crt
+          {{- end }}
+          {{- end }}
+          livenessProbe:
+            tcpSocket:
+              port: ldap-port
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 10
+          readinessProbe:
+            tcpSocket:
+              port: ldap-port
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 10
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+      volumes:
+        - name: certs
+          hostPath:
+            path: "/data/ldap/certs"
+{{- if .Values.persistence.enabled }}
+      imagePullSecrets: 
+        - name: {{ .Values.image.pullSecret }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        annotations:
+        {{- range $key, $value := .Values.persistence.annotations }}
+          {{ $key }}: {{ $value }}
+        {{- end }}
+      spec:
+        accessModes:
+        {{- range .Values.persistence.accessModes }}
+          - {{ . | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size | quote }}
+      {{- if .Values.persistence.storageClass }}
+      {{- if (eq "-" .Values.persistence.storageClass) }}
+        storageClassName: ""
+      {{- else }}
+        storageClassName: "{{ .Values.persistence.storageClass }}"
+      {{- end }}
+{{- end }}
+{{- else }}
+        - name: data
+          emptyDir: {}
+{{- end }}
