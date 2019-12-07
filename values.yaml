@@ -127,7 +127,7 @@ test:
     repository: dduportal/bats
     tag: 0.4.0
 ltb-passwd:
-  enabled : true
+  enabled : false
   ingress:
     enabled: true
     annotations: {}
