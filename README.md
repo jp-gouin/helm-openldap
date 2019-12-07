@@ -9,7 +9,7 @@ This chart will do the following:
 
 * Instantiate 3 instances of OpenLDAP server with multi-master replication
 * A phpldapadmin to administrate the OpenLDAP server
-* ltb-passwd for self service password
+* ltb-passwd for self service password **/!\ In Progress** 
 
 ## Installing the Chart
 
@@ -44,7 +44,7 @@ The following table lists the configurable parameters of the openldap chart and 
 | `service.sslLdapPort`              | External service port for SSL+LDAP                                                                                                        | `636`               |
 | `service.type`                     | Service type                                                                                                                              | `ClusterIP`         |
 | `env`                              | List of key value pairs as env variables to be sent to the docker image. See https://github.com/osixia/docker-openldap for available ones | `[see values.yaml]` |
-| `tls.enabled`                      | Set to enable TLS/LDAPS - should also set `tls.secret`                                                                                    | `false`             |
+| `tls.enabled`                      | Set to enable TLS/LDAPS with custom certificate - should also set `tls.secret`                                                                                    | `false`             |
 | `tls.secret`                       | Secret containing TLS cert and key (eg, generated via cert-manager)                                                                       | `""`                |
 | `tls.CA.enabled`                   | Set to enable custom CA crt file - should also set `tls.CA.secret`                                                                        | `false`             |
 | `tls.CA.secret`                    | Secret containing CA certificate (ca.crt)                                                                                                 | `""`                |
