@@ -131,7 +131,10 @@ ltb-passwd:
   ingress:
     enabled: true
     annotations: {}
-    host: "ssl-ldap2.local"
+    path: /
+    ## Ingress Host
+    hosts:
+    - "ssl-ldap2.local"
   ldap:
     server: ldaps://openldap.openldap
     searchBase: dc=example,dc=org
@@ -152,15 +155,16 @@ phpldapadmin:
     hosts:
     - phpldapadmin.local
   env:
-    PHPLDAPADMIN_LDAP_HOSTS: | 
-      "#PYTHON2BASH:
-        [{'openldap.openldap': 
-          [{'server': [
-            {'tls': False},
-            {'port':636}
-          ]},
-            {'login': 
-              [{'bind_id': 'cn=admin,dc=example,dc=org'}]
-            }]
-        }]"
+    PHPLDAPADMIN_LDAP_HOSTS: openldap.openldap
+ # TODO make it works
+ #     "#PYTHON2BASH:
+ #       [{'openldap.openldap': 
+ #         [{'server': [
+ #           {'tls': False},
+ #           {'port':636}
+ #         ]},
+ #           {'login': 
+ #             [{'bind_id': 'cn=admin,dc=example,dc=org'}]
+ #           }]
+ #       }]"
      

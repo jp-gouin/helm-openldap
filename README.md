@@ -97,17 +97,7 @@ phpldapadmin:
     hosts:
     - phpldapadmin.local
   env:
-    PHPLDAPADMIN_LDAP_HOSTS: | 
-      "#PYTHON2BASH:
-        [{'openldap.openldap': 
-          [{'server': [
-            {'tls': False},
-            {'port':636}
-          ]},
-            {'login': 
-              [{'bind_id': 'cn=admin,dc=example,dc=org'}]
-            }]
-        }]"
+    PHPLDAPADMIN_LDAP_HOSTS: openldap.openldap
      
 ```
 ## Self-service-password
@@ -119,6 +109,8 @@ Setup the `ldap` part with the information of the OpenLdap server.
 The `binduserSecret`should point to the secret of OpenLdap (set to the fullname of the deployment). 
 
 But can also be set to an existing `secret` in this case, set the `env` part to specify the `key` of the `password` in the `secret`.
+
+**Require a secret** with `BINDDN` key and `BINDPW` in order to work
 
 Example : 
 ```

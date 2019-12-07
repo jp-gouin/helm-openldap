@@ -21,7 +21,21 @@ ingress:
   enabled: true
   annotations: {}
   host: "ssl-ldap.local"
-
+## Configure Ingress based on the documentation here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+##
+ingress:
+  enabled: false
+  annotations: {}
+  path: /
+  ## Ingress Host
+  # hosts:
+  # - ssl-ldap.local
+  #
+  tls: []
+  # tls:
+  # - secretName: ssl-ldap-dedicated-tls
+  #   hosts:
+  #   - ssl-ldap.local
 resources: {}
 nodeSelector: {}
 tolerations: []
