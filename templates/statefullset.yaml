@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name:  {{ template "openldap.fullname" . }}
   labels:
-    app: {{ template "openldap.name" . }}
+    app: {{ template "openldap.fullname" . }}
     chart: {{ template "openldap.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -18,7 +18,7 @@ spec:
 {{- end }}
   selector:
     matchLabels:
-      app: {{ template "openldap.name" . }}
+      app: {{ template "openldap.fullname" . }}
       release: {{ .Release.Name }}
   serviceName: {{ template "openldap.fullname" . }}-headless
   template:
@@ -32,7 +32,7 @@ spec:
 {{ toYaml .Values.podAnnotations | indent 8}}
 {{- end }}
       labels:
-        app: {{ template "openldap.name" . }}
+        app: {{ template "openldap.fullname" . }}
         release: {{ .Release.Name }}
     spec:
       containers:
@@ -59,7 +59,7 @@ spec:
             - name: data
               mountPath: /etc/ldap/slapd.d
               subPath: config-data
-            - name: certs
+            - name: data
               mountPath: /container/service/slapd/assets/certs
           env:
             - name: POD_NAME
@@ -68,7 +68,7 @@ spec:
                   apiVersion: v1
                   fieldPath: metadata.name
             - name: HOSTNAME
-              value: $(POD_NAME).{{ template "openldap.name" . }}-headless
+              value: $(POD_NAME).{{ template "openldap.fullname" . }}-headless
           {{- if .Values.tls.enabled }}
             - name: LDAP_TLS_CRT_FILENAME
               value: tls.crt
@@ -105,13 +105,9 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
-      volumes:
-        - name: certs
-          hostPath:
-            path: "/data/ldap/certs"
-{{- if .Values.persistence.enabled }}
       imagePullSecrets: 
         - name: {{ .Values.image.pullSecret }}
+{{- if .Values.persistence.enabled }} 
   volumeClaimTemplates:
     - metadata:
         name: data

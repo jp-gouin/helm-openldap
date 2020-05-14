@@ -18,7 +18,7 @@ strategy: {}
 image:
   # From repository https://github.com/osixia/docker-openldap
   repository: osixia/openldap
-  tag: 1.2.4
+  tag: stable
   pullPolicy: Always
   pullSecret: harbor
 
@@ -27,7 +27,7 @@ existingSecret: ""
 
 # settings for enabling TLS with custom certificate
 tls:
-  enabled: false
+  enabled: true
   secret: ""  # The name of a kubernetes.io/tls type secret to use for TLS
   CA:
     enabled: false
@@ -82,8 +82,8 @@ env:
 # Default Passwords to use, stored as a secret. If unset, passwords are auto-generated.
 # You can override these at install time with
 # helm install openldap --set openldap.adminPassword=<passwd>,openldap.configPassword=<passwd>
-# adminPassword: admin
-# configPassword: config
+adminPassword: admin
+configPassword: config
 
 # Custom openldap configuration files used to override default settings
 # customLdifFiles:
@@ -101,7 +101,7 @@ persistence:
   ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
   ##   GKE, AWS & OpenStack)
   ##
-  # storageClass: "-"
+  storageClass: "standard-singlewriter"
   accessModes:
     - ReadWriteOnce
   size: 8Gi
@@ -127,23 +127,20 @@ test:
     repository: dduportal/bats
     tag: 0.4.0
 ltb-passwd:
-  enabled : false
+  enabled : true
   ingress:
     enabled: true
     annotations: {}
     path: /
     ## Ingress Host
     hosts:
-    - "ssl-ldap2.local"
+    - "ssl-ldap2.example"
   ldap:
-    server: ldaps://openldap.openldap
+    server: ldap://openldap.openldap
     searchBase: dc=example,dc=org
-    binduserSecret: openldap
-  env:
-  - name: SECRETEKEY
-    value: "LDAP_ADMIN_PASSWORD"
-  - name: LDAP_LOGIN_ATTRIBUTE
-    value: "cn"
+    binduserSecret: openldaptest
+    bindDN: cn=admin,dc=example,dc=org
+    bindPWKey: LDAP_ADMIN_PASSWORD
 
 phpldapadmin:
   enabled: true
@@ -153,7 +150,7 @@ phpldapadmin:
     path: /
     ## Ingress Host
     hosts:
-    - phpldapadmin.local
+    - phpldapadmin.example
   env:
     PHPLDAPADMIN_LDAP_HOSTS: openldap.openldap
  # TODO make it works

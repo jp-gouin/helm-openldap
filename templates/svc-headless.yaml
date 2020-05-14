@@ -4,9 +4,9 @@ metadata:
   name: {{ template "openldap.fullname" . }}-headless
   labels:
     app: {{ template "openldap.fullname" . }}
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
+    chart: {{ template "openldap.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   ports:
   - port: {{ .Values.service.ldapPort }}

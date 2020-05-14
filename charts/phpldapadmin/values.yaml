@@ -16,7 +16,7 @@ replicaCount: 1
 ##
 image:
   repository: osixia/phpldapadmin
-  tag: 0.7.1
+  tag: 0.9.0
   pullPolicy: IfNotPresent
 
 

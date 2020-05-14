@@ -28,15 +28,12 @@ spec:
           - name: LDAP_SERVER
             value: {{ .Values.ldap.server | quote }}
           - name: LDAP_BINDDN
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.ldap.binduserSecret }}
-                key: BINDDN
+            value: {{ .Values.ldap.bindDN | quote }}
           - name: LDAP_BINDPASS
             valueFrom:
               secretKeyRef:
                 name: {{ .Values.ldap.binduserSecret }}
-                key: BINDPW
+                key: {{ .Values.ldap.bindPWKey }} 
           - name: LDAP_STARTTLS
             value: "false"
           - name: LDAP_BASE_SEARCH

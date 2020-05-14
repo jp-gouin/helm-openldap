@@ -85,6 +85,8 @@ To enable PhpLdapAdmin set `phpldapadmin.enabled`  to `true`
 Ingress can be configure if you want to expose the service.
 Setup the env part of the configuration to access the OpenLdap server
 
+**Note** : The ldap host should match the following `namespace.Appfullname`
+
 Example : 
 ```
 phpldapadmin:
@@ -106,11 +108,11 @@ To enable Self-service-password set `ltb-passwd.enabled`  to `true`
 Ingress can be configure if you want to expose the service.
 
 Setup the `ldap` part with the information of the OpenLdap server.
-The `binduserSecret`should point to the secret of OpenLdap (set to the fullname of the deployment). 
+The `binduserSecret`should point to the secret of OpenLdap (set to the **fullname** of the deployment).
 
-But can also be set to an existing `secret` in this case, set the `env` part to specify the `key` of the `password` in the `secret`.
+Set `bindDN` accordingly to your ldap domain
 
-**Require a secret** with `BINDDN` key and `BINDPW` in order to work
+**Note** : The ldap server host should match the following `ldap://namespace.Appfullname`
 
 Example : 
 ```
@@ -121,14 +123,12 @@ ltb-passwd:
     annotations: {}
     host: "ssl-ldap2.local"
   ldap:
-    server: ldaps://openldap.openldap
+    server: ldap://openldap.openldap
     searchBase: dc=example,dc=org
     binduserSecret: openldap
-  env:
-  - name: SECRETEKEY
-    value: "LDAP_ADMIN_PASSWORD"
-  - name: LDAP_LOGIN_ATTRIBUTE
-    value: "cn"     
+    bindDN: cn=admin,dc=example,dc=org
+    bindPWKey: LDAP_ADMIN_PASSWORD
+  
 ```
 
 ## Cleanup orphaned Persistent Volumes

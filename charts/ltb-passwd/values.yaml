@@ -16,13 +16,11 @@ fullnameOverride: ""
 service:
   type: ClusterIP
   port: 80
-
 ingress:
   enabled: true
   annotations: {}
   host: "ssl-ldap.local"
 ## Configure Ingress based on the documentation here: https://kubernetes.io/docs/concepts/services-networking/ingress/
-##
 ingress:
   enabled: false
   annotations: {}
@@ -44,6 +42,8 @@ ldap:
   server: ldap://openldap.openldap
   searchBase: dc=example,dc=org
   binduserSecret: ssp-ldap
+  bindDN: cn=admin,dc=example,dc=org
+  bindPWKey: BINDPW
 env:
 - name: SECRETEKEY
   value: "password"
