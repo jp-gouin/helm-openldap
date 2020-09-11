@@ -16,7 +16,9 @@ This chart will do the following:
 To install the chart with the release name `my-release`:
 
 ```bash
-$ helm install --name my-release stable/openldap
+$ git clone https://github.com/jp-gouin/helm-openldap.git
+$ cd helm-openldap
+$ helm install openldap .
 ```
 
 ## Configuration
@@ -44,6 +46,7 @@ The following table lists the configurable parameters of the openldap chart and 
 | `service.sslLdapPort`              | External service port for SSL+LDAP                                                                                                        | `636`               |
 | `service.type`                     | Service type                                                                                                                              | `ClusterIP`         |
 | `env`                              | List of key value pairs as env variables to be sent to the docker image. See https://github.com/osixia/docker-openldap for available ones | `[see values.yaml]` |
+| `logLevel`                         | Set the container log level. Valid values: `none`, `error`, `warning`, `info`, `debug`, `trace`                                           | `info`              |
 | `tls.enabled`                      | Set to enable TLS/LDAPS with custom certificate - should also set `tls.secret`                                                                                    | `false`             |
 | `tls.secret`                       | Secret containing TLS cert and key (eg, generated via cert-manager)                                                                       | `""`                |
 | `tls.CA.enabled`                   | Set to enable custom CA crt file - should also set `tls.CA.secret`                                                                        | `false`             |
