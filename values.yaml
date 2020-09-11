@@ -18,12 +18,14 @@ strategy: {}
 image:
   # From repository https://github.com/osixia/docker-openldap
   repository: osixia/openldap
-  tag: stable
+  tag: 1.4.0
   pullPolicy: Always
   pullSecret: harbor
 
 # Spcifies an existing secret to be used for admin and config user passwords
-existingSecret: ""
+# existingSecret: ""
+
+logLevel: info
 
 # settings for enabling TLS with custom certificate
 tls:
@@ -126,6 +128,11 @@ test:
   image:
     repository: dduportal/bats
     tag: 0.4.0
+
+# Set the container log level
+# Valid log levels: none, error, warning, info (default), debug, trace
+logLevel: info
+
 ltb-passwd:
   enabled : true
   ingress:
