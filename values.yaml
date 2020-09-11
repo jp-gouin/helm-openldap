@@ -126,6 +126,11 @@ test:
   image:
     repository: dduportal/bats
     tag: 0.4.0
+
+# Set the container log level
+# Valid log levels: none, error, warning, info (default), debug, trace
+logLevel: info
+
 ltb-passwd:
   enabled : true
   ingress:
