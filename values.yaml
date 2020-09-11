@@ -92,7 +92,10 @@ env:
   # 01-default-users.ldif: |-
     # Predefine users here
 replication:
-  enabled: true    
+  enabled: true  
+  # Enter the name of your cluster, defaults to "cluster.local"
+  clusterName: "cluster.local"
+
 ## Persist data to a persistent volume
 persistence:
   enabled: true
@@ -143,10 +146,10 @@ ltb-passwd:
     hosts:
     - "ssl-ldap2.example"
   ldap:
-    server: ldap://openldap.openldap
     searchBase: dc=example,dc=org
     binduserSecret: openldaptest
     bindDN: cn=admin,dc=example,dc=org
+    server: ldap://openldap
     bindPWKey: LDAP_ADMIN_PASSWORD
 
 phpldapadmin:
@@ -159,7 +162,7 @@ phpldapadmin:
     hosts:
     - phpldapadmin.example
   env:
-    PHPLDAPADMIN_LDAP_HOSTS: openldap.openldap
+    PHPLDAPADMIN_LDAP_HOSTS: openldap
  # TODO make it works
  #     "#PYTHON2BASH:
  #       [{'openldap.openldap': 
