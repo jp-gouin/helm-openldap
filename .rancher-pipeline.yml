@@ -18,11 +18,20 @@ stages:
         phpldapadmin.ingress.hosts[0]: phpldapadmin-test.g3s-service.itcoc.tech
       name: openldap-pipeline
       targetNamespace: openldap-pipeline
+  - runScriptConfig:
+      image: busybox
+      shellScript: 'export CHART_VERSION=$(grep "version" Chart.yaml | cut -d : -f2)'
+    env:
+      CHART_VERSION: 1.0.0
 - name: Tests
   steps:
   - runScriptConfig:
-      image: gcc:latest
-      shellScript: echo "run ldap commands (add, search, modify...)"
+      image: osixia/openldap
+      shellScript: |-
+        echo "run ldap commands (add, search, modify...)"
+        ldapsearch --hostname openldap-pipeline --baseDN "dc=example,dc=org" "(objectclass=*)"
+        ldapsearch -x -D "cn=admin,dc=example,dc=org" \
+                   -w "Not@SecurePassw0rd" -H ldaps://openldap-pipeline -b "dc=example,dc=org" \
 timeout: 60
 branch: {}
 notification: {}
