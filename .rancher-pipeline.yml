@@ -18,6 +18,11 @@ stages:
         phpldapadmin.ingress.hosts[0]: phpldapadmin-test.g3s-service.itcoc.tech
       name: openldap-pipeline
       targetNamespace: openldap-pipeline
+- name: Tests
+  steps:
+  - runScriptConfig:
+      image: gcc:latest
+      shellScript: echo "run ldap commands (add, search, modify...)"
 timeout: 60
 branch: {}
 notification: {}
