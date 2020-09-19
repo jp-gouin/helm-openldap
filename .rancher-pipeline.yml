@@ -30,8 +30,7 @@ stages:
       shellScript: |-
         echo "run ldap commands (add, search, modify...)"
         ldapsearch --hostname openldap-pipeline --baseDN "dc=example,dc=org" "(objectclass=*)"
-        ldapsearch -x -D "cn=admin,dc=example,dc=org" \
-                   -w "Not@SecurePassw0rd" -H ldaps://openldap-pipeline -b "dc=example,dc=org" \
+        ldapsearch -x -D "cn=admin,dc=example,dc=org" -w "Not@SecurePassw0rd" -H ldaps://openldap-pipeline -b "dc=example,dc=org"
 timeout: 60
 branch: {}
 notification: {}
