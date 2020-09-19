@@ -1,0 +1,23 @@
+stages:
+- name: deploy-app
+  steps:
+  - applyAppConfig:
+      catalogTemplate: p-ts7vz:jpg-catalog-openldap
+      version: 2.0.2
+      answers:
+        ldap.bindDN: cn=admin,dc=example,dc=org
+        ldap.bindPWKey: LDAP_ADMIN_PASSWORD
+        ldap.searchBase: dc=example,dc=org
+        ldap.server: ldap://openldap
+        ltb-passwd.enabled: "true"
+        ltb-passwd.ingress.enabled: "true"
+        ltb-passwd.ingress.hosts[0]: ssl-ldap2-test.g3s-service.itcoc.tech
+        ltb-passwd.ingress.path: /
+        phpldapadmin.enabled: "true"
+        phpldapadmin.ingress.enabled: "true"
+        phpldapadmin.ingress.hosts[0]: phpldapadmin-test.g3s-service.itcoc.tech
+      name: openldap-pipeline
+      targetNamespace: openldap-pipeline
+timeout: 60
+branch: {}
+notification: {}
