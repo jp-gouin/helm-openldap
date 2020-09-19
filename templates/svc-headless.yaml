@@ -15,4 +15,6 @@ spec:
   clusterIP: None
   selector:
     app: {{ template "openldap.fullname" . }}
-    release: {{ .Release.Name }}
+    release: {{ .Release.Name }}  
+  type: ClusterIP
+  sessionAffinity: None

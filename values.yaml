@@ -18,12 +18,14 @@ strategy: {}
 image:
   # From repository https://github.com/osixia/docker-openldap
   repository: osixia/openldap
-  tag: stable
+  tag: 1.4.0
   pullPolicy: Always
   pullSecret: harbor
 
 # Spcifies an existing secret to be used for admin and config user passwords
-existingSecret: ""
+# existingSecret: ""
+
+logLevel: info
 
 # settings for enabling TLS with custom certificate
 tls:
@@ -90,7 +92,10 @@ env:
   # 01-default-users.ldif: |-
     # Predefine users here
 replication:
-  enabled: true    
+  enabled: true  
+  # Enter the name of your cluster, defaults to "cluster.local"
+  clusterName: "cluster.local"
+
 ## Persist data to a persistent volume
 persistence:
   enabled: true
@@ -126,6 +131,11 @@ test:
   image:
     repository: dduportal/bats
     tag: 0.4.0
+
+# Set the container log level
+# Valid log levels: none, error, warning, info (default), debug, trace
+logLevel: info
+
 ltb-passwd:
   enabled : true
   ingress:
@@ -136,10 +146,10 @@ ltb-passwd:
     hosts:
     - "ssl-ldap2.example"
   ldap:
-    server: ldap://openldap.openldap
     searchBase: dc=example,dc=org
     binduserSecret: openldaptest
     bindDN: cn=admin,dc=example,dc=org
+    server: ldap://openldap
     bindPWKey: LDAP_ADMIN_PASSWORD
 
 phpldapadmin:
@@ -152,7 +162,7 @@ phpldapadmin:
     hosts:
     - phpldapadmin.example
   env:
-    PHPLDAPADMIN_LDAP_HOSTS: openldap.openldap
+    PHPLDAPADMIN_LDAP_HOSTS: openldap
  # TODO make it works
  #     "#PYTHON2BASH:
  #       [{'openldap.openldap': 
