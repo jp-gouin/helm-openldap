@@ -1,6 +1,11 @@
 stages:
 - name: deploy-app
   steps:
+  - runScriptConfig:
+      image: busybox
+      shellScript: 'export CHART_VERSION=$(grep "version" Chart.yaml | cut -d : -f2)'
+    env:
+      CHART_VERSION: 1.0.0
   - applyAppConfig:
       catalogTemplate: p-ts7vz:jpg-catalog-openldap
       version: 2.0.2
@@ -18,11 +23,6 @@ stages:
         phpldapadmin.ingress.hosts[0]: phpldapadmin-test.g3s-service.itcoc.tech
       name: openldap-pipeline
       targetNamespace: openldap-pipeline
-  - runScriptConfig:
-      image: busybox
-      shellScript: 'export CHART_VERSION=$(grep "version" Chart.yaml | cut -d : -f2)'
-    env:
-      CHART_VERSION: 1.0.0
 - name: Tests
   steps:
   - runScriptConfig:
