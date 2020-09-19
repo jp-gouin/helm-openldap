@@ -41,7 +41,7 @@ affinity: {}
 ldap:
   server: ldap://openldap.openldap
   searchBase: dc=example,dc=org
-  binduserSecret: ssp-ldap
+  # existingSecret: ssp-ldap
   bindDN: cn=admin,dc=example,dc=org
   bindPWKey: BINDPW
 env:

@@ -9,7 +9,7 @@ This chart will do the following:
 
 * Instantiate 3 instances of OpenLDAP server with multi-master replication
 * A phpldapadmin to administrate the OpenLDAP server
-* ltb-passwd for self service password **/!\ In Progress** 
+* ltb-passwd for self service password
 
 ## Installing the Chart
 
@@ -112,7 +112,6 @@ To enable Self-service-password set `ltb-passwd.enabled`  to `true`
 Ingress can be configure if you want to expose the service.
 
 Setup the `ldap` part with the information of the OpenLdap server.
-The `binduserSecret`should point to the secret of OpenLdap (set to the **fullname** of the deployment).
 
 Set `bindDN` accordingly to your ldap domain
 
@@ -129,7 +128,6 @@ ltb-passwd:
   ldap:
     server: ldap://openldap.openldap
     searchBase: dc=example,dc=org
-    binduserSecret: openldap
     bindDN: cn=admin,dc=example,dc=org
     bindPWKey: LDAP_ADMIN_PASSWORD
   

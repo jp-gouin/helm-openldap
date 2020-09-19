@@ -23,10 +23,8 @@ image:
   pullSecret: harbor
 
 # Spcifies an existing secret to be used for admin and config user passwords
-# existingSecret: ""
-
+existingSecret: ""
 logLevel: info
-
 # settings for enabling TLS with custom certificate
 tls:
   enabled: true
@@ -81,21 +79,20 @@ env:
 
   
 
-# Default Passwords to use, stored as a secret. If unset, passwords are auto-generated.
+# Default Passwords to use, stored as a secret.
 # You can override these at install time with
 # helm install openldap --set openldap.adminPassword=<passwd>,openldap.configPassword=<passwd>
-# adminPassword: admin
-# configPassword: config
+adminPassword: Not@SecurePassw0rd
+configPassword: Not@SecurePassw0rd
 
 # Custom openldap configuration files used to override default settings
 # customLdifFiles:
   # 01-default-users.ldif: |-
     # Predefine users here
 replication:
-  enabled: true  
+  enabled: true    
   # Enter the name of your cluster, defaults to "cluster.local"
   clusterName: "cluster.local"
-
 ## Persist data to a persistent volume
 persistence:
   enabled: true
@@ -123,7 +120,6 @@ nodeSelector: {}
 
 tolerations: []
 
-affinity: {}
 
 ## test container details
 test:
@@ -131,11 +127,6 @@ test:
   image:
     repository: dduportal/bats
     tag: 0.4.0
-
-# Set the container log level
-# Valid log levels: none, error, warning, info (default), debug, trace
-logLevel: info
-
 ltb-passwd:
   enabled : true
   ingress:
@@ -146,10 +137,10 @@ ltb-passwd:
     hosts:
     - "ssl-ldap2.example"
   ldap:
-    searchBase: dc=example,dc=org
-    binduserSecret: openldaptest
-    bindDN: cn=admin,dc=example,dc=org
     server: ldap://openldap
+    searchBase: dc=example,dc=org
+    # existingSecret: openldaptest
+    bindDN: cn=admin,dc=example,dc=org
     bindPWKey: LDAP_ADMIN_PASSWORD
 
 phpldapadmin:

@@ -32,7 +32,7 @@ spec:
           - name: LDAP_BINDPASS
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.ldap.binduserSecret }}
+                name: {{ template "ltb-passwd.secretName" . }}
                 key: {{ .Values.ldap.bindPWKey }} 
           - name: LDAP_STARTTLS
             value: "false"
