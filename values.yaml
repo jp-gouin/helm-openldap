@@ -22,9 +22,12 @@ image:
   pullPolicy: Always
   pullSecret: harbor
 
+# Set the container log level
+# Valid log levels: none, error, warning, info (default), debug, trace
+logLevel: info
+
 # Spcifies an existing secret to be used for admin and config user passwords
 existingSecret: ""
-logLevel: info
 # settings for enabling TLS with custom certificate
 tls:
   enabled: true
