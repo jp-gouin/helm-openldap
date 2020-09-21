@@ -32,7 +32,7 @@ stages:
         echo "run ldap commands (add, search, modify...)"
         LDAPTLS_REQCERT=never ldapsearch -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://openldap-pipeline.openldap-pipeline -b 'dc=example,dc=org'
   - applyYamlConfig:
-      path: ./chaos/failure-experiment.yml
+      path: .chaos/failure-experiment.yml
   - runScriptConfig:
       image: alpine
       shellScript: "apk add openldap-clients\necho \"run ldap commands (add, search,
