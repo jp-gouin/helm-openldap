@@ -38,16 +38,12 @@ stages:
       shellScript: "apk add openldap-clients\necho \"run ldap commands (add, search,
         modify...)\"\nfor i in {1..10}\ndo\n   LDAPTLS_REQCERT=never ldapsearch -x
         -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://openldap-pipeline.openldap-pipeline
-        -b 'dc=example,dc=org';\n   sleep 5;\ndone \n"
+        -b 'dc=example,dc=org';\n   sleep 5\ndone \n"
   - runScriptConfig:
       image: debian:buster
-      shellScript: |-
-        RUN apt update && \
-              apt install -y curl && \
-              curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && \
-              chmod +x ./kubectl && \
-              mv ./kubectl /usr/local/bin/kubectl
-        kubectl delete -f .chaos/failure-experiment.yml
+      shellScript: "apt update \napt install -y curl \ncurl -LO https://storage.googleapis.com/kubernetes-release/release/`curl
+        -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl\nchmod
+        +x ./kubectl \nmv ./kubectl /usr/local/bin/kubectl\nkubectl delete -f .chaos/failure-experiment.yml"
 timeout: 60
 branch: {}
 notification: {}
