@@ -39,6 +39,8 @@ stages:
         modify...)\"\nfor i in {1..10}\ndo\n   LDAPTLS_REQCERT=never ldapsearch -x
         -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://openldap-pipeline.openldap-pipeline
         -b 'dc=example,dc=org';\n   sleep 5\ndone \n"
+- name: Cleanup
+  steps:
   - runScriptConfig:
       image: debian:buster
       shellScript: "apt update \napt install -y curl \ncurl -LO https://storage.googleapis.com/kubernetes-release/release/`curl
