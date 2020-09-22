@@ -41,6 +41,7 @@ extraLabels: {}
 podAnnotations: {}
 service:
   annotations: {}
+  omitClusterIP: true
   clusterIP: ""
 
   ldapPort: 389
@@ -168,4 +169,4 @@ phpldapadmin:
  #             [{'bind_id': 'cn=admin,dc=example,dc=org'}]
  #           }]
  #       }]"
-     
+
