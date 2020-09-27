@@ -41,17 +41,20 @@ extraLabels: {}
 podAnnotations: {}
 service:
   annotations: {}
-  clusterIP: ""
 
   ldapPort: 389
   sslLdapPort: 636
+
+  ## If service type NodePort, define the value here
+  #ldapPortNodePort:
+  #sslLdapPortNodePort:
   ## List of IP addresses at which the service is available
   ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
   ##
   externalIPs: []
 
-  loadBalancerIP: ""
-  loadBalancerSourceRanges: []
+  #loadBalancerIP: 
+  #loadBalancerSourceRanges: []
   type: NodePort
 
 # Default configuration for openldap as environment variables. These get injected directly in the container.
