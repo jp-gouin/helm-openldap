@@ -13,12 +13,13 @@ stages:
         ldap.bindDN: cn=admin,dc=example,dc=org
         ldap.bindPWKey: LDAP_ADMIN_PASSWORD
         ldap.searchBase: dc=example,dc=org
-        ldap.server: ldap://openldap
+        ltb-passwd.ldap.server: ldap://openldap-pipeline
         ltb-passwd.enabled: "true"
         ltb-passwd.ingress.enabled: "true"
         ltb-passwd.ingress.hosts[0]: ssl-ldap2-test.g3s-service.itcoc.tech
         ltb-passwd.ingress.path: /
         phpldapadmin.enabled: "true"
+        phpldapadmin.env.PHPLDAPADMIN_LDAP_HOSTS: "openldap-pipeline"
         phpldapadmin.ingress.enabled: "true"
         phpldapadmin.ingress.hosts[0]: phpldapadmin-test.g3s-service.itcoc.tech
       name: openldap-pipeline
@@ -40,8 +41,8 @@ stages:
         echo "run ldap commands (add, search, modify...)"
         for i in {1..10}
         do
-          LDAPTLS_REQCERT=never ldapsearch -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://openldap-pipeline.openldap-pipeline -b 'dc=example,dc=org';
-          sleep 5;
+          LDAPTLS_REQCERT=never ldapsearch -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://openldap-pipeline.openldap-pipeline -b 'dc=example,dc=org'
+          sleep 5
         done
   - runScriptConfig:
       image: debian:buster
