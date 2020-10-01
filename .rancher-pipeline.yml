@@ -43,7 +43,7 @@ stages:
         do
           echo $i
           LDAPTLS_REQCERT=never ldapsearch -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://openldap-pipeline.openldap-pipeline -b 'dc=example,dc=org'
-          sleep 5
+          sleep 60
         done
   - runScriptConfig:
       image: debian:buster
