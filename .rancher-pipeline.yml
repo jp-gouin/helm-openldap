@@ -8,7 +8,7 @@ stages:
       CHART_VERSION: 1.0.0
   - applyAppConfig:
       catalogTemplate: cattle-global-data:i3s-catalog-openldap
-      version: ${CHART_VERSION}
+      version: 2.0.3
       answers:
         ldap.bindDN: cn=admin,dc=example,dc=org
         ldap.bindPWKey: LDAP_ADMIN_PASSWORD
