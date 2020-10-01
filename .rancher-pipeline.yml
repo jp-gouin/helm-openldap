@@ -7,19 +7,19 @@ stages:
     env:
       CHART_VERSION: 1.0.0
   - applyAppConfig:
-      catalogTemplate: p-ts7vz:jpg-catalog-openldap
-      version: 2.0.2
+      catalogTemplate: cattle-global-data:i3s-catalog-openldap
+      version: ${CHART_VERSION}
       answers:
         ldap.bindDN: cn=admin,dc=example,dc=org
         ldap.bindPWKey: LDAP_ADMIN_PASSWORD
         ldap.searchBase: dc=example,dc=org
-        ltb-passwd.ldap.server: ldap://openldap-pipeline
         ltb-passwd.enabled: "true"
         ltb-passwd.ingress.enabled: "true"
         ltb-passwd.ingress.hosts[0]: ssl-ldap2-test.g3s-service.itcoc.tech
         ltb-passwd.ingress.path: /
+        ltb-passwd.ldap.server: ldap://openldap-pipeline
         phpldapadmin.enabled: "true"
-        phpldapadmin.env.PHPLDAPADMIN_LDAP_HOSTS: "openldap-pipeline"
+        phpldapadmin.env.PHPLDAPADMIN_LDAP_HOSTS: openldap-pipeline
         phpldapadmin.ingress.enabled: "true"
         phpldapadmin.ingress.hosts[0]: phpldapadmin-test.g3s-service.itcoc.tech
       name: openldap-pipeline
@@ -32,11 +32,9 @@ stages:
         apk add openldap-clients
         echo "run ldap commands (add, search, modify...)"
         LDAPTLS_REQCERT=never ldapsearch -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://openldap-pipeline.openldap-pipeline -b 'dc=example,dc=org'
-  #- applyYamlConfig:
-  #   path: ./chaos/failure-experiment.yml
   - runScriptConfig:
       image: alpine
-      shellScript: |- 
+      shellScript: |-
         apk add openldap-clients
         echo "run ldap commands (add, search, modify...)"
         for i in {1..10}
