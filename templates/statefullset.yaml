@@ -64,6 +64,10 @@ spec:
               subPath: config-data
             - name: data
               mountPath: /container/service/slapd/assets/certs
+{{- if .Values.customLdifFiles }}
+            - name: custom-ldif-files
+              mountPath: /container/service/slapd/assets/config/bootstrap/ldif/custom
+{{- end }}
           env:
             - name: POD_NAME
               valueFrom:
@@ -114,6 +118,12 @@ spec:
     {{- end }}
       imagePullSecrets: 
         - name: {{ .Values.image.pullSecret }}
+{{- if .Values.customLdifFiles }}
+      volumes:
+        - name: custom-ldif-files
+          configMap:
+            name: openldap-customldif
+{{- end }}
 {{- if .Values.persistence.enabled }} 
   volumeClaimTemplates:
     - metadata:
