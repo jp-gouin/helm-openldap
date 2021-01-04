@@ -122,7 +122,7 @@ spec:
       volumes:
         - name: custom-ldif-files
           configMap:
-            name: openldap-customldif
+            name: {{ template "openldap.fullname" . }}-customldif
 {{- end }}
 {{- if .Values.persistence.enabled }} 
   volumeClaimTemplates:
