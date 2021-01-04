@@ -11,14 +11,13 @@ This chart will do the following:
 * A phpldapadmin to administrate the OpenLDAP server
 * ltb-passwd for self service password
 
-## Installing the Chart
+## TL;DR
 
 To install the chart with the release name `my-release`:
 
 ```bash
-$ git clone https://github.com/jp-gouin/helm-openldap.git
-$ cd helm-openldap
-$ helm install openldap .
+$ helm repo add helm-openldap https://jp-gouin.github.io/helm-openldap/
+$ helm install my-release helm-openldap/openldap
 ```
 
 ## Configuration
