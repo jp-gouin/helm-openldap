@@ -64,6 +64,11 @@ The following table lists the configurable parameters of the openldap chart and 
 | `test.image.repository`            | Test container image requires bats framework                                                                                              | `dduportal/bats`    |
 | `test.image.tag`                   | Test container tag                                                                                                                        | `0.4.0`             |
 | `replication.enabled`              | Enable the multi-master replication | `true` |
+| `replication.retry`              | retry period for replication in sec | `60` |
+| `replication.timeout`              | timeout for replication  in sec| `1` |
+| `replication.starttls`              | starttls replication | `critical` |
+| `replication.tls_reqcert`              | tls certificate validation for replication | `never` |
+| `replication.interval`              | interval for replication | `00:00:00:10` |
 | `replication.clusterName`          | Set the clustername for replication | "cluster.local" |
 | `phpldapadmin.enabled`             | Enable the deployment of PhpLdapAdmin | `true`|
 | `phpldapadmin.ingress`             | Ingress of Phpldapadmin | `{}` |
