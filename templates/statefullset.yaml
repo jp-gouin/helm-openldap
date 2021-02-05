@@ -44,16 +44,12 @@ spec:
             - sh
             - -c
             - |
-              ls -all /tmp/certs
-              cat /tmp/certs/ca.crt
-              ls -all /container/service/slapd/assets/certs/
-              cp -r /tmp/certs/* /container/service/slapd/assets/certs/
-              cat /container/service/slapd/assets/certs/ca.crt
+              cp -r /tmp-certs/* /certs
           volumeMounts:
             - name: certs
-              mountPath: "/container/service/slapd/assets/certs"
+              mountPath: "/certs"
             - name: secret-certs
-              mountPath: "/tmp/certs"
+              mountPath: "/tmp-certs"
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -154,7 +150,8 @@ spec:
           secret:
             secretName: {{.Values.tls.secret}}
         - name: certs
-          emptyDir: {}
+          emptyDir:
+            medium: Memory
 {{- end }}
 {{- if .Values.persistence.enabled }} 
   volumeClaimTemplates:
