@@ -62,8 +62,14 @@ spec:
             - name: data
               mountPath: /etc/ldap/slapd.d
               subPath: config-data
+{{- if .Values.tls.enabled }}
+            - name: certs
+              mountPath: "/container/service/slapd/assets/certs"
+              readOnly: true
+{{- else }}
             - name: data
               mountPath: /container/service/slapd/assets/certs
+{{- end }}
 {{- if .Values.customLdifFiles }}
             - name: custom-ldif-files
               mountPath: /container/service/slapd/assets/config/bootstrap/ldif/custom
@@ -118,11 +124,16 @@ spec:
     {{- end }}
       imagePullSecrets: 
         - name: {{ .Values.image.pullSecret }}
-{{- if .Values.customLdifFiles }}
       volumes:
+{{- if .Values.customLdifFiles }}
         - name: custom-ldif-files
           configMap:
             name: {{ template "openldap.fullname" . }}-customldif
+{{- end }}
+{{- if .Values.tls.enabled }}
+        - name: certs
+          secret:
+            secretName: {{.Values.tls.secret}}
 {{- end }}
 {{- if .Values.persistence.enabled }} 
   volumeClaimTemplates:
