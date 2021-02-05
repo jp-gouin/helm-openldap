@@ -20,7 +20,7 @@ To install the chart with the release name `my-release`:
 
 ```bash
 $ helm repo add helm-openldap https://jp-gouin.github.io/helm-openldap/
-$ helm install my-release helm-openldap/openldap
+$ helm install my-release helm-openldap/openldap-stack-ha
 ```
 
 ## Configuration
