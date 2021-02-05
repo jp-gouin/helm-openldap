@@ -65,7 +65,6 @@ spec:
 {{- if .Values.tls.enabled }}
             - name: certs
               mountPath: "/container/service/slapd/assets/certs"
-              readOnly: true
 {{- else }}
             - name: data
               mountPath: /container/service/slapd/assets/certs
