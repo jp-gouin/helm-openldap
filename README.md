@@ -1,3 +1,6 @@
+[![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/helm-openldap)](https://artifacthub.io/packages/search?repo=helm-openldap)
+
+
 # OpenLDAP Helm Chart
 
 ## Prerequisites Details

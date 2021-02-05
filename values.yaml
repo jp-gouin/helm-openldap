@@ -68,8 +68,8 @@ env:
  LDAP_RFC2307BIS_SCHEMA: "false"
  LDAP_BACKEND: "mdb"
  LDAP_TLS: "true"
- LDAP_TLS_CRT_FILENAME: "ldap.crt"
- LDAP_TLS_KEY_FILENAME: "ldap.key"
+ LDAP_TLS_CRT_FILENAME: "tls.crt"
+ LDAP_TLS_KEY_FILENAME: "tls.key"
  LDAP_TLS_DH_PARAM_FILENAME: "dhparam.pem"
  LDAP_TLS_CA_CRT_FILENAME: "ca.crt"
  LDAP_TLS_ENFORCE: "false"
@@ -147,7 +147,7 @@ ltb-passwd:
     hosts:
     - "ssl-ldap2.example"
   ldap:
-    server: ldap://openldap
+    server: ldap://openldap-stack-ha
     searchBase: dc=example,dc=org
     # existingSecret: openldaptest
     bindDN: cn=admin,dc=example,dc=org
@@ -163,7 +163,7 @@ phpldapadmin:
     hosts:
     - phpldapadmin.example
   env:
-    PHPLDAPADMIN_LDAP_HOSTS: openldap
+    PHPLDAPADMIN_LDAP_HOSTS: openldap-stack-ha
  # TODO make it works
  #     "#PYTHON2BASH:
  #       [{'openldap.openldap': 
