@@ -3,7 +3,7 @@ entries:
   openldap:
   - apiVersion: v2
     appVersion: 2.4.47
-    created: "2021-02-05T15:18:12.235952+01:00"
+    created: "2021-02-05T15:25:38.879383+01:00"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -32,7 +32,7 @@ entries:
   openldap-stack-ha:
   - apiVersion: v2
     appVersion: 2.4.47
-    created: "2021-02-05T15:18:12.239079+01:00"
+    created: "2021-02-05T15:25:38.881613+01:00"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -60,4 +60,4 @@ entries:
     urls:
     - openldap-stack-ha-2.1.0.tgz
     version: 2.1.0
-generated: "2021-02-05T15:18:12.233435+01:00"
+generated: "2021-02-05T15:25:38.877446+01:00"
