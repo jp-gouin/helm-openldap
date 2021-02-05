@@ -44,7 +44,8 @@ spec:
             - sh
             - -c
             - |
-              cp -r /container/service/slapd/assets/tmp-certs /container/service/slapd/assets/certs
+              ls -all /container/service/slapd/assets/tmp-certs/
+              cp -r /container/service/slapd/assets/tmp-certs/* /container/service/slapd/assets/certs/
           volumeMounts:
             - name: certs
               mountPath: "/container/service/slapd/assets/certs"
