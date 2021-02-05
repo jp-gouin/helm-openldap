@@ -1,3 +1,6 @@
+[![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/helm-openldap)](https://artifacthub.io/packages/search?repo=helm-openldap)
+
+
 # OpenLDAP Helm Chart
 
 ## Prerequisites Details
@@ -48,9 +51,8 @@ The following table lists the configurable parameters of the openldap chart and 
 | `env`                              | List of key value pairs as env variables to be sent to the docker image. See https://github.com/osixia/docker-openldap for available ones | `[see values.yaml]` |
 | `logLevel`                         | Set the container log level. Valid values: `none`, `error`, `warning`, `info`, `debug`, `trace`                                           | `info`              |
 | `tls.enabled`                      | Set to enable TLS/LDAPS with custom certificate - should also set `tls.secret`                                                                                    | `false`             |
-| `tls.secret`                       | Secret containing TLS cert and key (eg, generated via cert-manager)                                                                       | `""`                |
-| `tls.CA.enabled`                   | Set to enable custom CA crt file - should also set `tls.CA.secret`                                                                        | `false`             |
-| `tls.CA.secret`                    | Secret containing CA certificate (ca.crt)                                                                                                 | `""`                |
+| `tls.secret`                       | Secret containing TLS cert and key must contain the keys tls.key , tls.crt and ca.crt (if tls.CA.enabled: true)                                                                       | `""`                |
+| `tls.CA.enabled`                   | Set to enable custom CA crt file                                                                         | `false`             |
 | `adminPassword`                    | Password for admin user. Unset to auto-generate the password                                                                              | None                |
 | `configPassword`                   | Password for config user. Unset to auto-generate the password                                                                             | None                |
 | `customLdifFiles`                  | Custom ldif files to seed the LDAP server. List of filename -> data pairs                                                                 | None                |

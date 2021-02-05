@@ -1,5 +1,5 @@
 apiVersion: v2
-name: openldap
+name: openldap-stack-ha
 dependencies:
   - name: ltb-passwd
     version: 0.1.x
@@ -8,13 +8,15 @@ dependencies:
     version: 0.1.x
     condition: phpldapadmin.enabled
 home: https://www.openldap.org
-version: 2.0.4
+version: 2.1.0
 appVersion: 2.4.47
 description: Community developed LDAP software
-icon: http://www.openldap.org/images/headers/LDAPworm.gif
+icon: https://raw.githubusercontent.com/jp-gouin/helm-openldap/master/logo.png
 keywords:
   - ldap
   - openldap
+  - iam-stack
+  - high availability 
 sources:
   - https://github.com/kubernetes/charts
 maintainers:
