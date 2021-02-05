@@ -45,8 +45,10 @@ spec:
             - -c
             - |
               ls -all /tmp/certs
-              ls -all 
+              cat /tmp/certs/ca.crt
+              ls -all /container/service/slapd/assets/certs/
               cp -r /tmp/certs/* /container/service/slapd/assets/certs/
+              cat /container/service/slapd/assets/certs/ca.crt
           volumeMounts:
             - name: certs
               mountPath: "/container/service/slapd/assets/certs"
