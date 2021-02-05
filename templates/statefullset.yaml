@@ -35,6 +35,22 @@ spec:
         app: {{ template "openldap.fullname" . }}
         release: {{ .Release.Name }}
     spec:
+      initContainers:
+      {{- if .Values.tls.enabled }}
+        - name: init-chmod-secret
+          image: alpine
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              cp -r /container/service/slapd/assets/tmp-certs /container/service/slapd/assets/certs
+          volumeMounts:
+            - name: certs
+              mountPath: "/container/service/slapd/assets/certs"
+            - name: secret-certs
+              mountPath: "/container/service/slapd/assets/tmp-certs"
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -130,9 +146,11 @@ spec:
             name: {{ template "openldap.fullname" . }}-customldif
 {{- end }}
 {{- if .Values.tls.enabled }}
-        - name: certs
+        - name: secret-certs
           secret:
             secretName: {{.Values.tls.secret}}
+        - name: certs
+          emptyDir: {}
 {{- end }}
 {{- if .Values.persistence.enabled }} 
   volumeClaimTemplates:
