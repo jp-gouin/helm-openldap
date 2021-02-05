@@ -3,7 +3,7 @@ entries:
   openldap:
   - apiVersion: v2
     appVersion: 2.4.47
-    created: "2021-02-05T15:25:38.879383+01:00"
+    created: "2021-02-05T15:32:19.108658+01:00"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -32,7 +32,7 @@ entries:
   openldap-stack-ha:
   - apiVersion: v2
     appVersion: 2.4.47
-    created: "2021-02-05T15:25:38.881613+01:00"
+    created: "2021-02-05T15:32:19.110951+01:00"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -43,7 +43,7 @@ entries:
       repository: ""
       version: 0.1.x
     description: Community developed LDAP software
-    digest: 13ef51eb79ce01f121eb14e6c1d32691a9244e6242e32f021215d25c61f4bd59
+    digest: a1e9285cf927f65a20a3e570616cb346e48163e78d376a9978bd621441317d96
     home: https://www.openldap.org
     icon: https://raw.githubusercontent.com/jp-gouin/helm-openldap/master/logo.png
     keywords:
@@ -60,4 +60,4 @@ entries:
     urls:
     - openldap-stack-ha-2.1.0.tgz
     version: 2.1.0
-generated: "2021-02-05T15:25:38.877446+01:00"
+generated: "2021-02-05T15:32:19.106047+01:00"
