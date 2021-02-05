@@ -44,13 +44,14 @@ spec:
             - sh
             - -c
             - |
-              ls -all /container/service/slapd/assets/tmp-certs/
-              cp -r /container/service/slapd/assets/tmp-certs/* /container/service/slapd/assets/certs/
+              ls -all /tmp/certs
+              ls -all 
+              cp -r /tmp/certs/* /container/service/slapd/assets/certs/
           volumeMounts:
             - name: certs
               mountPath: "/container/service/slapd/assets/certs"
             - name: secret-certs
-              mountPath: "/container/service/slapd/assets/tmp-certs"
+              mountPath: "/tmp/certs"
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
