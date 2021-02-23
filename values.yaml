@@ -3,18 +3,26 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 3
-# Define deployment strategy - IMPORTANT: use rollingUpdate: null when use Recreate strategy.
-# It prevents from merging with existing map keys which are forbidden.
-strategy: {}
+updateStrategy: {}
+  # When a StatefulSet's .spec.updateStrategy.type is set to OnDelete, 
+  # the StatefulSet controller will not automatically update the Pods
+  # in a StatefulSet. Users must manually delete Pods to cause the
+  # controller to create new Pods that reflect modifications made
+  # to a StatefulSet's .spec.template.
+  # 
+  # type: OnDelete
+  # 
+  # or
+  # 
+  # When a StatefulSet's .spec.updateStrategy.type is set to RollingUpdate,
+  # the StatefulSet controller will delete and recreate each Pod in the StatefulSet.
+  # It will proceed in the same order as Pod termination (from the largest ordinal 
+  # to the smallest), updating each Pod one at a time. It will wait until an updated
+  # Pod is Running and Ready prior to updating its predecessor.
+  # 
   # type: RollingUpdate
   # rollingUpdate:
-  #   maxSurge: 1
-  #   maxUnavailable: 0
-  #
-  # or
-  #
-  # type: Recreate
-  # rollingUpdate: null
+  #   partition: 1
 image:
   # From repository https://github.com/osixia/docker-openldap
   repository: osixia/openldap
