@@ -28,6 +28,7 @@ image:
   repository: osixia/openldap
   tag: 1.4.0
   pullPolicy: Always
+  # pullSecret: harbor
 
 # Set the container log level
 # Valid log levels: none, error, warning, info (default), debug, trace
