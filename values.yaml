@@ -26,7 +26,7 @@ updateStrategy: {}
 image:
   # From repository https://github.com/osixia/docker-openldap
   repository: osixia/openldap
-  tag: 1.4.0
+  tag: 1.5.0
   pullPolicy: Always
   # pullSecret: harbor
 
@@ -37,7 +37,7 @@ logLevel: info
 # Spcifies an existing secret to be used for admin and config user passwords
 existingSecret: ""
 # settings for enabling TLS with custom certificate
-tls:
+customTLS:
   enabled: true
   secret: ""  # The name of a kubernetes.io/tls type secret to use for TLS
   CA:

@@ -36,7 +36,7 @@ spec:
         release: {{ .Release.Name }}
     spec:
       initContainers:
-      {{- if .Values.tls.enabled }}
+      {{- if .Values.customTLS.enabled }}
         - name: init-chmod-secret
           image: alpine
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -80,7 +80,7 @@ spec:
             - name: data
               mountPath: /etc/ldap/slapd.d
               subPath: config-data
-{{- if .Values.tls.enabled }}
+{{- if .Values.customTLS.enabled }}
             - name: certs
               mountPath: "/container/service/slapd/assets/certs"
 {{- else }}
@@ -99,12 +99,12 @@ spec:
                   fieldPath: metadata.name
             #- name: HOSTNAME
             #  value: $(POD_NAME).{{ template "openldap.fullname" . }}-headless
-          {{- if .Values.tls.enabled }}
+          {{- if .Values.customTLS.enabled }}
             - name: LDAP_TLS_CRT_FILENAME
               value: tls.crt
             - name: LDAP_TLS_KEY_FILENAME
               value: tls.key
-          {{- if .Values.tls.CA.enabled }}
+          {{- if .Values.customTLS.CA.enabled }}
             - name: LDAP_TLS_CA_CRT_FILENAME
               value: ca.crt
           {{- end }}
@@ -149,7 +149,7 @@ spec:
           configMap:
             name: {{ template "openldap.fullname" . }}-customldif
 {{- end }}
-{{- if .Values.tls.enabled }}
+{{- if .Values.customTLS.enabled }}
         - name: secret-certs
           secret:
             secretName: {{.Values.tls.secret}}
