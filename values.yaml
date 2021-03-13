@@ -38,7 +38,7 @@ logLevel: info
 existingSecret: ""
 # settings for enabling TLS with custom certificate
 customTLS:
-  enabled: true
+  enabled: false
   secret: ""  # The name of a kubernetes.io/tls type secret to use for TLS
   CA:
     enabled: false
