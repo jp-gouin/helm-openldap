@@ -152,7 +152,7 @@ spec:
 {{- if .Values.customTLS.enabled }}
         - name: secret-certs
           secret:
-            secretName: {{.Values.tls.secret}}
+            secretName: {{.Values.customTLS.secret}}
         - name: certs
           emptyDir:
             medium: Memory
