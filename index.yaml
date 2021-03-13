@@ -3,7 +3,7 @@ entries:
   openldap:
   - apiVersion: v2
     appVersion: 2.4.47
-    created: "2021-02-05T15:32:19.108658+01:00"
+    created: "2021-03-13T10:43:38.611467+01:00"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -31,8 +31,38 @@ entries:
     version: 2.0.4
   openldap-stack-ha:
   - apiVersion: v2
+    appVersion: 2.4.57
+    created: "2021-03-13T10:43:38.618711+01:00"
+    dependencies:
+    - condition: ltb-passwd.enabled
+      name: ltb-passwd
+      repository: ""
+      version: 0.1.x
+    - condition: phpldapadmin.enabled
+      name: phpldapadmin
+      repository: ""
+      version: 0.1.x
+    description: Community developed LDAP software
+    digest: 727631d92137829a153e067ed81ce64226604ede6a9baf4b1ec7e75df76fc3fe
+    home: https://www.openldap.org
+    icon: https://raw.githubusercontent.com/jp-gouin/helm-openldap/master/logo.png
+    keywords:
+    - ldap
+    - openldap
+    - iam-stack
+    - high availability
+    maintainers:
+    - email: jp-gouin@hotmail.fr
+      name: Jean-Philippe Gouin
+    name: openldap-stack-ha
+    sources:
+    - https://github.com/jp-gouin/helm-openldap
+    urls:
+    - openldap-stack-ha-2.1.2.tgz
+    version: 2.1.2
+  - apiVersion: v2
     appVersion: 2.4.47
-    created: "2021-02-05T15:32:19.110951+01:00"
+    created: "2021-03-13T10:43:38.613728+01:00"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -60,4 +90,4 @@ entries:
     urls:
     - openldap-stack-ha-2.1.0.tgz
     version: 2.1.0
-generated: "2021-02-05T15:32:19.106047+01:00"
+generated: "2021-03-13T10:43:38.609962+01:00"
