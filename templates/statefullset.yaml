@@ -133,8 +133,8 @@ spec:
           - topologyKey: kubernetes.io/hostname
             labelSelector:
               matchLabels:
-                app.kubernetes.io/component: {{ .Release.Name }}
-                app.kubernetes.io/instance: {{ .Release.Name }}
+                app: {{ template "openldap.fullname" . }}
+                release: {{ .Release.Name }}
     {{- with .Values.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
