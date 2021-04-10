@@ -1,0 +1,16 @@
+name: GitHub Pages
+
+on:
+    release:
+      types: # This configuration does not affect the page_build event above
+        - created
+        - prereleased 
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v1
+        - run: .bin/update-gh-pages
+          env:
+            DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }} 
+            GITHUB_TOKEN: ${{ secrets.github_token }}
