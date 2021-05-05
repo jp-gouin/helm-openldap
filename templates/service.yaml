@@ -42,6 +42,7 @@ spec:
       {{- else if eq .Values.service.type "ClusterIP" }}
       nodePort: null
       {{- end }}
+  sessionAffinity: {{ .Values.service.sessionAffinity }}
   selector:
     app: {{ template "openldap.fullname" . }}
     release: {{ .Release.Name }}
