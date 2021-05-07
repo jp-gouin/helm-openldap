@@ -123,6 +123,7 @@ persistence:
   ##   GKE, AWS & OpenStack)
   ##
   # storageClass: "standard-singlewriter"
+  # existingClaim: openldap-pvc
   accessModes:
     - ReadWriteOnce
   size: 8Gi
