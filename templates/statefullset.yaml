@@ -165,7 +165,7 @@ spec:
             medium: Memory
 {{- end }}
 {{- if .Values.persistence.enabled }}
-{{- if (eq "-" .Values.persistence.existingClaim) }}
+{{- if (not .Values.persistence.existingClaim) }}
   volumeClaimTemplates:
     - metadata:
         name: data
