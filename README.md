@@ -58,8 +58,7 @@ The following table lists the configurable parameters of the openldap chart and 
 | `customLdifFiles`                  | Custom ldif files to seed the LDAP server. List of filename -> data pairs                                                                 | None                |
 | `persistence.enabled`              | Whether to use PersistentVolumes or not                                                                                                   | `false`             |
 | `persistence.storageClass`         | Storage class for PersistentVolumes.                                                                                                      | `<unset>`           |
-| `persistence.existingClaim`        | Add existing Volumes Claim.
-| `<unset>`           |
+| `persistence.existingClaim`        | Add existing Volumes Claim. | `<unset>`           |
 | `persistence.accessMode`           | Access mode for PersistentVolumes                                                                                                         | `ReadWriteOnce`     |
 | `persistence.size`                 | PersistentVolumeClaim storage size                                                                                                        | `8Gi`               |
 | `resources`                        | Container resource requests and limits in yaml                                                                                            | `{}`                |
