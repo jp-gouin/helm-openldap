@@ -1,0 +1,34 @@
+logLevel: debug
+ltb-passwd:
+  ingress:
+    hosts:
+    - "ssl-ldap2.example"
+phpldapadmin:
+  ingress:
+    hosts:
+    - "phpldapadmin.example"
+customTLS:
+  enabled: true
+  secret: "custom-cert"
+  CA:
+    enabled: false
+customLdifFiles:
+  01-default-group.ldif: |-
+    dn: cn=myGroup,dc=example,dc=org
+    cn: myGroup
+    gidnumber: 500
+    objectclass: posixGroup
+    objectclass: top
+  02-default-user.ldif: |-
+    dn: cn=Jean Dupond,dc=example,dc=org
+    cn: Jean Dupond
+    gidnumber: 500
+    givenname: Jean
+    homedirectory: /home/users/jdupond
+    objectclass: inetOrgPerson
+    objectclass: posixAccount
+    objectclass: top
+    sn: Dupond
+    uid: jdupond
+    uidnumber: 1000
+    userpassword: {MD5}KOULhzfBhPTq9k7a9XfCGw==

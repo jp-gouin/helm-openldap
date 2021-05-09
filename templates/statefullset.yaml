@@ -45,7 +45,6 @@ spec:
             - -c
             - |
               mkdir /certs/test
-              cp -Lr /tmp-certs/* /certs/test
               cp -Lr /tmp-certs/* /certs
           volumeMounts:
             - name: certs
