@@ -103,10 +103,8 @@ spec:
               value: tls.crt
             - name: LDAP_TLS_KEY_FILENAME
               value: tls.key
-          {{- if .Values.customTLS.CA.enabled }}
             - name: LDAP_TLS_CA_CRT_FILENAME
               value: ca.crt
-          {{- end }}
           {{- end }}
           livenessProbe:
             tcpSocket:

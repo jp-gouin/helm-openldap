@@ -1,4 +1,9 @@
 logLevel: debug
+resources: 
+  limits:
+    cpu: "128m"
+    memory: "64Mi"
+replicaCount: 3
 ltb-passwd:
   ingress:
     hosts:
@@ -10,8 +15,6 @@ phpldapadmin:
 customTLS:
   enabled: true
   secret: "custom-cert"
-  CA:
-    enabled: false
 customLdifFiles:
   01-default-group.ldif: |-
     dn: cn=myGroup,dc=example,dc=org
@@ -32,3 +35,7 @@ customLdifFiles:
     uid: jdupond
     uidnumber: 1000
     userpassword: {MD5}KOULhzfBhPTq9k7a9XfCGw==
+service:
+  ldapPortNodePort: 30389
+  sslLdapPortNodePort: 30636
+  type: NodePort

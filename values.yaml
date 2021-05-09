@@ -34,14 +34,15 @@ image:
 # Valid log levels: none, error, warning, info (default), debug, trace
 logLevel: info
 
-# Spcifies an existing secret to be used for admin and config user passwords
+# Specifies an existing secret to be used for admin and config user passwords
 existingSecret: ""
-# settings for enabling TLS with custom certificate
+
+# Settings for enabling TLS with custom certificate
+# need a secret with tls.crt, tls.key and ca.crt keys with associated files
+# Ref: https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#create-a-secret
 customTLS:
   enabled: false
   secret: ""  # The name of a kubernetes.io/tls type secret to use for TLS
-  CA:
-    enabled: false
 ## Add additional labels to all resources
 extraLabels: {}
 ## Add additional annotations to pods

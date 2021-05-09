@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-failure-openldap
+  annotations:
+    experiment.chaos-mesh.org/pause: "false"
+spec:
+  action: pod-failure
+  mode: random-max-percent
+  value: "100"
+  duration: "15s"
+  selector:
+    labelSelectors:
+      "app": "openldap-openldap-stack-ha"
+  scheduler:
+    cron: "@every 2m"
