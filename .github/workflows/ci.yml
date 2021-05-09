@@ -72,7 +72,7 @@ jobs:
         shell: bash
         run: |
            echo "test access to openldap database"
-           for i in {1..20}; do  LDAPTLS_REQCERT=never ldapsearch -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org' && sleep 60 ; done
+           for i in {1..20}; do  LDAPTLS_REQCERT=never ldapsearch -o nettimeout=20 -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org' && sleep 60 ; done
 
 
       

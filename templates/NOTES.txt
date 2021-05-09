@@ -1,6 +1,12 @@
-OpenLDAP has been installed. You can access the server from within the k8s cluster using:
+** Please be patient while the chart is being deployed **
+
+OpenLDAP-Stack-HA has been installed. You can access the server from within the k8s cluster using:
 
   {{ template "openldap.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.ldapPort }}
+  
+  Or
+  
+  {{ template "openldap.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.sslLdapPort }}
 
 
 You can access the LDAP adminPassword and configPassword using:
@@ -10,11 +16,42 @@ You can access the LDAP adminPassword and configPassword using:
 
 
 You can access the LDAP service, from within the cluster (or with kubectl port-forward) with a command like (replace password and domain):
-  ldapsearch -x -H ldap://{{ template "openldap.fullname" . }}-service.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.ldapPort }} -b dc=example,dc=org -D "cn=admin,dc=example,dc=org" -w $LDAP_ADMIN_PASSWORD
+  ldapsearch -x -H ldap://{{ template "openldap.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.ldapPort }} -b dc=example,dc=org -D "cn=admin,dc=example,dc=org" -w $LDAP_ADMIN_PASSWORD
 
+
+{{- if .Values.phpldapadmin.enabled }}
+
+You can access PHPLdapAdmin, using 
+{{- if .Values.phpldapadmin.ingress.enabled }}
+  {{- range $host := .Values.phpldapadmin.ingress.hosts }}
+     - http://{{ $host }}
+  {{- end }}  
+{{- else if contains "NodePort" .Values.phpldapadmin.service.type }}
+  Get the NodePort using :
+  kubectl get --namespace {{ .Release.Namespace }} svc
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  http://$NODE_IP:<NodePort>/
+{{- end }}
+
+{{- end }}
+
+
+{{- if index .Values "ltb-passwd" "enabled" }}
+
+You can access Self Service Password, using 
+{{- if index .Values "ltb-passwd" "ingress" "enabled" }}
+  {{- range $host := index .Values "ltb-passwd" "ingress" "hosts" }}
+     - http://{{ $host }}
+  {{- end }}  
+{{- else if contains "NodePort" index .Values "ltb-passwd" "service" "type" }}
+  Get the NodePort using :
+  kubectl get --namespace {{ .Release.Namespace }} svc
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  http://$NODE_IP:<NodePort>/
+{{- end }}
+{{- end }}
 
 Test server health using Helm test:
   helm test {{ .Release.Name }}
 
-
-You can also consider installing the helm chart for phpldapadmin to manage this instance of OpenLDAP, or install Apache Directory Studio, and connect using kubectl port-forward.
+Enjoy :)
