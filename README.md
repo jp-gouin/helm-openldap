@@ -62,6 +62,9 @@ The following table lists the configurable parameters of the openldap chart and 
 | `persistence.existingClaim`        | Add existing Volumes Claim. | `<unset>`           |
 | `persistence.accessMode`           | Access mode for PersistentVolumes                                                                                                         | `ReadWriteOnce`     |
 | `persistence.size`                 | PersistentVolumeClaim storage size                                                                                                        | `8Gi`               |
+| `livenessProbe`                    | Liveness probe configuration                                                                                                              | `[see values.yaml]` |
+| `readinessProbe`                   | Readiness probe configuration                                                                                                             | `[see values.yaml]` |
+| `startupProbe`                     | Startup probe configuration                                                                                                               | `[see values.yaml]` |
 | `resources`                        | Container resource requests and limits in yaml                                                                                            | `{}`                |
 | `test.enabled`                     | Conditionally provision test resources                                                                                                    | `false`             |
 | `test.image.repository`            | Test container image requires bats framework                                                                                              | `dduportal/bats`    |
