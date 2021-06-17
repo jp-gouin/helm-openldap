@@ -129,6 +129,30 @@ persistence:
     - ReadWriteOnce
   size: 8Gi
 
+## Configure extra options for liveness, readiness, and startup probes
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 20
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 10
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 20
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 10
+startupProbe:
+  enabled: false
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 30
+
 resources: {}
  # requests:
  #   cpu: "100m"
