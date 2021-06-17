@@ -39,6 +39,12 @@ The following table lists the configurable parameters of the openldap chart and 
 | `image.pullPolicy`                 | Container pull policy                                                                                                                     | `IfNotPresent`      |
 | `extraLabels`                      | Labels to add to the Resources                                                                                                            | `{}`                |
 | `podAnnotations`                   | Annotations to add to the pod                                                                                                             | `{}`                |
+| `podAffinityPreset`         | Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`       | `""`                           |
+| `podAntiAffinityPreset`     | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`  | `soft`                         |
+| `nodeAffinityPreset.type`   | Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard` | `""`                           |
+| `nodeAffinityPreset.key`    | Node label key to match. Ignored if `affinity` is set.                                    | `""`                           |
+| `nodeAffinityPreset.values` | Node label values to match. Ignored if `affinity` is set.                                 | `[]`                           |
+| `affinity`                  | Affinity for pod assignment                                                               | `{}` (evaluated as a template) |
 | `existingSecret`                   | Use an existing secret for admin and config user passwords                                                                                | `""`                |
 | `service.annotations`              | Annotations to add to the service                                                                                                         | `{}`                |
 | `service.externalIPs`              | Service external IP addresses                                                                                                             | `[]`                |
