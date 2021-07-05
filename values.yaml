@@ -43,6 +43,8 @@ existingSecret: ""
 customTLS:
   enabled: false
   secret: ""  # The name of a kubernetes.io/tls type secret to use for TLS
+  CA:
+    enabled: false
 ## Add additional labels to all resources
 extraLabels: {}
 ## Add additional annotations to pods
