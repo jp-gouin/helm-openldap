@@ -62,6 +62,8 @@ The following table lists the configurable parameters of the openldap chart and 
 | `persistence.existingClaim`        | Add existing Volumes Claim. | `<unset>`           |
 | `persistence.accessMode`           | Access mode for PersistentVolumes                                                                                                         | `ReadWriteOnce`     |
 | `persistence.size`                 | PersistentVolumeClaim storage size                                                                                                        | `8Gi`               |
+| `extraVolumes`                     | Allow add extra volumes which could be mounted to statefulset | None |
+| `extraVolumeMounts`                | Add extra volumes to statefulset | None |
 | `livenessProbe`                    | Liveness probe configuration                                                                                                              | `[see values.yaml]` |
 | `readinessProbe`                   | Readiness probe configuration                                                                                                             | `[see values.yaml]` |
 | `startupProbe`                     | Startup probe configuration                                                                                                               | `[see values.yaml]` |

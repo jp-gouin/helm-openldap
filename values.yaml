@@ -66,6 +66,18 @@ service:
   type: ClusterIP
   sessionAffinity: None
 
+# Additional volumes to be mounted to pod
+extraVolumes:
+  # - name: ca-certs
+  #   hostPath:
+  #     path: /etc/ssl/certs/ca-bundle.crt
+  #     type: File
+
+extraVolumeMounts:
+  #- name: ca-certs
+  #  readOnly: true
+  #  mountPath: "/etc/ssl/certs/ca-certificates.crt"
+
 # Default configuration for openldap as environment variables. These get injected directly in the container.
 # Use the env variables from https://github.com/osixia/docker-openldap#beginner-guide
 env:

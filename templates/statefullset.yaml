@@ -79,6 +79,9 @@ spec:
             - name: data
               mountPath: /etc/ldap/slapd.d
               subPath: config-data
+            {{- if .Values.extraVolumeMounts }}
+            {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
+            {{- end }}
 {{- if .Values.customTLS.enabled }}
             - name: certs
               mountPath: "/container/service/slapd/assets/certs"
@@ -179,6 +182,9 @@ spec:
           emptyDir:
             medium: Memory
 {{- end }}
+        {{- if .Values.extraVolumes }}
+        {{- toYaml .Values.extraVolumes | nindent 8 }}
+        {{- end }}
 {{- if .Values.persistence.enabled }}
 {{- if (not .Values.persistence.existingClaim) }}
   volumeClaimTemplates:
