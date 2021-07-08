@@ -37,6 +37,10 @@ logLevel: info
 # Specifies an existing secret to be used for admin and config user passwords
 existingSecret: ""
 
+# if you want to override default command
+#command: "/container/tool/run"
+command: ""
+
 # Settings for enabling TLS with custom certificate
 # need a secret with tls.crt, tls.key and ca.crt keys with associated files
 # Ref: https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#create-a-secret
