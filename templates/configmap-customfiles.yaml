@@ -1,0 +1,20 @@
+{{- range .Values.customFileSets }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "openldap.fullname" $ }}-fs-{{ .name }}
+  labels:
+    app: {{ template "openldap.name" $ }}
+    chart: {{ template "openldap.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+{{- if $.Values.extraLabels }}
+{{ toYaml $.Values.extraLabels | indent 4 }}
+{{- end }}
+data:
+{{- range .files }}
+{{ .filename | indent 2}}: |
+{{ .content | indent 4 }}
+{{- end}}
+---
+{{- end }}
