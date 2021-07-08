@@ -93,6 +93,14 @@ spec:
             - name: custom-ldif-files
               mountPath: /container/service/slapd/assets/config/bootstrap/ldif/custom
 {{- end }}
+{{- range .Values.customFileSets }}
+{{- $fs := . }}
+{{- range .files }}
+            - name: {{ $fs.name }}
+              mountPath: {{ $fs.targetPath }}/{{ .filename }}
+              subPath: {{ .filename }}
+{{- end }}
+{{- end }}
           env:
             - name: POD_NAME
               valueFrom:
@@ -183,6 +191,11 @@ spec:
         - name: certs
           emptyDir:
             medium: Memory
+{{- end }}
+{{- range .Values.customFileSets }}
+        - name: {{ .name }}
+          configMap:
+            name: {{ template "openldap.fullname" $ }}-fs-{{ .name }}
 {{- end }}
         {{- if .Values.extraVolumes }}
         {{- toYaml .Values.extraVolumes | nindent 8 }}

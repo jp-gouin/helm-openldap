@@ -118,6 +118,19 @@ configPassword: Not@SecurePassw0rd
 # customLdifFiles:
   # 01-default-users.ldif: |-
     # Predefine users here
+
+# Custom files with provided contents to be added in container.
+customFileSets: []
+#- name: fileset1
+#  targetPath: /container/service/slapd/assets/config/bootstrap/ldif
+#  files:
+#  - filename: 03-memberOf.ldif
+#    content: |
+#      dn: cn=module{0},cn=config
+#      changetype: modify
+#      add: olcModuleLoad
+#      olcModuleLoad: memberof
+
 replication:
   enabled: true    
   # Enter the name of your cluster, defaults to "cluster.local"
