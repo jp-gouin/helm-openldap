@@ -43,6 +43,8 @@ existingSecret: ""
 customTLS:
   enabled: false
   secret: ""  # The name of a kubernetes.io/tls type secret to use for TLS
+  CA:
+    enabled: false
 ## Add additional labels to all resources
 extraLabels: {}
 ## Add additional annotations to pods
@@ -65,6 +67,18 @@ service:
   #loadBalancerSourceRanges: []
   type: ClusterIP
   sessionAffinity: None
+
+# Additional volumes to be mounted to pod
+extraVolumes:
+  # - name: ca-certs
+  #   hostPath:
+  #     path: /etc/ssl/certs/ca-bundle.crt
+  #     type: File
+
+extraVolumeMounts:
+  #- name: ca-certs
+  #  readOnly: true
+  #  mountPath: "/etc/ssl/certs/ca-certificates.crt"
 
 # Default configuration for openldap as environment variables. These get injected directly in the container.
 # Use the env variables from https://github.com/osixia/docker-openldap#beginner-guide
@@ -104,6 +118,19 @@ configPassword: Not@SecurePassw0rd
 # customLdifFiles:
   # 01-default-users.ldif: |-
     # Predefine users here
+
+# Custom files with provided contents to be added in container.
+customFileSets: []
+#- name: fileset1
+#  targetPath: /container/service/slapd/assets/config/bootstrap/ldif
+#  files:
+#  - filename: 03-memberOf.ldif
+#    content: |
+#      dn: cn=module{0},cn=config
+#      changetype: modify
+#      add: olcModuleLoad
+#      olcModuleLoad: memberof
+
 replication:
   enabled: true    
   # Enter the name of your cluster, defaults to "cluster.local"

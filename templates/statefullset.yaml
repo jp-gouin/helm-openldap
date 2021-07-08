@@ -79,6 +79,9 @@ spec:
             - name: data
               mountPath: /etc/ldap/slapd.d
               subPath: config-data
+            {{- if .Values.extraVolumeMounts }}
+            {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
+            {{- end }}
 {{- if .Values.customTLS.enabled }}
             - name: certs
               mountPath: "/container/service/slapd/assets/certs"
@@ -89,6 +92,14 @@ spec:
 {{- if .Values.customLdifFiles }}
             - name: custom-ldif-files
               mountPath: /container/service/slapd/assets/config/bootstrap/ldif/custom
+{{- end }}
+{{- range .Values.customFileSets }}
+{{- $fs := . }}
+{{- range .files }}
+            - name: {{ $fs.name }}
+              mountPath: {{ $fs.targetPath }}/{{ .filename }}
+              subPath: {{ .filename }}
+{{- end }}
 {{- end }}
           env:
             - name: POD_NAME
@@ -103,8 +114,10 @@ spec:
               value: tls.crt
             - name: LDAP_TLS_KEY_FILENAME
               value: tls.key
+          {{- if .Values.customTLS.CA.enabled }}
             - name: LDAP_TLS_CA_CRT_FILENAME
               value: ca.crt
+          {{- end }}
           {{- end }}
           {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
@@ -179,6 +192,14 @@ spec:
           emptyDir:
             medium: Memory
 {{- end }}
+{{- range .Values.customFileSets }}
+        - name: {{ .name }}
+          configMap:
+            name: {{ template "openldap.fullname" $ }}-fs-{{ .name }}
+{{- end }}
+        {{- if .Values.extraVolumes }}
+        {{- toYaml .Values.extraVolumes | nindent 8 }}
+        {{- end }}
 {{- if .Values.persistence.enabled }}
 {{- if (not .Values.persistence.existingClaim) }}
   volumeClaimTemplates:
