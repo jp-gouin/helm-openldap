@@ -57,11 +57,14 @@ The following table lists the configurable parameters of the openldap chart and 
 | `adminPassword`                    | Password for admin user. Unset to auto-generate the password                                                                              | None                |
 | `configPassword`                   | Password for config user. Unset to auto-generate the password                                                                             | None                |
 | `customLdifFiles`                  | Custom ldif files to seed the LDAP server. List of filename -> data pairs                                                                 | None                |
+| `customFileSets`                   | Custom filesets to be mounted, see values.yaml for example.                                                                               | None                |
 | `persistence.enabled`              | Whether to use PersistentVolumes or not                                                                                                   | `false`             |
 | `persistence.storageClass`         | Storage class for PersistentVolumes.                                                                                                      | `<unset>`           |
 | `persistence.existingClaim`        | Add existing Volumes Claim. | `<unset>`           |
 | `persistence.accessMode`           | Access mode for PersistentVolumes                                                                                                         | `ReadWriteOnce`     |
 | `persistence.size`                 | PersistentVolumeClaim storage size                                                                                                        | `8Gi`               |
+| `extraVolumes`                     | Allow add extra volumes which could be mounted to statefulset | None |
+| `extraVolumeMounts`                | Add extra volumes to statefulset | None |
 | `livenessProbe`                    | Liveness probe configuration                                                                                                              | `[see values.yaml]` |
 | `readinessProbe`                   | Readiness probe configuration                                                                                                             | `[see values.yaml]` |
 | `startupProbe`                     | Startup probe configuration                                                                                                               | `[see values.yaml]` |
