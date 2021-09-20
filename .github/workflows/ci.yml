@@ -20,28 +20,6 @@ jobs:
       - name: setup cluster
         shell: bash
         run: |
-          name: Qualif
-:
-  push:
-    branches:
-      - "master"
-      - "patch-action"
-  pull_request:
-    branches:
-      - "master"
-jobs:
-  qualif:
-      runs-on: ubuntu-latest
-      steps:
-      - name: Check out code
-        uses: actions/checkout@v1
-      - name: Lint
-        shell: bash
-        run: |
-          helm lint .
-      - name: setup cluster
-        shell: bash
-        run: |
           curl -Lo /tmp/kind https://kind.sigs.k8s.io/dl/v0.11.1/kind-linux-amd64
           chmod +x /tmp/kind
           /tmp/kind create cluster --config=$GITHUB_WORKSPACE/.bin/kind-conf.yml
