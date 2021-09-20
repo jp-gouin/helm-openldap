@@ -21,7 +21,7 @@ jobs:
         shell: bash
         run: |
           name: Qualif
-on:
+:
   push:
     branches:
       - "master"
@@ -43,63 +43,6 @@ jobs:
         shell: bash
         run: |
           curl -Lo /tmp/kind https://kind.sigs.k8s.io/dl/v0.11.1/kind-linux-amd64
-          chmod +x /tmp/kind
-          /tmp/kind create cluster --config=$GITHUB_WORKSPACE/.bin/kind-conf.yml
-          kubectl apply -f https://projectcontour.io/quickstart/contour.yaml
-          kubectl patch daemonsets -n projectcontour envoy -p '{"spec":{"template":{"spec":{"nodeSelector":{"ingress-ready":"true"}}}}}'
-      - name: setup chaos mesh
-        shell: bash
-        run: |
-          curl -sSL https://mirrors.chaos-mesh.org/v1.2.2/install.sh | bash -s -- --local kind
-      - name: setup certs
-        shell: bash
-        run: |
-          openssl req -x509 -newkey rsa:4096 -nodes -subj '/CN=example.com' -keyout tls.key -out tls.crt -days 365
-          cp tls.crt ca.crt
-          openssl dhparam -out dhparam.pem 2048
-          kubectl create secret generic custom-cert --from-file=./tls.crt --from-file=./tls.key --from-file=./dhparam.pem --from-file=./ca.crt
-      - name: deploy openldap-stack-ha
-        shell: bash
-        run: |
-          cd "$GITHUB_WORKSPACE"
-          helm install openldap -f .bin/myval.yaml .
-          kubectl rollout status sts openldap-openldap-stack-ha 
-      - name: verify deployment
-        shell: bash
-        run: |
-           echo "test access to openldap database"
-           sudo apt-get install -y ldap-utils
-           LDAPTLS_REQCERT=never ldapsearch -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org'
-      - name: test phpldapadmin access
-        shell: bash
-        run: |
-           echo "test access to phpldapadmin"
-           echo "127.0.0.1 phpldapadmin.example ssl-ldap2.example" | sudo tee -a /etc/hosts
-           curl phpldapadmin.example:8080
-      - name: test self service pwd access
-        shell: bash
-        run: |
-           echo "test access to ssp"
-           curl ssl-ldap2.example:8080
-      - name: verify certs
-        shell: bash
-        run: |
-           echo "verify certificate"
-           openssl s_client -showcerts -connect localhost:30636 </dev/null | grep "issuer=CN = example.com"
-      - name: apply chaos tests
-        shell: bash
-        run: |
-           echo "test access to openldap database"
-           kubectl apply -f .bin/chaos.yaml
-      - name: chaos tests
-        shell: bash
-        run: |
-           echo "test access to openldap database"
-           for i in {1..20}; do  LDAPTLS_REQCERT=never ldapsearch -o nettimeout=20 -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org' && sleep 60 ; done
-
-
-      
-          curl -Lo /tmp/kind https://kind.sigs.k8s.io/dl/v0.10.0/kind-linux-amd64
           chmod +x /tmp/kind
           /tmp/kind create cluster --config=$GITHUB_WORKSPACE/.bin/kind-conf.yml
           kubectl apply -f https://projectcontour.io/quickstart/contour.yaml
