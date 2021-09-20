@@ -19,7 +19,7 @@ jobs:
       - name: setup cluster
         shell: bash
         run: |
-          curl -Lo /tmp/kind https://kind.sigs.k8s.io/dl/v0.10.0/kind-linux-amd64
+          curl -Lo /tmp/kind https://kind.sigs.k8s.io/dl/v0.11.1/kind-linux-amd64
           chmod +x /tmp/kind
           /tmp/kind create cluster --config=$GITHUB_WORKSPACE/.bin/kind-conf.yml
           kubectl apply -f https://projectcontour.io/quickstart/contour.yaml
@@ -27,7 +27,7 @@ jobs:
       - name: setup chaos mesh
         shell: bash
         run: |
-          curl -sSL https://mirrors.chaos-mesh.org/latest/install.sh | bash -s -- --local kind
+          curl -sSL https://mirrors.chaos-mesh.org/v1.2.2/install.sh | bash -s -- --local kind
       - name: setup certs
         shell: bash
         run: |
