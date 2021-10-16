@@ -205,6 +205,7 @@ ltb-passwd:
     enabled: true
     annotations: {}
     path: /
+    pathType: Prefix
     ## Ingress Host
     hosts:
     - "ssl-ldap2.example"
@@ -221,6 +222,7 @@ phpldapadmin:
     enabled: true
     annotations: {}
     path: /
+    pathType: Prefix
     ## Ingress Host
     hosts:
     - phpldapadmin.example

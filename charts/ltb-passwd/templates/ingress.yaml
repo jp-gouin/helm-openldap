@@ -1,7 +1,8 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "ltb-passwd.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+{{- $ingressPathType := .Values.ingress.pathType -}}
+apiVersion: {{ include "ingress.apiVersion" . }}
 kind: Ingress
 metadata:
   name: {{ $fullName }}
@@ -31,6 +32,9 @@ spec:
       http:
         paths:
           - path: {{ $ingressPath }}
+            {{- if eq (include "ingress.apiVersion" $) "networking.k8s.io/v1" }}
+            pathType: {{ $ingressPathType }}
+            {{- end }}
             backend:
               serviceName: {{ $fullName }}
               servicePort: http
