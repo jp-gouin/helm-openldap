@@ -9,10 +9,10 @@ Expand the name of the chart.
 Return the appropriate apiVersion for statefulset.
 */}}
 {{- define "statefulset.apiVersion" -}}
-{{- if semverCompare "<1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-{{- print "apps/v1beta1" -}}
-{{- else -}}
+{{- if .Capabilities.APIVersions.Has "apps/v1" -}}
 {{- print "apps/v1" -}}
+{{- else -}}
+{{- print "apps/v1beta1" -}}
 {{- end -}}
 {{- end -}}
 {{/*
