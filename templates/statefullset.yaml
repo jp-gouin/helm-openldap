@@ -1,4 +1,4 @@
-apiVersion: {{ template "statefulset.apiVersion" . }}
+apiVersion: {{ include "common.capabilities.statefulset.apiVersion" . }}
 kind: StatefulSet
 metadata:
   name:  {{ template "openldap.fullname" . }}
@@ -38,7 +38,7 @@ spec:
       initContainers:
       {{- if .Values.customTLS.enabled }}
         - name: init-chmod-secret
-          image: alpine
+          image: {{ include "openldap.initContainerImage" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - sh
@@ -54,7 +54,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: {{ include "openldap.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - -l
@@ -167,10 +167,7 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- if .Values.image.pullSecret }}
-      imagePullSecrets: 
-        - name: {{ .Values.image.pullSecret }}
-    {{- end }}
+    {{- include "openldap.imagePullSecrets" . | nindent 6 }}
       volumes:
 {{- if .Values.persistence.enabled }}
 {{- if .Values.persistence.existingClaim }}

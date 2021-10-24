@@ -16,19 +16,16 @@ spec:
         app.kubernetes.io/name: {{ include "ltb-passwd.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
-    {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}
+      {{- include "ltb-passwd.imagePullSecrets" . | nindent 6 }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: {{ include "ltb-passwd.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
           - name: LDAP_SERVER
-            value: {{ .Values.ldap.server | quote }}
+            value: {{ include "global.server" . }}
           - name: LDAP_BINDDN
-            value: {{ .Values.ldap.bindDN | quote }}
+            value: {{ include "global.bindDN" . }}
           - name: LDAP_BINDPASS
             valueFrom:
               secretKeyRef:
@@ -37,7 +34,7 @@ spec:
           - name: LDAP_STARTTLS
             value: "false"
           - name: LDAP_BASE_SEARCH
-            value: {{ .Values.ldap.searchBase | quote }}
+            value: {{ include "global.baseDomain" . | quote }}
           {{- with .Values.env }}
           {{- toYaml . | nindent 10 }}
           {{- end }}

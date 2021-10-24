@@ -21,9 +21,10 @@ spec:
         app: {{ template "phpldapadmin.name" . }}
         release: {{ .Release.Name }}
     spec:
+      {{- include "phpldapadmin.imagePullSecrets" . | nindent 6 }}
       containers:
       - name: {{ .Chart.Name }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        image: {{ include "phpldapadmin.image" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - name: http

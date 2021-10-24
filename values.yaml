@@ -2,6 +2,22 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Global Docker image parameters
+# Please, note that this will override the image parameters, including dependencies, configured to use the global value
+# Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
+global:
+  imageRegistry: ""
+  ## E.g.
+  ## imagePullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  imagePullSecrets: ["harbor"]
+  storageClass: ""
+  ldapDomain: "example.org"
+  adminPassword: Not@SecurePassw0rd
+  configPassword: Not@SecurePassw0rd
+
+
 replicaCount: 3
 updateStrategy: {}
   # When a StatefulSet's .spec.updateStrategy.type is set to OnDelete, 
@@ -28,7 +44,7 @@ image:
   repository: osixia/openldap
   tag: 1.5.0
   pullPolicy: Always
-  # pullSecret: harbor
+  pullSecrets: []
 
 # Set the container log level
 # Valid log levels: none, error, warning, info (default), debug, trace
@@ -41,7 +57,10 @@ existingSecret: ""
 # need a secret with tls.crt, tls.key and ca.crt keys with associated files
 # Ref: https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#create-a-secret
 customTLS:
-  enabled: false
+  enabled: true
+  image:
+    repository: alpine
+    tag: latest
   secret: ""  # The name of a kubernetes.io/tls type secret to use for TLS
   CA:
     enabled: false
@@ -85,7 +104,6 @@ extraVolumeMounts:
 env:
  LDAP_LOG_LEVEL: "256"
  LDAP_ORGANISATION: "Example Inc."
- LDAP_DOMAIN: "example.org"
  LDAP_READONLY_USER: "false"
  LDAP_READONLY_USER_USERNAME: "readonly"
  LDAP_READONLY_USER_PASSWORD: "readonly"
@@ -105,14 +123,6 @@ env:
  LDAP_TLS_VERIFY_CLIENT: "never"
  LDAP_TLS_PROTOCOL_MIN: "3.0"
  LDAP_TLS_CIPHER_SUITE: "NORMAL"
-
-  
-
-# Default Passwords to use, stored as a secret.
-# You can override these at install time with
-# helm install openldap --set openldap.adminPassword=<passwd>,openldap.configPassword=<passwd>
-adminPassword: Not@SecurePassw0rd
-configPassword: Not@SecurePassw0rd
 
 # Custom openldap configuration files used to override default settings
 # customLdifFiles:
@@ -210,10 +220,9 @@ ltb-passwd:
     hosts:
     - "ssl-ldap2.example"
   ldap:
-    server: ldap://openldap-openldap-stack-ha
-    searchBase: dc=example,dc=org
+    #server: ldaps://openldap-openldap-stack-ha
     # existingSecret: openldaptest
-    bindDN: cn=admin,dc=example,dc=org
+    #bindDN: cn=admin,dc=example,dc=org
     bindPWKey: LDAP_ADMIN_PASSWORD
 
 phpldapadmin:

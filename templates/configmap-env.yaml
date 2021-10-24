@@ -17,6 +17,7 @@ metadata:
 {{ toYaml .Values.extraLabels | indent 4 }}
 {{- end }}
 data:
+  LDAP_DOMAIN: {{ .Values.global.ldapDomain }}
 {{ toYaml .Values.env | indent 2 }}
 {{- if .Values.replication.enabled }}
   LDAP_REPLICATION: "true"

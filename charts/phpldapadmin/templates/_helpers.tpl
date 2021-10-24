@@ -32,12 +32,15 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
-Return the appropriate apiVersion for ingress.
+Return the proper Openldap image name
 */}}
-{{- define "ingress.apiVersion" -}}
-{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1" -}}
-{{- print "networking.k8s.io/v1" -}}
-{{- else -}}
-{{- print "extensions/v1beta1" -}}
+{{- define "phpldapadmin.image" -}}
+{{- include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) -}}
 {{- end -}}
+
+{{/*
+Return the proper Docker Image Registry Secret Names
+*/}}
+{{- define "phpldapadmin.imagePullSecrets" -}}
+{{ include "common.images.pullSecrets" (dict "images" (list .Values.image ) "global" .Values.global) }}
 {{- end -}}

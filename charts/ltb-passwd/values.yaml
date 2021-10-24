@@ -8,8 +8,9 @@ image:
   repository: tiredofit/self-service-password
   tag: latest
   pullPolicy: Always
+  pullSecrets: []
 
-imagePullSecrets: []
+
 nameOverride: ""
 fullnameOverride: ""
 
@@ -39,7 +40,6 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 ldap:
-  server: ldap://openldap.openldap
   searchBase: dc=example,dc=org
   # existingSecret: ssp-ldap
   bindDN: cn=admin,dc=example,dc=org
