@@ -235,8 +235,8 @@ phpldapadmin:
     ## Ingress Host
     hosts:
     - phpldapadmin.example
-  env:
-    PHPLDAPADMIN_LDAP_HOSTS: openldap-openldap-stack-ha
+  #env:
+  #  PHPLDAPADMIN_LDAP_HOSTS: openldap-openldap-stack-ha
  # TODO make it works
  #     "#PYTHON2BASH:
  #       [{'openldap.openldap': 
