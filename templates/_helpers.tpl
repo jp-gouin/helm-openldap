@@ -115,7 +115,7 @@ Return the proper Docker Image Registry Secret Names
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "global.phpldapserver" -}}
-{{- printf "%s-%s.%s" .Release.Name .Release.Name .Release.Namespace  -}}
+{{- printf "%s.%s" .Release.Name .Release.Namespace  -}}
 {{- end -}}
 
 {{/*
