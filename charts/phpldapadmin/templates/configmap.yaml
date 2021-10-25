@@ -12,3 +12,4 @@ metadata:
 {{- end }}
 data:
 {{ toYaml .Values.env | indent 2 }}
+  PHPLDAPADMIN_LDAP_HOSTS: "#PYTHON2BASH:[{ {{ template "global.phpldapserver" .  }}  : [{'server': [{'tls': False},{'port':636}]},{'login': [{'bind_id': {{ template "global.bindDN" . }}  }]}]}]"
