@@ -31,8 +31,6 @@ spec:
               secretKeyRef:
                 name: {{ template "ltb-passwd.secretName" . }}
                 key: {{ .Values.ldap.bindPWKey }} 
-          - name: LDAP_STARTTLS
-            value: "false"
           - name: LDAP_BASE_SEARCH
             value: {{ include "global.baseDomain" . | quote }}
           {{- with .Values.env }}

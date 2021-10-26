@@ -49,3 +49,8 @@ env:
   value: "password"
 - name: LDAP_LOGIN_ATTRIBUTE
   value: "cn"
+- name: LDAP_STARTTLS
+  value: true
+- name: CHANGE_SSHKEY
+  value: true
+  
