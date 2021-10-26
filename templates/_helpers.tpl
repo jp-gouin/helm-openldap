@@ -108,13 +108,6 @@ dc={{ $part }},
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "global.server" -}}
-{{- printf "ldaps://%s.%s" .Release.Name .Release.Namespace  -}}
-{{- end -}}
-
-{{/*
-Return the proper Docker Image Registry Secret Names
-*/}}
-{{- define "global.phpldapserver" -}}
 {{- printf "%s.%s" .Release.Name .Release.Namespace  -}}
 {{- end -}}
 
