@@ -1,0 +1,309 @@
+# Default values for openldap.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+updateStrategy: {}
+  # When a StatefulSet's .spec.updateStrategy.type is set to OnDelete, 
+  # the StatefulSet controller will not automatically update the Pods
+  # in a StatefulSet. Users must manually delete Pods to cause the
+  # controller to create new Pods that reflect modifications made
+  # to a StatefulSet's .spec.template.
+  # 
+  # type: OnDelete
+  # 
+  # or
+  #   
+  # When a StatefulSet's .spec.updateStrategy.type is set to RollingUpdate,
+  # the StatefulSet controller will delete and recreate each Pod in the StatefulSet.
+  # It will proceed in the same order as Pod termination (from the largest ordinal 
+  # to the smallest), updating each Pod one at a time. It will wait until an updated
+  # Pod is Running and Ready prior to updating its predecessor.
+  # 
+  # type: RollingUpdate
+  # rollingUpdate:
+  #   partition: 1
+image:
+  # From repository https://github.com/osixia/docker-openldap
+  repository: osixia/openldap
+  tag: 1.5.0
+  pullPolicy: Always
+  # pullSecret: harbor
+
+# Set the container log level
+# Valid log levels: none, error, warning, info (default), debug, trace
+logLevel: debug
+
+# Specifies an existing secret to be used for admin and config user passwords
+existingSecret: ""
+
+# Settings for enabling TLS with custom certificate
+# need a secret with tls.crt, tls.key and ca.crt keys with associated files
+# Ref: https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#create-a-secret
+customTLS:
+  enabled: false
+  secret: ""  # The name of a kubernetes.io/tls type secret to use for TLS
+  CA:
+    enabled: false
+## Add additional labels to all resources
+extraLabels: {}
+## Add additional annotations to pods
+podAnnotations: {}
+service:
+  annotations: {}
+
+  ldapPort: 389
+  sslLdapPort: 636
+
+  ## If service type NodePort, define the value here
+  #ldapPortNodePort:
+  #sslLdapPortNodePort:
+  ## List of IP addresses at which the service is available
+  ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+  ##
+  externalIPs: []
+
+  #loadBalancerIP: 
+  #loadBalancerSourceRanges: []
+  type: ClusterIP
+  sessionAffinity: None
+
+# Additional volumes to be mounted to pod
+extraVolumes:
+  # - name: ca-certs
+  #   hostPath:
+  #     path: /etc/ssl/certs/ca-bundle.crt
+  #     type: File
+
+extraVolumeMounts:
+  #- name: ca-certs
+  #  readOnly: true
+  #  mountPath: "/etc/ssl/certs/ca-certificates.crt"
+
+# Default configuration for openldap as environment variables. These get injected directly in the container.
+# Use the env variables from https://github.com/osixia/docker-openldap#beginner-guide
+env:
+ LDAP_LOG_LEVEL: "256"
+ LDAP_ORGANISATION: "Example Inc."
+ LDAP_DOMAIN: "test.link"
+ LDAP_READONLY_USER: "false"
+ LDAP_READONLY_USER_USERNAME: "readonly"
+ LDAP_READONLY_USER_PASSWORD: "readonly"
+ LDAP_RFC2307BIS_SCHEMA: "false"
+ LDAP_BACKEND: "mdb"
+ LDAP_TLS: "true"
+ LDAP_TLS_CRT_FILENAME: "tls.crt"
+ LDAP_TLS_KEY_FILENAME: "tls.key"
+ LDAP_TLS_DH_PARAM_FILENAME: "dhparam.pem"
+ LDAP_TLS_CA_CRT_FILENAME: "ca.crt"
+ LDAP_TLS_ENFORCE: "false"
+ CONTAINER_LOG_LEVEL: "4"
+ LDAP_TLS_REQCERT: "never"
+ KEEP_EXISTING_CONFIG: "false"
+ LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
+ LDAP_SSL_HELPER_PREFIX: "ldap"
+ LDAP_TLS_VERIFY_CLIENT: "never"
+ LDAP_TLS_PROTOCOL_MIN: "3.0"
+ LDAP_TLS_CIPHER_SUITE: "NORMAL"
+
+  
+
+# Default Passwords to use, stored as a secret.
+# You can override these at install time with
+# helm install openldap --set openldap.adminPassword=<passwd>,openldap.configPassword=<passwd>
+adminPassword: Not@SecurePassw0rd
+configPassword: Not@SecurePassw0rd
+
+# Custom openldap configuration files used to override default settings
+customLdifFiles:
+  01-default-users.ldif: |-
+    # Predefine users here
+    # Entry 1: dc=test,dc=link
+    #dn: dc=test,dc=link
+    #dc: test
+    #o: Example Inc.
+    #objectclass: top
+    #objectclass: dcObject
+    #objectclass: organization
+
+    # Entry 2: cn=admin,dc=test,dc=link
+    #dn: cn=admin,dc=test,dc=link
+    #cn: admin
+    #description: LDAP administrator
+    #objectclass: simpleSecurityObject
+    #objectclass: organizationalRole
+    #objectclass: top
+    #userpassword: foo
+
+    # Entry 3: ou=groups,dc=test,dc=link
+    dn: ou=groups,dc=test,dc=link
+    objectclass: organizationalUnit
+    objectclass: top
+    ou: groups
+
+    # Entry 5: cn=users,ou=groups,dc=test,dc=link
+    dn: cn=users,ou=groups,dc=test,dc=link
+    cn: users
+    gidnumber: 500
+    memberuid: admin
+    objectclass: posixGroup
+    objectclass: top
+
+    # Entry 6: ou=users,dc=test,dc=link
+    dn: ou=users,dc=test,dc=link
+    objectclass: organizationalUnit
+    objectclass: top
+    ou: users
+
+    # Entry 7: cn=admin admin,ou=users,dc=test,dc=link
+    dn: cn=admin admin,ou=users,dc=test,dc=link
+    cn: admin admin
+    gidnumber: 501
+    givenname: admin
+    homedirectory: /home/admin
+    loginshell: /bin/bash
+    mail: admin@test.com
+    objectclass: inetOrgPerson
+    objectclass: posixAccount
+    objectclass: top
+    sn: admin
+    uid: admin
+    uidnumber: 10006
+    userpassword: foo
+
+    dn: cn=first last,ou=users,dc=test,dc=link
+    cn: first last
+    gidnumber: 500
+    givenname: first
+    homedirectory: /home/first
+    loginshell: /bin/bash
+    mail: foo@test.com
+    objectclass: inetOrgPerson
+    objectclass: posixAccount
+    objectclass: top
+    sn: last
+    uid: first
+    uidnumber: 10001
+    userpassword: foo
+
+# Custom files with provided contents to be added in container.
+customFileSets: []
+#- name: fileset1
+#  targetPath: /container/service/slapd/assets/config/bootstrap/ldif
+#  files:
+#  - filename: 03-memberOf.ldif
+#    content: |
+#      dn: cn=module{0},cn=config
+#      changetype: modify
+#      add: olcModuleLoad
+#      olcModuleLoad: memberof
+
+replication:
+  enabled: true    
+  # Enter the name of your cluster, defaults to "cluster.local"
+  clusterName: "cluster.local"
+  retry: 60
+  timeout: 1
+  interval: 00:00:00:10
+  starttls: "critical"
+  tls_reqcert: "never"
+## Persist data to a persistent volume
+persistence:
+  enabled: true
+  ## database data Persistent Volume Storage Class
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  # storageClass: "standard-singlewriter"
+  # existingClaim: openldap-pvc
+  accessModes:
+    - ReadWriteOnce
+  size: 8Gi
+
+## Configure extra options for liveness, readiness, and startup probes
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 20
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 10
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 20
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 10
+startupProbe:
+  enabled: false
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 30
+
+resources: {}
+ # requests:
+ #   cpu: "100m"
+ #   memory: "256Mi"
+ # limits:
+ #   cpu: "500m"
+ #   memory: "512Mi"
+
+nodeSelector: {}
+
+tolerations: []
+
+
+## test container details
+test:
+  enabled: false
+  image:
+    repository: dduportal/bats
+    tag: 0.4.0
+ltb-passwd:
+  enabled : true
+  ingress:
+    enabled: true
+    annotations: {}
+    path: /
+    pathType: Prefix
+    ## Ingress Host
+    hosts:
+    - "ssl-ldap2.demo.jpgouin.pro"
+  ldap:
+    server: ldap://openldap-stack-ha
+    searchBase: dc=example,dc=org
+    # existingSecret: openldaptest
+    bindDN: cn=admin,dc=example,dc=org
+    bindPWKey: LDAP_ADMIN_PASSWORD
+
+phpldapadmin:
+  enabled: true
+  ingress:
+    enabled: true
+    annotations: {}
+    path: /
+    pathType: Prefix
+    ## Ingress Host
+    hosts:
+    - phpldapadmin.demo.jpgouin.pro
+  env:
+    PHPLDAPADMIN_LDAP_HOSTS: openldap-stack-ha
+ # TODO make it works
+ #     "#PYTHON2BASH:
+ #       [{'openldap.openldap': 
+ #         [{'server': [
+ #           {'tls': False},
+ #           {'port':636}
+ #         ]},
+ #           {'login': 
+ #             [{'bind_id': 'cn=admin,dc=example,dc=org'}]
+ #           }]
+ #       }]"
+     
