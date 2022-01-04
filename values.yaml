@@ -3,23 +3,24 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 3
-updateStrategy: {}
-  # When a StatefulSet's .spec.updateStrategy.type is set to OnDelete, 
+updateStrategy:
+  {}
+  # When a StatefulSet's .spec.updateStrategy.type is set to OnDelete,
   # the StatefulSet controller will not automatically update the Pods
   # in a StatefulSet. Users must manually delete Pods to cause the
   # controller to create new Pods that reflect modifications made
   # to a StatefulSet's .spec.template.
-  # 
+  #
   # type: OnDelete
-  # 
+  #
   # or
-  # 
+  #
   # When a StatefulSet's .spec.updateStrategy.type is set to RollingUpdate,
   # the StatefulSet controller will delete and recreate each Pod in the StatefulSet.
-  # It will proceed in the same order as Pod termination (from the largest ordinal 
+  # It will proceed in the same order as Pod termination (from the largest ordinal
   # to the smallest), updating each Pod one at a time. It will wait until an updated
   # Pod is Running and Ready prior to updating its predecessor.
-  # 
+  #
   # type: RollingUpdate
   # rollingUpdate:
   #   partition: 1
@@ -35,14 +36,14 @@ image:
 logLevel: info
 
 # Specifies an existing secret to be used for admin and config user passwords
-existingSecret: ""
+existingSecret: ''
 
 # Settings for enabling TLS with custom certificate
 # need a secret with tls.crt, tls.key and ca.crt keys with associated files
 # Ref: https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#create-a-secret
 customTLS:
   enabled: false
-  secret: ""  # The name of a kubernetes.io/tls type secret to use for TLS
+  secret: '' # The name of a kubernetes.io/tls type secret to use for TLS
   CA:
     enabled: false
 ## Add additional labels to all resources
@@ -63,7 +64,7 @@ service:
   ##
   externalIPs: []
 
-  #loadBalancerIP: 
+  #loadBalancerIP:
   #loadBalancerSourceRanges: []
   type: ClusterIP
   sessionAffinity: None
@@ -83,30 +84,29 @@ extraVolumeMounts:
 # Default configuration for openldap as environment variables. These get injected directly in the container.
 # Use the env variables from https://github.com/osixia/docker-openldap#beginner-guide
 env:
- LDAP_LOG_LEVEL: "256"
- LDAP_ORGANISATION: "Example Inc."
- LDAP_DOMAIN: "example.org"
- LDAP_READONLY_USER: "false"
- LDAP_READONLY_USER_USERNAME: "readonly"
- LDAP_READONLY_USER_PASSWORD: "readonly"
- LDAP_RFC2307BIS_SCHEMA: "false"
- LDAP_BACKEND: "mdb"
- LDAP_TLS: "true"
- LDAP_TLS_CRT_FILENAME: "tls.crt"
- LDAP_TLS_KEY_FILENAME: "tls.key"
- LDAP_TLS_DH_PARAM_FILENAME: "dhparam.pem"
- LDAP_TLS_CA_CRT_FILENAME: "ca.crt"
- LDAP_TLS_ENFORCE: "false"
- CONTAINER_LOG_LEVEL: "4"
- LDAP_TLS_REQCERT: "never"
- KEEP_EXISTING_CONFIG: "false"
- LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
- LDAP_SSL_HELPER_PREFIX: "ldap"
- LDAP_TLS_VERIFY_CLIENT: "never"
- LDAP_TLS_PROTOCOL_MIN: "3.0"
- LDAP_TLS_CIPHER_SUITE: "NORMAL"
-
-  
+  LDAP_LOG_LEVEL: '256'
+  LDAP_ORGANISATION: 'Example Inc.'
+  LDAP_DOMAIN: 'example.org'
+  LDAB_BASE_DN: 'dc=example,dc=org'
+  LDAP_READONLY_USER: 'false'
+  LDAP_READONLY_USER_USERNAME: 'readonly'
+  LDAP_READONLY_USER_PASSWORD: 'readonly'
+  LDAP_RFC2307BIS_SCHEMA: 'false'
+  LDAP_BACKEND: 'mdb'
+  LDAP_TLS: 'true'
+  LDAP_TLS_CRT_FILENAME: 'tls.crt'
+  LDAP_TLS_KEY_FILENAME: 'tls.key'
+  LDAP_TLS_DH_PARAM_FILENAME: 'dhparam.pem'
+  LDAP_TLS_CA_CRT_FILENAME: 'ca.crt'
+  LDAP_TLS_ENFORCE: 'false'
+  CONTAINER_LOG_LEVEL: '4'
+  LDAP_TLS_REQCERT: 'never'
+  KEEP_EXISTING_CONFIG: 'false'
+  LDAP_REMOVE_CONFIG_AFTER_SETUP: 'true'
+  LDAP_SSL_HELPER_PREFIX: 'ldap'
+  LDAP_TLS_VERIFY_CLIENT: 'never'
+  LDAP_TLS_PROTOCOL_MIN: '3.0'
+  LDAP_TLS_CIPHER_SUITE: 'NORMAL'
 
 # Default Passwords to use, stored as a secret.
 # You can override these at install time with
@@ -116,8 +116,8 @@ configPassword: Not@SecurePassw0rd
 
 # Custom openldap configuration files used to override default settings
 # customLdifFiles:
-  # 01-default-users.ldif: |-
-    # Predefine users here
+# 01-default-users.ldif: |-
+# Predefine users here
 
 # Custom files with provided contents to be added in container.
 customFileSets: []
@@ -132,14 +132,14 @@ customFileSets: []
 #      olcModuleLoad: memberof
 
 replication:
-  enabled: true    
+  enabled: true
   # Enter the name of your cluster, defaults to "cluster.local"
-  clusterName: "cluster.local"
+  clusterName: 'cluster.local'
   retry: 60
   timeout: 1
   interval: 00:00:00:10
-  starttls: "critical"
-  tls_reqcert: "never"
+  starttls: 'critical'
+  tls_reqcert: 'never'
 ## Persist data to a persistent volume
 persistence:
   enabled: true
@@ -180,18 +180,18 @@ startupProbe:
   successThreshold: 1
   failureThreshold: 30
 
-resources: {}
- # requests:
- #   cpu: "100m"
- #   memory: "256Mi"
- # limits:
- #   cpu: "500m"
- #   memory: "512Mi"
+resources:
+  {}
+  # requests:
+  #   cpu: "100m"
+  #   memory: "256Mi"
+  # limits:
+  #   cpu: "500m"
+  #   memory: "512Mi"
 
 nodeSelector: {}
 
 tolerations: []
-
 
 ## test container details
 test:
@@ -200,7 +200,7 @@ test:
     repository: dduportal/bats
     tag: 0.4.0
 ltb-passwd:
-  enabled : true
+  enabled: true
   ingress:
     enabled: true
     annotations: {}
@@ -208,7 +208,7 @@ ltb-passwd:
     pathType: Prefix
     ## Ingress Host
     hosts:
-    - "ssl-ldap2.example"
+      - 'ssl-ldap2.example'
   ldap:
     server: ldap://openldap-openldap-stack-ha
     searchBase: dc=example,dc=org
@@ -225,18 +225,17 @@ phpldapadmin:
     pathType: Prefix
     ## Ingress Host
     hosts:
-    - phpldapadmin.example
+      - phpldapadmin.example
   env:
     PHPLDAPADMIN_LDAP_HOSTS: openldap-openldap-stack-ha
- # TODO make it works
- #     "#PYTHON2BASH:
- #       [{'openldap.openldap': 
- #         [{'server': [
- #           {'tls': False},
- #           {'port':636}
- #         ]},
- #           {'login': 
- #             [{'bind_id': 'cn=admin,dc=example,dc=org'}]
- #           }]
- #       }]"
-     
+  # TODO make it works
+  #     "#PYTHON2BASH:
+  #       [{'openldap.openldap':
+  #         [{'server': [
+  #           {'tls': False},
+  #           {'port':636}
+  #         ]},
+  #           {'login':
+  #             [{'bind_id': 'cn=admin,dc=example,dc=org'}]
+  #           }]
+  #       }]"
