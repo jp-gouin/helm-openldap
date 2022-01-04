@@ -34,9 +34,6 @@ image:
 # Valid log levels: none, error, warning, info (default), debug, trace
 logLevel: info
 
-# Specifies an existing secret to be used for admin and config user passwords
-existingSecret: ""
-
 # Settings for enabling TLS with custom certificate
 # need a secret with tls.crt, tls.key and ca.crt keys with associated files
 # Ref: https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#create-a-secret
@@ -107,8 +104,10 @@ env:
  LDAP_TLS_CIPHER_SUITE: "NORMAL"
 
   
+# Specifies an existing secret to be used for admin and config user passwords. The expected key are LDAP_ADMIN_PASSWORD and LDAP_CONFIG_PASSWORD.
+existingSecret: ""
 
-# Default Passwords to use, stored as a secret.
+# Default Passwords to use, stored as a secret. Not used if existingSecret is set.
 # You can override these at install time with
 # helm install openldap --set openldap.adminPassword=<passwd>,openldap.configPassword=<passwd>
 adminPassword: Not@SecurePassw0rd
