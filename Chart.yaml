@@ -9,7 +9,7 @@ dependencies:
     condition: phpldapadmin.enabled
 home: https://www.openldap.org
 version: 2.1.6
-appVersion: 2.4.57
+appVersion: 2.5.0
 description: Community developed LDAP software
 icon: https://raw.githubusercontent.com/jp-gouin/helm-openldap/master/logo.png
 keywords:
