@@ -23,14 +23,14 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
           - name: LDAP_SERVER
-            value: ldap://{{ include "global.server" . }}
+            value: ldaps://{{ include "global.server" . }}
           - name: LDAP_BINDDN
             value: {{ include "global.bindDN" . }}
           - name: LDAP_BINDPASS
             valueFrom:
               secretKeyRef:
                 name: {{ template "ltb-passwd.secretName" . }}
-                key: {{ .Values.ldap.bindPWKey }} 
+                key: LDAP_ADMIN_PASSWORD
           - name: LDAP_BASE_SEARCH
             value: {{ include "global.baseDomain" . | quote }}
           {{- with .Values.env }}
@@ -50,6 +50,17 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.ldap.custom }}
+          volumeMounts:
+            - mountPath: /etc/openldap
+              name: ldap-conf
+          {{- end }}
+      {{- if .Values.ldap.custom }}
+      volumes:
+      - name: ldap-conf
+        configMap:
+          name: {{ include "ltb-passwd.fullname" . }}-ldap-cm
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

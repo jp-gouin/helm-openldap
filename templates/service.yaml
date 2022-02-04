@@ -8,7 +8,7 @@ metadata:
   name: {{ template "openldap.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ template "openldap.fullname" . }}
+    app.kubernetes.io/component: {{ template "openldap.fullname" . }}
     chart: {{ template "openldap.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -44,5 +44,5 @@ spec:
       {{- end }}
   sessionAffinity: {{ .Values.service.sessionAffinity }}
   selector:
-    app: {{ template "openldap.fullname" . }}
+    app.kubernetes.io/component: {{ template "openldap.fullname" . }}
     release: {{ .Release.Name }}

@@ -174,3 +174,43 @@ PASSED: foolish-mouse-openldap-service-test-akmms
 ```
 
 It will confirm that we can do an ldapsearch with the default credentials
+
+## Troubleshoot
+
+You can increase the level of log using 'logLevel'
+
+```
+# Set the container log level
+# Valid log levels: none, error, warning, info (default), debug, trace
+logLevel: info
+```
+
+### Boostrap custom ldif
+
+**Warning** when using custom ldif in the `customLdifFiles:` section you do not have to and shouldn't create the high level object `organization` or the `admin` user such as : 
+
+```
+dn: dc=test,dc=example
+dc: test
+o: Example Inc.
+objectclass: top
+objectclass: dcObject
+objectclass: organization
+
+dn: cn=admin,dc=test,dc=example
+cn: admin
+description: LDAP administrator
+objectclass: simpleSecurityObject
+objectclass: organizationalRole
+objectclass: top
+userpassword: foo
+```
+
+This will result with the following error : 
+```
+***  ERROR  | 2021-11-21 08:53:38 | /container/run/startup/slapd failed with status 68
+Already exist
+```
+And the rest of your custom file will be skipped.
+
+All internal configuration like `cn=config` , `cn=module{0},cn=config` should be avoided as well.
