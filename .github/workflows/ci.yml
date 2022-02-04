@@ -21,7 +21,7 @@ jobs:
         run: |
           curl -Lo /tmp/kind https://kind.sigs.k8s.io/dl/v0.11.1/kind-linux-amd64
           chmod +x /tmp/kind
-          /tmp/kind create cluster --config=$GITHUB_WORKSPACE/.bin/kind-conf.yml
+          /tmp/kind create cluster --config=$GITHUB_WORKSPACE/.bin/kind-conf.yml --image=kindest/node:v1.23.0@sha256:49824ab1727c04e56a21a5d8372a402fcd32ea51ac96a2706a12af38934f81ac
           kubectl apply -f https://projectcontour.io/quickstart/contour.yaml
           kubectl patch daemonsets -n projectcontour envoy -p '{"spec":{"template":{"spec":{"nodeSelector":{"ingress-ready":"true"}}}}}'
       - name: setup chaos mesh
