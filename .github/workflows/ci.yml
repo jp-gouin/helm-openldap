@@ -39,7 +39,7 @@ jobs:
         shell: bash
         run: |
           cd "$GITHUB_WORKSPACE"
-          helm install openldap -f .bin/myval.yaml .
+          helm install openldap-stack-ha -f .bin/myval.yaml .
           kubectl rollout status sts openldap-stack-ha 
       - name: verify deployment
         shell: bash
