@@ -30,16 +30,71 @@ We use the docker images provided by https://github.com/osixia/docker-openldap. 
 
 The following table lists the configurable parameters of the openldap chart and their default values.
 
+### Global section
+
+Global parameters to configure the deployment of the application.
+
+| Parameter                          | Description                                                                                                                               | Default             |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| `global.imageRegistry`                     | Global image registry                                                                                                                        | `""`                 |
+| `global.imagePullSecrets`                     | Global list of imagePullSecrets                                                                                                                        | `[]`                 |
+| `global.storageClass`                     | storage class                                                                                                                        | `3`                 |
+| `global.ldapDomain`                     | Domain LDAP                                                                                                                         | `example.org`                 |
+| `global.adminPassword`                     | Administration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
+| `global.configPassword`                     | Configuration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
+
+### Application parameters
+
+Parameters related to the configuration of the application.
+
 | Parameter                          | Description                                                                                                                               | Default             |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | `replicaCount`                     | Number of replicas                                                                                                                        | `3`                 |
+| `env`                              | List of key value pairs as env variables to be sent to the docker image. See https://github.com/osixia/docker-openldap for available ones | `[see values.yaml]` |
+| `logLevel`                         | Set the container log level. Valid values: `none`, `error`, `warning`, `info`, `debug`, `trace`                                           | `info`              |
+| `customTLS.enabled`                      | Set to enable TLS/LDAPS with custom certificate - should also set `tls.secret`                                                                                    | `false`             |
+| `customTLS.secret`                       | Secret containing TLS cert and key must contain the keys tls.key , tls.crt and ca.crt (if tls.CA.enabled: true)                                                                       | `""`                |
+| `customTLS.CA.enabled`                   | Set to enable custom CA crt file                                                                         | `false`
+| `replication.enabled`              | Enable the multi-master replication | `true` |
+| `replication.retry`              | retry period for replication in sec | `60` |
+| `replication.timeout`              | timeout for replication  in sec| `1` |
+| `replication.starttls`              | starttls replication | `critical` |
+| `replication.tls_reqcert`              | tls certificate validation for replication | `never` |
+| `replication.interval`             | interval for replication | `00:00:00:10` |
+| `replication.clusterName`          | Set the clustername for replication | "cluster.local" |
+
+### Phpladadmin configuration
+
+Parameters related to PHPLdapAdmin
+
+| Parameter                          | Description                                                                                                                               | Default             |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| `phpldapadmin.enabled`             | Enable the deployment of PhpLdapAdmin | `true`|
+| `phpldapadmin.ingress`             | Ingress of Phpldapadmin | `{}` |
+| `phpldapadmin.env`  | Environment variables for PhpldapAdmin| `{PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT: "never"}` |
+
+### Self-service password configuration
+
+Parameters related to Self-service password.
+
+| Parameter                          | Description                                                                                                                               | Default             |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+|`ltb-passwd.enabled`| Enable the deployment of Ltb-Passwd| `true` |
+|`ltb-passwd.ingress`| Ingress of the Ltb-Passwd service | `{}` |
+
+### Kubernetes parameters
+
+Parameters related to Kubernetes.
+
+| Parameter                          | Description                                                                                                                               | Default             |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | `updateStrategy`                   | StatefulSet update strategy                                                                                                               | `{}`                |
-| `image.repository`                 | Container image repository                                                                                                                | `osixia/openldap`   |
-| `image.tag`                        | Container image tag                                                                                                                       | `1.1.10`            |
-| `image.pullPolicy`                 | Container pull policy                                                                                                                     | `IfNotPresent`      |
-| `extraLabels`                      | Labels to add to the Resources                                                                                                            | `{}`                |
-| `podAnnotations`                   | Annotations to add to the pod                                                                                                             | `{}`                |
-| `existingSecret`                   | Use an existing secret for admin and config user passwords                                                                                | `""`                |
+| `kubeVersion`                 | kubeVersion Override Kubernetes version                                                                                                                | `""`   |
+| `nameOverride`                        | String to partially override common.names.fullname                                                                                                                       | `""`            |
+| `fullnameOverride`                 | fullnameOverride String to fully override common.names.fullname                                                                                                                     | `""`      |
+| `commonLabels`                      | commonLabels Labels to add to all deployed objects                                                                                                            | `{}`                |
+| `clusterDomain`                   | clusterDomain Kubernetes cluster domain name                                                                                                             | `cluster.local`                |
+| `extraDeploy`                   | extraDeploy Array of extra objects to deploy with the release                                                                                | `""`                |
 | `service.annotations`              | Annotations to add to the service                                                                                                         | `{}`                |
 | `service.externalIPs`              | Service external IP addresses                                                                                                             | `[]`                |
 | `service.ldapPort`                 | External service port for LDAP                                                                                                            | `389`               |
@@ -49,15 +104,6 @@ The following table lists the configurable parameters of the openldap chart and 
 | `service.sslLdapPort`              | External service port for SSL+LDAP                                                                                                        | `636`               |
 | `service.sslLdapPortNodePort`                 | Nodeport of External service port for SSL if service.type is NodePort                                                                                                            | `nil`               |
 | `service.type`                     | Service type can be ClusterIP, NodePort, LoadBalancer                                                                                                                              | `ClusterIP`         |
-| `env`                              | List of key value pairs as env variables to be sent to the docker image. See https://github.com/osixia/docker-openldap for available ones | `[see values.yaml]` |
-| `logLevel`                         | Set the container log level. Valid values: `none`, `error`, `warning`, `info`, `debug`, `trace`                                           | `info`              |
-| `customTLS.enabled`                      | Set to enable TLS/LDAPS with custom certificate - should also set `tls.secret`                                                                                    | `false`             |
-| `customTLS.secret`                       | Secret containing TLS cert and key must contain the keys tls.key , tls.crt and ca.crt (if tls.CA.enabled: true)                                                                       | `""`                |
-| `customTLS.CA.enabled`                   | Set to enable custom CA crt file                                                                         | `false`             |
-| `adminPassword`                    | Password for admin user. Unset to auto-generate the password                                                                              | None                |
-| `configPassword`                   | Password for config user. Unset to auto-generate the password                                                                             | None                |
-| `customLdifFiles`                  | Custom ldif files to seed the LDAP server. List of filename -> data pairs                                                                 | None                |
-| `customFileSets`                   | Custom filesets to be mounted, see values.yaml for example.                                                                               | None                |
 | `persistence.enabled`              | Whether to use PersistentVolumes or not                                                                                                   | `false`             |
 | `persistence.storageClass`         | Storage class for PersistentVolumes.                                                                                                      | `<unset>`           |
 | `persistence.existingClaim`        | Add existing Volumes Claim. | `<unset>`           |
@@ -65,27 +111,23 @@ The following table lists the configurable parameters of the openldap chart and 
 | `persistence.size`                 | PersistentVolumeClaim storage size                                                                                                        | `8Gi`               |
 | `extraVolumes`                     | Allow add extra volumes which could be mounted to statefulset | None |
 | `extraVolumeMounts`                | Add extra volumes to statefulset | None |
-| `livenessProbe`                    | Liveness probe configuration                                                                                                              | `[see values.yaml]` |
-| `readinessProbe`                   | Readiness probe configuration                                                                                                             | `[see values.yaml]` |
-| `startupProbe`                     | Startup probe configuration                                                                                                               | `[see values.yaml]` |
+| `customReadinessProbe`                    | Liveness probe configuration                                                                                                              | `[see values.yaml]` |
+| `customLivenessProbe`                   | Readiness probe configuration                                                                                                             | `[see values.yaml]` |
+| `customStartupProbe`                     | Startup probe configuration                                                                                                               | `[see values.yaml]` |
 | `resources`                        | Container resource requests and limits in yaml                                                                                            | `{}`                |
-| `test.enabled`                     | Conditionally provision test resources                                                                                                    | `false`             |
-| `test.image.repository`            | Test container image requires bats framework                                                                                              | `dduportal/bats`    |
-| `test.image.tag`                   | Test container tag                                                                                                                        | `0.4.0`             |
-| `replication.enabled`              | Enable the multi-master replication | `true` |
-| `replication.retry`              | retry period for replication in sec | `60` |
-| `replication.timeout`              | timeout for replication  in sec| `1` |
-| `replication.starttls`              | starttls replication | `critical` |
-| `replication.tls_reqcert`              | tls certificate validation for replication | `never` |
-| `replication.interval`              | interval for replication | `00:00:00:10` |
-| `replication.clusterName`          | Set the clustername for replication | "cluster.local" |
-| `phpldapadmin.enabled`             | Enable the deployment of PhpLdapAdmin | `true`|
-| `phpldapadmin.ingress`             | Ingress of Phpldapadmin | `{}` |
-| `phpldapadmin.env`  | Environment variables for PhpldapAdmin| `{}` |
-|`ltb-passwd.enabled`| Enable the deployment of Ltb-Passwd| `true` |
-|`ltb-passwd.ingress`| Ingress of the Ltb-Passwd service | `{}` |
-|`ltb-passwd.ldap`| Ldap configuration for the Ltb-Passwd service | `{}` |
-|`ltb-passwd.env`| Environment variables for ltp-passwd | `{}` |
+| `podSecurityContext`              | Enabled OPENLDAP  pods' Security Context | `true` |``
+| `containerSecurityContext`              | Set OPENLDAP  pod's Security Context fsGroup | `true` |
+| `existingConfigmap`              | existingConfigmap The name of an existing ConfigMap with your custom configuration for OPENLDAP  | `` |
+| `podLabels`              | podLabels Extra labels for OPENLDAP  pods| `{}` |
+| `podAnnotations`              | Enable the multi-master replication | `true` |
+| `podAffinityPreset`              | podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`| `` |
+| `podAntiAffinityPreset`              | podAntiAffinityPreset Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` | `soft` |
+| `nodeAffinityPreset`              | nodeAffinityPreset.type Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard` | `true` |
+| `affinity`              | affinity Affinity for OPENLDAP  pods assignment | `` |
+| `nodeSelector`              | nodeSelector Node labels for OPENLDAP  pods assignment | `` |
+| `sidecars`              | sidecars Add additional sidecar containers to the OPENLDAP  pod(s) | `` |
+| `initContainers`              | initContainers Add additional init containers to the OPENLDAP  pod(s) | `` |
+| `volumePermissions`              | 'volumePermissions' init container parameters | `` |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
 
@@ -118,7 +160,7 @@ phpldapadmin:
     hosts:
     - phpldapadmin.local
   env:
-    PHPLDAPADMIN_LDAP_HOSTS: openldap.openldap
+    PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT: "never"
      
 ```
 ## Self-service-password
@@ -140,12 +182,7 @@ ltb-passwd:
     enabled: true
     annotations: {}
     host: "ssl-ldap2.local"
-  ldap:
-    server: ldap://openldap.openldap
-    searchBase: dc=example,dc=org
-    bindDN: cn=admin,dc=example,dc=org
-    bindPWKey: LDAP_ADMIN_PASSWORD
-  
+
 ```
 
 ## Cleanup orphaned Persistent Volumes
@@ -162,18 +199,6 @@ $ kubectl delete pvc -l release=${RELEASE-NAME}
 
 `existingSecret` can be used to override the default secret.yaml provided
 
-## Testing
-
-Helm tests are included and they confirm connection to slapd.
-
-```bash
-helm install . --set test.enabled=true
-helm test <RELEASE_NAME>
-RUNNING: foolish-mouse-openldap-service-test-akmms
-PASSED: foolish-mouse-openldap-service-test-akmms
-```
-
-It will confirm that we can do an ldapsearch with the default credentials
 
 ## Troubleshoot
 
@@ -214,3 +239,13 @@ Already exist
 And the rest of your custom file will be skipped.
 
 All internal configuration like `cn=config` , `cn=module{0},cn=config` should be avoided as well.
+
+## Changelog/Updating
+
+### To 3.0.0
+
+This major update of the chart enable new feature for the deployment such as : 
+- supporting initcontainer
+- supporting sidecar
+- use global parameters to ease the configuration of the app
+- out of the box integration with phpldapadmin and self-service password in a secure way
