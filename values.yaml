@@ -14,6 +14,7 @@ global:
   imagePullSecrets: ["harbor"]
   storageClass: ""
   ldapDomain: "example.org"
+  ## Default Passwords to use, stored as a secret. Not used if existingSecret is set.
   adminPassword: Not@SecurePassw0rd
   configPassword: Not@SecurePassw0rd
 
@@ -54,7 +55,7 @@ image:
 # Valid log levels: none, error, warning, info (default), debug, trace
 logLevel: info
 
-# Specifies an existing secret to be used for admin and config user passwords
+# Specifies an existing secret to be used for admin and config user passwords. The expected key are LDAP_ADMIN_PASSWORD and LDAP_CONFIG_PASSWORD.
 existingSecret: ""
 
 # Settings for enabling TLS with custom certificate
