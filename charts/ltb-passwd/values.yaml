@@ -8,18 +8,16 @@ image:
   repository: tiredofit/self-service-password
   tag: latest
   pullPolicy: Always
+  pullSecrets: []
 
-imagePullSecrets: []
+
 nameOverride: ""
 fullnameOverride: ""
 
 service:
   type: ClusterIP
   port: 80
-ingress:
-  enabled: true
-  annotations: {}
-  host: "ssl-ldap.local"
+
 ## Configure Ingress based on the documentation here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:
   enabled: false
@@ -39,13 +37,20 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 ldap:
-  server: ldap://openldap.openldap
-  searchBase: dc=example,dc=org
+  #searchBase: dc=example,dc=org
   # existingSecret: ssp-ldap
-  bindDN: cn=admin,dc=example,dc=org
-  bindPWKey: BINDPW
+  #bindDN: cn=admin,dc=example,dc=org
+  #bindPWKey: LDAP_ADMIN_PASSWORD
+  custom:
+    - name: TLS_REQCERT
+      value: never
 env:
 - name: SECRETEKEY
   value: "password"
 - name: LDAP_LOGIN_ATTRIBUTE
   value: "cn"
+- name: LDAP_STARTTLS
+  value: "false"
+- name: CHANGE_SSHKEY
+  value: "true"
+  

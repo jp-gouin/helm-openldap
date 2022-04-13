@@ -1,44 +1,49 @@
-apiVersion: {{ template "statefulset.apiVersion" . }}
+apiVersion: {{ include "common.capabilities.statefulset.apiVersion" . }}
 kind: StatefulSet
 metadata:
   name:  {{ template "openldap.fullname" . }}
-  labels:
-    app: {{ template "openldap.fullname" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: {{ template "openldap.fullname" . }}
     chart: {{ template "openldap.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-{{- if .Values.extraLabels }}
-{{ toYaml .Values.extraLabels | indent 4 }}
-{{- end }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
-{{- if .Values.updateStrategy }}
-  updateStrategy:
-{{ toYaml .Values.updateStrategy | indent 4 }}
-{{- end }}
   selector:
-    matchLabels:
-      app: {{ template "openldap.fullname" . }}
-      release: {{ .Release.Name }}
+    matchLabels: {{ include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: {{ template "openldap.fullname" . }}
   serviceName: {{ template "openldap.fullname" . }}-headless
+  {{- if .Values.updateStrategy }}
+  updateStrategy: 
+{{ toYaml .Values.updateStrategy | nindent 4 }}
+  {{- end }}
   template:
     metadata:
       annotations:
         checksum/configmap-env: {{ include (print $.Template.BasePath "/configmap-env.yaml") . | sha256sum }}
-{{- if .Values.customLdifFiles}}
+        {{- if .Values.customLdifFiles}}
         checksum/configmap-customldif: {{ include (print $.Template.BasePath "/configmap-customldif.yaml") . | sha256sum }}
-{{- end }}
-{{- if .Values.podAnnotations}}
-{{ toYaml .Values.podAnnotations | indent 8}}
-{{- end }}
-      labels:
-        app: {{ template "openldap.fullname" . }}
+        {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: {{ template "openldap.fullname" . }}
         release: {{ .Release.Name }}
+        {{- if .Values.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.podLabels "context" $) | nindent 8 }}
+        {{- end }}
     spec:
       initContainers:
+      {{- if .Values.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
+      {{- end }} 
       {{- if .Values.customTLS.enabled }}
         - name: init-chmod-secret
-          image: alpine
+          image: {{ include "openldap.initContainerImage" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - sh
@@ -52,63 +57,64 @@ spec:
             - name: secret-certs
               mountPath: "/tmp-certs"
       {{- end }}
+      {{- if .Values.volumePermissions.enabled }}
+        - name: volume-permissions
+          image: {{ include "openldap.initContainerImage" . }}
+          imagePullPolicy: {{ .Values.volumePermissions.image.pullPolicy | quote }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.volumePermissions.command "context" $) | nindent 12 }}
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.volumePermissions.resources }}
+          resources: {{- toYaml .Values.volumePermissions.resources | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: foo
+              mountPath: bar
+      {{- end }}
+      {{- /*
+ serviceAccountName: {{ template "openldap.serviceAccountName" . }} 
+*/ -}}
+      {{- include "openldap.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAffinityPreset "component" "openldap" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAntiAffinityPreset "component" "openldap" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.nodeAffinityPreset.type "key" .Values.nodeAffinityPreset.key "values" .Values.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.schedulerName }}
+      schedulerName: {{- .Values.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: {{ include "openldap.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - -l
             - {{ .Values.logLevel }}
-{{- if or .Values.customLdifFiles .Values.customFileSets }}
+          {{- if or .Values.customLdifFiles .Values.customFileSets }}
             - --copy-service
-{{- end }}
-          ports:
-            - name: ldap-port
-              containerPort: 389
-            - name: ssl-ldap-port
-              containerPort: 636
-          envFrom:
-            - configMapRef:
-                name: {{ template "openldap.fullname" . }}-env
-            - secretRef:
-                name: {{ template "openldap.secretName" . }}
-          volumeMounts:
-            - name: data
-              mountPath: /var/lib/ldap
-              subPath: data
-            - name: data
-              mountPath: /etc/ldap/slapd.d
-              subPath: config-data
-            {{- if .Values.extraVolumeMounts }}
-            {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
-            {{- end }}
-{{- if .Values.customTLS.enabled }}
-            - name: certs
-              mountPath: "/container/service/slapd/assets/certs"
-{{- else }}
-            - name: data
-              mountPath: /container/service/slapd/assets/certs
-{{- end }}
-{{- if .Values.customLdifFiles }}
-            - name: custom-ldif-files
-              mountPath: /container/service/slapd/assets/config/bootstrap/ldif/custom
-{{- end }}
-{{- range .Values.customFileSets }}
-{{- $fs := . }}
-{{- range .files }}
-            - name: {{ $fs.name }}
-              mountPath: {{ $fs.targetPath }}/{{ .filename }}
-              subPath: {{ .filename }}
-{{- end }}
-{{- end }}
+          {{- end }}
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
           env:
             - name: POD_NAME
               valueFrom:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: metadata.name
-            #- name: HOSTNAME
-            #  value: $(POD_NAME).{{ template "openldap.fullname" . }}-headless
           {{- if .Values.customTLS.enabled }}
             - name: LDAP_TLS_CRT_FILENAME
               value: tls.crt
@@ -119,6 +125,30 @@ spec:
               value: ca.crt
           {{- end }}
           {{- end }}
+            {{- if .Values.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            {{- if .Values.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            - configMapRef:
+                name: {{ template "openldap.fullname" . }}-env
+            {{- if .Values.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+            - secretRef:
+                name: {{ template "openldap.secretName" . }}
+          {{- if .Values.resources }}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: ldap-port
+              containerPort: {{ .Values.service.ldapPort }}
+            - name: ssl-ldap-port
+              containerPort: {{ .Values.service.sslLdapPort }}
           {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
             tcpSocket:
@@ -148,29 +178,44 @@ spec:
             timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
             successThreshold: {{ .Values.startupProbe.successThreshold }}
             failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+          {{- else if .Values.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}
-          resources:
-{{ toYaml .Values.resources | indent 12 }}
-    {{- with .Values.nodeSelector }}
-      nodeSelector:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-      affinity: 
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - topologyKey: kubernetes.io/hostname
-            labelSelector:
-              matchLabels:
-                app: {{ template "openldap.fullname" . }}
-                release: {{ .Release.Name }}
-    {{- with .Values.tolerations }}
-      tolerations:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- if .Values.image.pullSecret }}
-      imagePullSecrets: 
-        - name: {{ .Values.image.pullSecret }}
-    {{- end }}
+          {{- if .Values.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/ldap
+              subPath: data
+            - name: data
+              mountPath: /etc/ldap/slapd.d
+              subPath: config-data
+{{- if .Values.customTLS.enabled }}
+            - name: certs
+              mountPath: "/container/service/slapd/assets/certs"
+{{- else }}
+            - name: data
+              mountPath: /container/service/slapd/assets/certs
+{{- end }}
+{{- if .Values.customLdifFiles }}
+            - name: custom-ldif-files
+              mountPath: /container/service/slapd/assets/config/bootstrap/ldif/custom
+{{- end }}
+{{- range .Values.customFileSets }}
+{{- $fs := . }}
+{{- range .files }}
+            - name: {{ $fs.name }}
+              mountPath: {{ $fs.targetPath }}/{{ .filename }}
+              subPath: {{ .filename }}
+{{- end }}
+{{- end }}
+{{- if .Values.extraVolumeMounts }}
+{{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
+{{- end }}
+{{- if .Values.sidecars }}
+{{- include "common.tplvalues.render" ( dict "value" .Values.sidecars "context" $) | nindent 8 }}
+{{- end }}
       volumes:
 {{- if .Values.persistence.enabled }}
 {{- if .Values.persistence.existingClaim }}
@@ -198,9 +243,8 @@ spec:
             name: {{ template "openldap.fullname" $ }}-fs-{{ .name }}
 {{- end }}
         {{- if .Values.extraVolumes }}
-        {{- toYaml .Values.extraVolumes | nindent 8 }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
-{{- if .Values.persistence.enabled }}
 {{- if (not .Values.persistence.existingClaim) }}
   volumeClaimTemplates:
     - metadata:
@@ -223,7 +267,6 @@ spec:
       {{- else }}
         storageClassName: "{{ .Values.persistence.storageClass }}"
       {{- end }}
-{{- end }}
 {{- end }}
 {{- else }}
         - name: data

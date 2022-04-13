@@ -2,7 +2,7 @@
 {{- $fullName := include "ltb-passwd.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
 {{- $ingressPathType := .Values.ingress.pathType -}}
-apiVersion: {{ include "ingress.apiVersion" . }}
+apiVersion: {{ include "common.capabilities.ingress.apiVersion" . }}
 kind: Ingress
 metadata:
   name: {{ $fullName }}
@@ -16,6 +16,9 @@ metadata:
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
+{{- if and .Values.ingress.ingressClassName (eq "true" (include "common.ingress.supportsIngressClassname" .)) }}
+  ingressClassName: {{ .Values.ingress.ingressClassName | quote }}
+{{- end }}
 {{- if .Values.ingress.tls }}
   tls:
   {{- range .Values.ingress.tls }}
@@ -32,10 +35,12 @@ spec:
       http:
         paths:
           - path: {{ $ingressPath }}
-            {{- if eq (include "ingress.apiVersion" $) "networking.k8s.io/v1" }}
+            {{- if eq "true" (include "common.ingress.supportsPathType" $) }}
             pathType: {{ $ingressPathType }}
             {{- end }}
-            backend:
+            backend: {{- include "common.ingress.backend" (dict "serviceName" $fullName "servicePort" "http" "context" $)  | nindent 14 }}
+            {{- /*
+ backend:
               {{- if eq (include "ingress.apiVersion" $) "networking.k8s.io/v1" }}
               service:
                 name: {{ $fullName }}
@@ -44,6 +49,7 @@ spec:
               {{- else }}
               serviceName: {{ $fullName }}
               servicePort: http
-              {{- end }}
+              {{- end }} 
+*/ -}}
   {{- end }}
 {{- end }}

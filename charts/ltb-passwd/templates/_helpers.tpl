@@ -43,6 +43,7 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
+
 {{/*
 Generate chart secret name
 */}}
@@ -51,12 +52,15 @@ Generate chart secret name
 {{- end -}}
 
 {{/*
-Return the appropriate apiVersion for ingress.
+Return the proper Openldap image name
 */}}
-{{- define "ingress.apiVersion" -}}
-{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1" -}}
-{{- print "networking.k8s.io/v1" -}}
-{{- else -}}
-{{- print "extensions/v1beta1" -}}
+{{- define "ltb-passwd.image" -}}
+{{- include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) -}}
 {{- end -}}
+
+{{/*
+Return the proper Docker Image Registry Secret Names
+*/}}
+{{- define "ltb-passwd.imagePullSecrets" -}}
+{{ include "common.images.pullSecrets" (dict "images" (list .Values.image ) "global" .Values.global) }}
 {{- end -}}

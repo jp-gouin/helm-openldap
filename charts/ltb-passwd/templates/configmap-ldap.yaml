@@ -1,0 +1,17 @@
+{{- if .Values.ldap.custom }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ltb-passwd.fullname" . }}-ldap-cm
+  labels:
+    app: {{ template "ltb-passwd.name" . }}
+    chart: {{ template "ltb-passwd.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  ldap.conf: |
+    {{- range $ldapconfig := .Values.ldap.custom }}
+    {{ $ldapconfig.name }} {{ $ldapconfig.value }}     
+    {{- end }}
+{{- end }}

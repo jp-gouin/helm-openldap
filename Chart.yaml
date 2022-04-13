@@ -7,8 +7,13 @@ dependencies:
   - name: phpldapadmin
     version: 0.1.x
     condition: phpldapadmin.enabled
+  - name: common
+    repository: https://charts.bitnami.com/bitnami
+    tags:
+      - bitnami-common
+    version: 1.x.x
 home: https://www.openldap.org
-version: 2.1.6
+version: 3.0.0
 appVersion: 2.4.57
 description: Community developed LDAP software
 icon: https://raw.githubusercontent.com/jp-gouin/helm-openldap/master/logo.png
