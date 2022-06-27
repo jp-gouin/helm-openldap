@@ -128,6 +128,8 @@ Parameters related to Kubernetes.
 | `sidecars`              | sidecars Add additional sidecar containers to the OPENLDAP  pod(s) | `` |
 | `initContainers`              | initContainers Add additional init containers to the OPENLDAP  pod(s) | `` |
 | `volumePermissions`              | 'volumePermissions' init container parameters | `` |
+| `priorityClassName`              | OPENLDAP pods' priority class name | `` |
+| `tolerations`              | Tolerations for pod assignment | [] |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
 
