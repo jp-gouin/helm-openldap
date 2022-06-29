@@ -62,7 +62,7 @@ existingSecret: ""
 # need a secret with tls.crt, tls.key and ca.crt keys with associated files
 # Ref: https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#create-a-secret
 customTLS:
-  enabled: true
+  enabled: false
   image:
     repository: alpine
     tag: latest
@@ -405,6 +405,8 @@ test:
     tag: 0.4.0
 ltb-passwd:
   enabled : true
+  image:
+    tag: 5.2.3
   ingress:
     enabled: true
     annotations: {}
