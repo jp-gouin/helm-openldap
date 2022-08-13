@@ -115,6 +115,13 @@ env:
  LDAP_TLS_PROTOCOL_MIN: "3.0"
  LDAP_TLS_CIPHER_SUITE: "NORMAL"
 
+# Pod Disruption Budget for Stateful Set
+# Disabled by default, to ensure backwards compatibility
+pdb:
+  enabled: false
+  minAvailable: 1
+  maxUnavailable: ""
+
 # Custom openldap configuration files used to override default settings
 # customLdifFiles:
   # 01-default-users.ldif: |-
