@@ -122,6 +122,9 @@ Parameters related to Kubernetes.
 | `podAnnotations`              | Enable the multi-master replication | `true` |
 | `podAffinityPreset`              | podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`| `` |
 | `podAntiAffinityPreset`              | podAntiAffinityPreset Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` | `soft` |
+| `pdb.enabled`                      | Enable Pod Disruption Budget                                                                                                              | `false`             |
+| `pdb.minAvailable`                 | Configure PDB to have at least this many health replicas.                                                                                 | `1`                 |
+| `pdb.maxUnavailable`               | Configure PDB to have at most this many unhealth replicas.                                                                                | `<unset>`           |
 | `nodeAffinityPreset`              | nodeAffinityPreset.type Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard` | `true` |
 | `affinity`              | affinity Affinity for OPENLDAP  pods assignment | `` |
 | `nodeSelector`              | nodeSelector Node labels for OPENLDAP  pods assignment | `` |
