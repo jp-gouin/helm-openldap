@@ -1,0 +1,69 @@
+#
+# A ConfigMap spec for openldap slapd that map directly to files under
+# /container/service/slapd/assets/config/bootstrap/ldif/custom
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "openldap.fullname" . }}-replication
+  labels:
+    app: {{ template "openldap.name" . }}
+    chart: {{ template "openldap.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.extraLabels }}
+{{ toYaml .Values.extraLabels | indent 4 }}
+{{- end }}
+data:
+  replication.ldif: | 
+    dn: cn=module{0},cn=config
+    objectClass: olcModuleList
+    cn: module{0}
+    olcModuleLoad: syncprov  
+
+    # Load syncprov module
+    #dn: cn=module{0},cn=config
+    #changetype: modify
+    #add: olcModuleLoad
+    #olcModuleLoad: syncprov
+
+    # Set server ID
+    dn: cn=config
+    changeType: modify
+    olcServerID: 1 [{{ template "replicalist" . }}]
+
+    # Add syncprov on config
+    dn: olcOverlay=syncprov,olcDatabase={0}config,cn=config
+    changetype: add
+    objectClass: olcOverlayConfig
+    objectClass: olcSyncProvConfig
+    olcOverlay: syncprov
+
+    # Add sync replication on config
+    dn: olcDatabase={0}config,cn=config
+    changetype: modify
+    add: olcSyncRepl
+    olcSyncRepl: rid=001 provider=[{{ template "replicalist" . }}] bindmethod=simple credentials={{ .Values.global.configPassword }} searchbase="cn=config" type=refreshAndPersist retry="{{.Values.replication.retry }} +" timeout={{.Values.replication.timeout }} starttls={{.Values.replication.starttls }} tls_reqcert={{.Values.replication.tls_reqcert }}
+    
+    -
+    add: olcMirrorMode
+    olcMirrorMode: TRUE
+
+    # Add syncprov on backend
+    dn: olcOverlay=syncprov,olcDatabase={1}{{ .Values.env.LDAP_BACKEND }},cn=config
+    changetype: add
+    objectClass: olcOverlayConfig
+    objectClass: olcSyncProvConfig
+    olcOverlay: syncprov
+
+    # Add sync replication on backend
+    dn: olcDatabase={1}{{ .Values.env.LDAP_BACKEND }},cn=config
+    changetype: modify
+    add: olcSyncRepl
+    olcSyncRepl: rid=101 provider=[{{ template "replicalist" . }}] binddn="cn=admin,{{ .Values.global.ldapDomain }}" bindmethod=simple credentials={{ .Values.global.adminPassword }} searchbase="{{ .Values.global.ldapDomain }}" type=refreshAndPersist interval={{.Values.replication.interval }} retry="{{.Values.replication.retry }} +" timeout={{.Values.replication.timeout }} starttls={{.Values.replication.starttls }} tls_reqcert={{.Values.replication.tls_reqcert }}
+    -
+    add: olcMirrorMode
+    olcMirrorMode: TRUE
+    -
+    add: olcLimits
+    olcLimits: dn.exact="cn=admin,{{ .Values.global.ldapDomain }}" time.soft=unlimited time.hard=unlimited size.soft=unlimited size.hard=unlimited  

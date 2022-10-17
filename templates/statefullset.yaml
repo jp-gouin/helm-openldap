@@ -107,8 +107,6 @@ spec:
           image: {{ include "openldap.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
-            - -l
-            - {{ .Values.logLevel }}
           {{- if or .Values.customLdifFiles .Values.customFileSets }}
             - --copy-service
           {{- end }}
@@ -122,13 +120,13 @@ spec:
                   apiVersion: v1
                   fieldPath: metadata.name
           {{- if .Values.customTLS.enabled }}
-            - name: LDAP_TLS_CRT_FILENAME
-              value: tls.crt
-            - name: LDAP_TLS_KEY_FILENAME
-              value: tls.key
+            - name: LDAP_TLS_CRT_FILE
+              value: /certs/tls.crt
+            - name: LDAP_TLS_KEY_FILE
+              value: /certs/tls.key
           {{- if .Values.customTLS.CA.enabled }}
-            - name: LDAP_TLS_CA_CRT_FILENAME
-              value: ca.crt
+            - name: LDAP_TLS_CA_CRT_FILE
+              value: /certs/ca.crt
           {{- end }}
           {{- end }}
             {{- if .Values.extraEnvVars }}
@@ -199,14 +197,17 @@ spec:
               subPath: config-data
 {{- if .Values.customTLS.enabled }}
             - name: certs
-              mountPath: "/container/service/slapd/assets/certs"
+              mountPath: /opt/bitnami/openldap/certs
 {{- else }}
             - name: data
-              mountPath: /container/service/slapd/assets/certs
+              mountPath: /opt/bitnami/openldap/certs
 {{- end }}
+            - name: replication
+              mountPath: /tmp/replication.ldif
+              subPath: replication.ldif
 {{- if .Values.customLdifFiles }}
             - name: custom-ldif-files
-              mountPath: /container/service/slapd/assets/config/bootstrap/ldif/custom
+              mountPath: /ldifs/add
 {{- end }}
 {{- range .Values.customFileSets }}
 {{- $fs := . }}
@@ -230,6 +231,9 @@ spec:
             claimName: {{ .Values.persistence.existingClaim }}
 {{- end }}
 {{- end }}
+        - name: replication
+          configMap:
+            name: {{ template "openldap.fullname" . }}-replication
 {{- if .Values.customLdifFiles }}
         - name: custom-ldif-files
           configMap:

@@ -15,7 +15,7 @@ global:
   storageClass: ""
   ldapDomain: "example.org"
   ## Default Passwords to use, stored as a secret. Not used if existingSecret is set.
-  adminPassword: Not@SecurePassw0rd
+  adminPassword: Not@SecurePassw\/0rd
   configPassword: Not@SecurePassw0rd
 
 ## @section Common parameters
@@ -46,8 +46,8 @@ replicaCount: 3
 
 image:
   # From repository https://github.com/osixia/docker-openldap
-  repository: osixia/openldap
-  tag: 1.5.0
+  repository: bitnami/openldap
+  tag: 2.6.3
   pullPolicy: Always
   pullSecrets: []
 
@@ -94,7 +94,8 @@ service:
 # Default configuration for openldap as environment variables. These get injected directly in the container.
 # Use the env variables from https://github.com/osixia/docker-openldap#beginner-guide
 env:
- LDAP_LOG_LEVEL: "256"
+ BITNAMI_DEBUG: "true"
+ LDAP_LOGLEVEL: "256"
  LDAP_ORGANISATION: "Example Inc."
  LDAP_READONLY_USER: "false"
  LDAP_READONLY_USER_USERNAME: "readonly"
@@ -114,6 +115,7 @@ env:
  LDAP_TLS_VERIFY_CLIENT: "never"
  LDAP_TLS_PROTOCOL_MIN: "3.0"
  LDAP_TLS_CIPHER_SUITE: "NORMAL"
+ LDAP_ENABLE_TLS: "true"
 
 # Pod Disruption Budget for Stateful Set
 # Disabled by default, to ensure backwards compatibility
