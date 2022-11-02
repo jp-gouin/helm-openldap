@@ -229,9 +229,19 @@ spec:
             name: {{ template "openldap.fullname" . }}-customldif
 {{- end }}
 {{- if .Values.customTLS.enabled }}
+{{- if .Values.customTLS.certManager }}
+        - name: secret-certs
+          csi:
+            driver: csi.cert-manager.io
+            volumeAttributes:
+{{- if .Values.customTLS.certSpec }}
+{{- include "common.tplvalues.render" (dict "value" .Values.customTLS.certSpec "context" $) | nindent 14 }}
+{{- end }}
+{{- else }}
         - name: secret-certs
           secret:
             secretName: {{.Values.customTLS.secret}}
+{{- end }}
         - name: certs
           emptyDir:
             medium: Memory
