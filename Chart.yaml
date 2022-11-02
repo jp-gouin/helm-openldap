@@ -13,18 +13,18 @@ dependencies:
       - bitnami-common
     version: 1.x.x
 home: https://www.openldap.org
-version: 3.0.2
+version: 3.1.0
 appVersion: 2.4.57
 description: Community developed LDAP software
-icon: https://raw.githubusercontent.com/jp-gouin/helm-openldap/master/logo.png
+icon: https://raw.githubusercontent.com/dpsi4/helm-openldap/master/logo.png
 keywords:
   - ldap
   - openldap
   - iam-stack
   - high availability 
 sources:
-  - https://github.com/jp-gouin/helm-openldap
+  - https://github.com/dpsi4/helm-openldap
 maintainers:
-  - name: Jean-Philippe Gouin
-    email: jp-gouin@hotmail.fr
+  - name: Reid Miller
+    email: reidm@dpsi4.net
 engine: gotpl
