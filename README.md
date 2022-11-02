@@ -67,13 +67,13 @@ Parameters related to the configuration of the application.
 ### Cert-Manager Certificate Specification Annnotations for the Inline Volume
 | Parameter                             | Description                                                          | Default               |
 | ------------------------------------- | -------------------------------------------------------------------- | ----------------------|
-| customTLS.certSpec: {}                | -                                                                    | -                     |
-| csi.cert-manager.io/issuer-name       | Cert-Manager Issuer used to generate Certificates                    | ""                    | 
-| csi.cert-manager.io/issuer-kind       | The class of Issuer deployed in your K8s cluster                     | ClusterIssuer
-| csi.cert-manager.io/dns-names         | DNS names to add to the SANS on issued Certificate                   | "${POD_NAME}.${POD_NAMESPACE}.svc.cluster.local,${POD_NAME}.${POD_NAMESPACE}.svc,${POD_NAME}"
-| csi.cert-manager.io/ip-sans           | IP SANs to add to the issued Certificate, add LoadBalancer if used   | "127.0.0.1"
-| csi.cert-manager.io/key-usages        | Certificate Usages to apply to generated Cert                        | "server auth, key encipherment, digital signature"
-| csi.cert-manager.io/key-encoding      | Encoding to use for generated Certificate                            | "PKCS8"
+| `customTLS.certSpec`                  | -                                                                    | n/a                   |
+| `csi.cert-manager.io/issuer-name`     | Cert-Manager Issuer used to generate Certificates                    | ""                    | 
+| `csi.cert-manager.io/issuer-kind`     | The class of Issuer deployed in your K8s cluster                     | `ClusterIssuer`
+| `csi.cert-manager.io/dns-names`       | DNS names to add to the SANS on issued Certificate                   | `${POD_NAME}.${POD_NAMESPACE}.svc.cluster.local,${POD_NAME}.${POD_NAMESPACE}.svc,${POD_NAME}`
+| `csi.cert-manager.io/ip-sans`         | IP SANs to add to the issued Certificate, add LoadBalancer if used   | `127.0.0.1`
+| `csi.cert-manager.io/key-usages`      | Certificate Usages to apply to generated Cert                        | `server auth, key encipherment, digital signature`
+| `csi.cert-manager.io/key-encoding`    | Encoding to use for generated Certificate                            | `PKCS8`
 
 These and other annotations are documented at [Cert-Manager CSI Driver docs|https://cert-manager.io/docs/projects/csi-driver/#supported-volume-attributes]
 
