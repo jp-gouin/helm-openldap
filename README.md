@@ -34,14 +34,14 @@ The following table lists the configurable parameters of the openldap chart and 
 
 Global parameters to configure the deployment of the application.
 
-| Parameter                          | Description                                                                                                                               | Default             |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| `global.imageRegistry`                     | Global image registry                                                                                                                        | `""`                 |
-| `global.imagePullSecrets`                     | Global list of imagePullSecrets                                                                                                                        | `[]`                 |
-| `global.storageClass`                     | storage class                                                                                                                        | `3`                 |
-| `global.ldapDomain`                     | Domain LDAP                                                                                                                         | `example.org`                 |
-| `global.adminPassword`                     | Administration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
-| `global.configPassword`                     | Configuration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
+| Parameter                          | Description                                                                                                                               | Default              |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| `global.imageRegistry`             | Global image registry                                                                                                                     | `""`                 |
+| `global.imagePullSecrets`          | Global list of imagePullSecrets                                                                                                           | `[]`                 |
+| `global.storageClass`              | storage class                                                                                                                             | `3`                  |
+| `global.ldapDomain`                | Domain LDAP                                                                                                                               | `example.org`        |
+| `global.adminPassword`             | Administration password of Openldap                                                                                                       | `Not@SecurePassw0rd` |
+| `global.configPassword`            | Configuration password of Openldap                                                                                                        | `Not@SecurePassw0rd` |
 
 ### Application parameters
 
@@ -52,35 +52,49 @@ Parameters related to the configuration of the application.
 | `replicaCount`                     | Number of replicas                                                                                                                        | `3`                 |
 | `env`                              | List of key value pairs as env variables to be sent to the docker image. See https://github.com/osixia/docker-openldap for available ones | `[see values.yaml]` |
 | `logLevel`                         | Set the container log level. Valid values: `none`, `error`, `warning`, `info`, `debug`, `trace`                                           | `info`              |
-| `customTLS.enabled`                      | Set to enable TLS/LDAPS with custom certificate - should also set `tls.secret`                                                                                    | `false`             |
-| `customTLS.secret`                       | Secret containing TLS cert and key must contain the keys tls.key , tls.crt and ca.crt (if tls.CA.enabled: true)                                                                       | `""`                |
-| `customTLS.CA.enabled`                   | Set to enable custom CA crt file                                                                         | `false`
-| `replication.enabled`              | Enable the multi-master replication | `true` |
-| `replication.retry`              | retry period for replication in sec | `60` |
-| `replication.timeout`              | timeout for replication  in sec| `1` |
-| `replication.starttls`              | starttls replication | `critical` |
-| `replication.tls_reqcert`              | tls certificate validation for replication | `never` |
-| `replication.interval`             | interval for replication | `00:00:00:10` |
-| `replication.clusterName`          | Set the clustername for replication | "cluster.local" |
+| `customTLS.enabled`                | Set to enable TLS/LDAPS with custom certificate - should also set `tls.secret`                                                            | `false`             |
+| `customTLS.secret`                 | Secret containing TLS cert and key must contain the keys tls.key , tls.crt and ca.crt (if tls.CA.enabled: true)                           | `""`                |
+| `customTLS.CA.enabled`             | Set to enable custom CA crt file                                                                                                          | `false`             |
+| `customTLS.certManager`            | Enable Cert-Manger manages TLS Certificates and CA                                                                                        | `false`             |
+| `replication.enabled`              | Enable the multi-master replication                                                                                                       | `true`              |
+| `replication.retry`                | retry period for replication in sec                                                                                                       | `60`                |
+| `replication.timeout`              | timeout for replication  in sec                                                                                                           | `1`                 |
+| `replication.starttls`             | starttls replication                                                                                                                      | `critical`          |
+| `replication.tls_reqcert`          | tls certificate validation for replication                                                                                                | `never`             |
+| `replication.interval`             | interval for replicationi                                                                                                                 | `00:00:00:10`       |
+| `replication.clusterName`          | Set the clustername for replication                                                                                                       | "cluster.local"     |
+
+### Cert-Manager Certificate Specification Annnotations for the Inline Volume
+| Parameter                             | Description                                                          | Default               |
+| ------------------------------------- | -------------------------------------------------------------------- | ----------------------|
+| customTLS.certSpec: {}                | -                                                                    | -                     |
+| csi.cert-manager.io/issuer-name       | Cert-Manager Issuer used to generate Certificates                    | ""                    | 
+| csi.cert-manager.io/issuer-kind       | The class of Issuer deployed in your K8s cluster                     | ClusterIssuer
+| csi.cert-manager.io/dns-names         | DNS names to add to the SANS on issued Certificate                   | "${POD_NAME}.${POD_NAMESPACE}.svc.cluster.local,${POD_NAME}.${POD_NAMESPACE}.svc,${POD_NAME}"
+| csi.cert-manager.io/ip-sans           | IP SANs to add to the issued Certificate, add LoadBalancer if used   | "127.0.0.1"
+| csi.cert-manager.io/key-usages        | Certificate Usages to apply to generated Cert                        | "server auth, key encipherment, digital signature"
+| csi.cert-manager.io/key-encoding      | Encoding to use for generated Certificate                            | "PKCS8"
+
+These and other annotations are documented at [Cert-Manager CSI Driver docs|https://cert-manager.io/docs/projects/csi-driver/#supported-volume-attributes]
 
 ### Phpladadmin configuration
 
 Parameters related to PHPLdapAdmin
 
-| Parameter                          | Description                                                                                                                               | Default             |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| `phpldapadmin.enabled`             | Enable the deployment of PhpLdapAdmin | `true`|
-| `phpldapadmin.ingress`             | Ingress of Phpldapadmin | `{}` |
-| `phpldapadmin.env`  | Environment variables for PhpldapAdmin| `{PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT: "never"}` |
+| Parameter                          | Description                                | Default             |
+| ---------------------------------- | ------------------------------------------ | ------------------- |
+| `phpldapadmin.enabled`             | Enable the deployment of PhpLdapAdmin      | `true`              |
+| `phpldapadmin.ingress`             | Ingress of Phpldapadmin                    | `{}`                |
+| `phpldapadmin.env`                 | Environment variables for PhpldapAdmin     | `{PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT: "never"}` |
 
 ### Self-service password configuration
 
 Parameters related to Self-service password.
 
-| Parameter                          | Description                                                                                                                               | Default             |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-|`ltb-passwd.enabled`| Enable the deployment of Ltb-Passwd| `true` |
-|`ltb-passwd.ingress`| Ingress of the Ltb-Passwd service | `{}` |
+| Parameter          | Description                         | Default             |
+| ------------------ | ----------------------------------- | ------------------- |
+|`ltb-passwd.enabled`| Enable the deployment of Ltb-Passwd | `true`              |
+|`ltb-passwd.ingress`| Ingress of the Ltb-Passwd service   | `{}`                |
 
 ### Kubernetes parameters
 
@@ -89,50 +103,50 @@ Parameters related to Kubernetes.
 | Parameter                          | Description                                                                                                                               | Default             |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | `updateStrategy`                   | StatefulSet update strategy                                                                                                               | `{}`                |
-| `kubeVersion`                 | kubeVersion Override Kubernetes version                                                                                                                | `""`   |
-| `nameOverride`                        | String to partially override common.names.fullname                                                                                                                       | `""`            |
-| `fullnameOverride`                 | fullnameOverride String to fully override common.names.fullname                                                                                                                     | `""`      |
-| `commonLabels`                      | commonLabels Labels to add to all deployed objects                                                                                                            | `{}`                |
-| `clusterDomain`                   | clusterDomain Kubernetes cluster domain name                                                                                                             | `cluster.local`                |
-| `extraDeploy`                   | extraDeploy Array of extra objects to deploy with the release                                                                                | `""`                |
+| `kubeVersion`                      | kubeVersion Override Kubernetes version                                                                                                   | `""`                |
+| `nameOverride`                     | String to partially override common.names.fullname                                                                                        | `""`                |
+| `fullnameOverride`                 | fullnameOverride String to fully override common.names.fullname                                                                           | `""`                |
+| `commonLabels`                     | commonLabels Labels to add to all deployed objects                                                                                        | `{}`                |
+| `clusterDomain`                    | clusterDomain Kubernetes cluster domain name                                                                                              | `cluster.local`     |
+| `extraDeploy`                      | extraDeploy Array of extra objects to deploy with the release                                                                             | `""`                |
 | `service.annotations`              | Annotations to add to the service                                                                                                         | `{}`                |
 | `service.externalIPs`              | Service external IP addresses                                                                                                             | `[]`                |
 | `service.ldapPort`                 | External service port for LDAP                                                                                                            | `389`               |
-| `service.ldapPortNodePort`                 | Nodeport of External service port for LDAP if service.type is NodePort                                                                                                            | `nil`               |
+| `service.ldapPortNodePort`         | Nodeport of External service port for LDAP if service.type is NodePort                                                                    | `nil`               |
 | `service.loadBalancerIP`           | IP address to assign to load balancer (if supported)                                                                                      | `""`                |
 | `service.loadBalancerSourceRanges` | List of IP CIDRs allowed access to load balancer (if supported)                                                                           | `[]`                |
 | `service.sslLdapPort`              | External service port for SSL+LDAP                                                                                                        | `636`               |
-| `service.sslLdapPortNodePort`                 | Nodeport of External service port for SSL if service.type is NodePort                                                                                                            | `nil`               |
-| `service.type`                     | Service type can be ClusterIP, NodePort, LoadBalancer                                                                                                                              | `ClusterIP`         |
+| `service.sslLdapPortNodePort`      | Nodeport of External service port for SSL if service.type is NodePort                                                                     | `nil`               |
+| `service.type`                     | Service type can be ClusterIP, NodePort, LoadBalancer                                                                                     | `ClusterIP`         |
 | `persistence.enabled`              | Whether to use PersistentVolumes or not                                                                                                   | `false`             |
 | `persistence.storageClass`         | Storage class for PersistentVolumes.                                                                                                      | `<unset>`           |
-| `persistence.existingClaim`        | Add existing Volumes Claim. | `<unset>`           |
+| `persistence.existingClaim`        | Add existing Volumes Claim.                                                                                                               | `<unset>`           |
 | `persistence.accessMode`           | Access mode for PersistentVolumes                                                                                                         | `ReadWriteOnce`     |
 | `persistence.size`                 | PersistentVolumeClaim storage size                                                                                                        | `8Gi`               |
-| `extraVolumes`                     | Allow add extra volumes which could be mounted to statefulset | None |
-| `extraVolumeMounts`                | Add extra volumes to statefulset | None |
-| `customReadinessProbe`                    | Liveness probe configuration                                                                                                              | `[see values.yaml]` |
-| `customLivenessProbe`                   | Readiness probe configuration                                                                                                             | `[see values.yaml]` |
-| `customStartupProbe`                     | Startup probe configuration                                                                                                               | `[see values.yaml]` |
+| `extraVolumes`                     | Allow add extra volumes which could be mounted to statefulset                                                                             | None                |
+| `extraVolumeMounts`                | Add extra volumes to statefulset                                                                                                          | None                |
+| `customReadinessProbe`             | Liveness probe configuration                                                                                                              | `[see values.yaml]` |
+| `customLivenessProbe`              | Readiness probe configuration                                                                                                             | `[see values.yaml]` |
+| `customStartupProbe`               | Startup probe configuration                                                                                                               | `[see values.yaml]` |
 | `resources`                        | Container resource requests and limits in yaml                                                                                            | `{}`                |
-| `podSecurityContext`              | Enabled OPENLDAP  pods' Security Context | `true` |``
-| `containerSecurityContext`              | Set OPENLDAP  pod's Security Context fsGroup | `true` |
-| `existingConfigmap`              | existingConfigmap The name of an existing ConfigMap with your custom configuration for OPENLDAP  | `` |
-| `podLabels`              | podLabels Extra labels for OPENLDAP  pods| `{}` |
-| `podAnnotations`              | Enable the multi-master replication | `true` |
-| `podAffinityPreset`              | podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`| `` |
-| `podAntiAffinityPreset`              | podAntiAffinityPreset Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` | `soft` |
+| `podSecurityContext`               | Enabled OPENLDAP  pods' Security Context                                                                                                  | `true`              |
+| `containerSecurityContext`         | Set OPENLDAP  pod's Security Context fsGroup                                                                                              | `true`              |
+| `existingConfigmap`                | existingConfigmap The name of an existing ConfigMap with your custom configuration for OPENLDAP                                           | `""`                |
+| `podLabels`                        | podLabels Extra labels for OPENLDAP  pods                                                                                                 | `{}`                |
+| `podAnnotations`                   | Enable the multi-master replication                                                                                                       | `true`              |
+| `podAffinityPreset`                | podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                                     | `""`                |
+| `podAntiAffinityPreset`            | podAntiAffinityPreset Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                            | `soft`              |
 | `pdb.enabled`                      | Enable Pod Disruption Budget                                                                                                              | `false`             |
 | `pdb.minAvailable`                 | Configure PDB to have at least this many health replicas.                                                                                 | `1`                 |
 | `pdb.maxUnavailable`               | Configure PDB to have at most this many unhealth replicas.                                                                                | `<unset>`           |
-| `nodeAffinityPreset`              | nodeAffinityPreset.type Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard` | `true` |
-| `affinity`              | affinity Affinity for OPENLDAP  pods assignment | `` |
-| `nodeSelector`              | nodeSelector Node labels for OPENLDAP  pods assignment | `` |
-| `sidecars`              | sidecars Add additional sidecar containers to the OPENLDAP  pod(s) | `` |
-| `initContainers`              | initContainers Add additional init containers to the OPENLDAP  pod(s) | `` |
-| `volumePermissions`              | 'volumePermissions' init container parameters | `` |
-| `priorityClassName`              | OPENLDAP pods' priority class name | `` |
-| `tolerations`              | Tolerations for pod assignment | [] |
+| `nodeAffinityPreset`               | nodeAffinityPreset.type Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                         | `true`              |
+| `affinity`                         | affinity Affinity for OPENLDAP  pods assignment                                                                                           | `""`                |
+| `nodeSelector`                     | nodeSelector Node labels for OPENLDAP  pods assignment                                                                                    | `""`                |
+| `sidecars`                         | sidecars Add additional sidecar containers to the OPENLDAP  pod(s)                                                                        | `""`                |
+| `initContainers`                   | initContainers Add additional init containers to the OPENLDAP  pod(s)                                                                     | `""`                |
+| `volumePermissions`                | 'volumePermissions' init container parameters                                                                                             | `""`                |
+| `priorityClassName`                | OPENLDAP pods' priority class name                                                                                                        | `""`                |
+| `tolerations`                      | Tolerations for pod assignment                                                                                                            | []                  |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
 
