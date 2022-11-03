@@ -1,5 +1,3 @@
-[![build](https://github.com/jp-gouin/helm-openldap/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/jp-gouin/helm-openldap/actions/workflows/ci.yml)
-[![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/helm-openldap)](https://artifacthub.io/packages/search?repo=helm-openldap)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/apache/apisix/blob/master/LICENSE)
 
 # OpenLDAP Helm Chart
@@ -7,6 +5,7 @@
 ## Prerequisites Details
 * Kubernetes 1.8+
 * PV support on the underlying infrastructure
+* Cert-Manger installed with an Issuer/ClusterIssuer
 
 ## Chart Details
 This chart will do the following:
@@ -20,7 +19,7 @@ This chart will do the following:
 To install the chart with the release name `my-release`:
 
 ```bash
-$ helm repo add helm-openldap https://jp-gouin.github.io/helm-openldap/
+$ helm repo add helm-openldap https://dpsi4.github.io/helm-openldap/
 $ helm install my-release helm-openldap/openldap-stack-ha
 ```
 
