@@ -226,13 +226,6 @@ spec:
 {{- include "common.tplvalues.render" ( dict "value" .Values.sidecars "context" $) | nindent 8 }}
 {{- end }}
       volumes:
-{{- if .Values.persistence.enabled }}
-{{- if .Values.persistence.existingClaim }}
-        - name: data
-          persistentVolumeClaim:
-            claimName: {{ .Values.persistence.existingClaim }}
-{{- end }}
-{{- end }}
 {{- if .Values.customLdifFiles }}
         - name: custom-ldif-files
           configMap:
@@ -254,7 +247,12 @@ spec:
         {{- if .Values.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
-{{- if (not .Values.persistence.existingClaim) }}
+{{- if .Values.persistence.enabled }}
+{{- if .Values.persistence.existingClaim }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim }}
+{{- else }}
   volumeClaimTemplates:
     - metadata:
         name: data
@@ -275,6 +273,7 @@ spec:
         storageClassName: ""
       {{- else }}
         storageClassName: "{{ .Values.persistence.storageClass }}"
+      {{- end }}
       {{- end }}
 {{- end }}
 {{- else }}
