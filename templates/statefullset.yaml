@@ -271,7 +271,6 @@ spec:
           configMap:
             name: {{ template "openldap.fullname" . }}-customldif
 {{- end }}
-
         - name: certs
           emptyDir:
             medium: Memory
@@ -284,7 +283,6 @@ spec:
           emptyDir:
             medium: Memory
 {{- end }}
-
 {{- range .Values.customFileSets }}
         - name: {{ .name }}
           configMap:
