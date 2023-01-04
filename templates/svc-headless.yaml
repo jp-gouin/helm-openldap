@@ -9,7 +9,7 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   ports:
-  - port: {{ .Values.service.ldapPort }}
+  - port: {{ .Values.global.ldapPort }}
     name: ldap-port
     targetPort: ldap-port
   clusterIP: None

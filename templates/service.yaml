@@ -26,7 +26,7 @@ spec:
   ports:
     - name: ldap-port
       protocol: TCP
-      port: {{ .Values.service.ldapPort }}
+      port: {{ .Values.global.ldapPort }}
       targetPort: ldap-port
       {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.ldapPortNodePort)) }}
       nodePort: {{ .Values.service.ldapPortNodePort }}
@@ -35,7 +35,7 @@ spec:
       {{- end }}
     - name: ssl-ldap-port
       protocol: TCP
-      port: {{ .Values.service.sslLdapPort }}
+      port: {{ .Values.global.sslLdapPort }}
       targetPort: ssl-ldap-port
       {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.sslLdapPortNodePort)) }}
       nodePort: {{ .Values.service.sslLdapPortNodePort }}

@@ -6,6 +6,7 @@ on:
   pull_request:
     branches:
       - "master"
+      - "bitnami"
 jobs:
   qualif:
       runs-on: ubuntu-latest
@@ -33,8 +34,7 @@ jobs:
         run: |
           openssl req -x509 -newkey rsa:4096 -nodes -subj '/CN=example.com' -keyout tls.key -out tls.crt -days 365
           cp tls.crt ca.crt
-          openssl dhparam -out dhparam.pem 2048
-          kubectl create secret generic custom-cert --from-file=./tls.crt --from-file=./tls.key --from-file=./dhparam.pem --from-file=./ca.crt
+          kubectl create secret generic custom-cert --from-file=./tls.crt --from-file=./tls.key --from-file=./ca.crt
       - name: deploy openldap-stack-ha
         shell: bash
         run: |

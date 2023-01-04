@@ -14,8 +14,17 @@ phpldapadmin:
     - "phpldapadmin.example"
 customTLS:
   enabled: true
-  secret: "custom-cert"
+  image:
+    repository: alpine/openssl
+    tag: latest
+  secret: "custom-cert" 
 customLdifFiles:
+  00-root.ldif: |-
+    # Root creation
+    dn: dc=example,dc=org
+    objectClass: dcObject
+    objectClass: organization
+    o: Example, Inc
   01-default-group.ldif: |-
     dn: cn=myGroup,dc=example,dc=org
     cn: myGroup

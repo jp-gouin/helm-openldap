@@ -1,0 +1,70 @@
+#
+# A ConfigMap spec for openldap slapd that map directly to files under
+# /container/service/slapd/assets/config/bootstrap/ldif/custom
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "openldap.fullname" . }}-replication
+  labels:
+    app: {{ template "openldap.name" . }}
+    chart: {{ template "openldap.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.extraLabels }}
+{{ toYaml .Values.extraLabels | indent 4 }}
+{{- end }}
+data:
+  syncprov.ldif: | 
+    # Load syncprov module
+    dn: cn=module{0},cn=config
+    objectClass: olcModuleList
+    cn: module{0}
+    olcModuleLoad: syncprov
+  serverid.ldif: | 
+    # Set server ID
+    dn: cn=config
+    changeType: modify
+    add: olcServerID
+    {{- include "olcServerIDs" . }}
+  csyncprov.ldif: | 
+    # Add syncprov on config
+    dn: olcOverlay=syncprov,olcDatabase={0}config,cn=config
+    changetype: add
+    objectClass: olcOverlayConfig
+    objectClass: olcSyncProvConfig
+    olcOverlay: syncprov
+  rep.ldif: | 
+    # Add sync replication on config
+    dn: olcDatabase={0}config,cn=config
+    changetype: modify
+    add: olcSyncRepl
+    {{- include "olcSyncRepls" . }}
+    -
+    add: olcMirrorMode
+    olcMirrorMode: TRUE
+  bsyncprov.ldif: | 
+    dn: olcOverlay=syncprov,olcDatabase={2}mdb,cn=config
+    objectClass: olcOverlayConfig
+    objectClass: olcSyncProvConfig
+    olcOverlay: syncprov
+    olcSpSessionLog: 100
+  brep.ldif: |
+    dn: olcDatabase={2}mdb,cn=config
+    changetype: modify
+    add: olcSyncrepl
+    {{- include "olcSyncRepls2" . }}
+
+    dn: olcDatabase={2}mdb,cn=config
+    changetype: modify
+    add: olcMirrorMode
+    olcMirrorMode: TRUE
+  
+
+    
+
+  
+
+   
+
+   
