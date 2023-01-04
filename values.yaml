@@ -68,7 +68,7 @@ customTLS:
   image:
     repository: alpine/openssl
     tag: latest
-  secret: "openldap-cert"  # The name of a kubernetes.io/tls type secret to use for TLS
+  secret: ""  # The name of a kubernetes.io/tls type secret to use for TLS
 ## Add additional labels to all resources
 extraLabels: {}
 
