@@ -1,8 +1,28 @@
 [![build](https://github.com/jp-gouin/helm-openldap/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/jp-gouin/helm-openldap/actions/workflows/ci.yml)
 [![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/helm-openldap)](https://artifacthub.io/packages/search?repo=helm-openldap)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/apache/apisix/blob/master/LICENSE)
+![Version](https://img.shields.io/static/v1?label=Openldap&message=2.6.3&color=blue) 
 
 # OpenLDAP Helm Chart
+## Disclaimer
+This version now use the [Bitnami Openldap](https://hub.docker.com/r/bitnami/openldap) container image.
+
+More detail on the container image can be found [here](https://github.com/bitnami/containers/tree/main/bitnami/openldap)
+
+There are some major changes between the Osixia version and the Bitnami version , ergo the major gap of the chart version.
+
+- Upgrade may not work fine between `3.x` and `4.x`
+- Ldap and Ldaps port are non privileged ports (`1389` and `1636`)
+- Replication is now purely setup by configuration
+Extra schemas are loaded using `LDAP_EXTRA_SCHEMAS: "cosine,inetorgperson,nis,syncprov,serverid,csyncprov,rep,bsyncprov,brep"`
+  - For now this list is harcoded and will be configurable in a future update.
+  - (let me know if you need this feature priorityzed)
+
+A default tree (Root organisation, users and group) is created during startup, this can be skipped using `LDAP_SKIP_DEFAULT_TREE` , however you need to use `customLdifFiles` to create a root organisation.
+
+- This will be improved in a future update.
+
+Self service password is not fully working with this new version, troubleshooting is in progress and will be working in the next update.
 
 ## Prerequisites Details
 * Kubernetes 1.8+
@@ -24,9 +44,11 @@ $ helm repo add helm-openldap https://jp-gouin.github.io/helm-openldap/
 $ helm install my-release helm-openldap/openldap-stack-ha
 ```
 
+
+
 ## Configuration
 
-We use the docker images provided by https://github.com/osixia/docker-openldap. The docker image is highly configurable and well documented. Please consult to documentation for the docker image for more information.
+We use the docker images provided by https://github.com/bitnami/containers/tree/main/bitnami/openldap. The docker image is highly configurable and well documented. Please consult to documentation for the docker image for more information.
 
 The following table lists the configurable parameters of the openldap chart and their default values.
 
@@ -42,6 +64,8 @@ Global parameters to configure the deployment of the application.
 | `global.ldapDomain`                     | Domain LDAP                                                                                                                         | `example.org`                 |
 | `global.adminPassword`                     | Administration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
 | `global.configPassword`                     | Configuration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
+| `global.ldapPort`                     | Ldap port                                                                                                                         | `1389`                 |
+| `global.sslLdapPort`                     | Ldaps port                                                                                                                         | `1636`                 |
 
 ### Application parameters
 
@@ -50,11 +74,13 @@ Parameters related to the configuration of the application.
 | Parameter                          | Description                                                                                                                               | Default             |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | `replicaCount`                     | Number of replicas                                                                                                                        | `3`                 |
-| `env`                              | List of key value pairs as env variables to be sent to the docker image. See https://github.com/osixia/docker-openldap for available ones | `[see values.yaml]` |
+| `users`          | User list to create (comma separated list) , can't be use with customLdifFiles | "" |
+| `userPasswords`          | User password to create (comma seprated list)  | "" |
+| `group`          | Group to create and add list of user above | "" |
+| `env`                              | List of key value pairs as env variables to be sent to the docker image. See https://github.com/bitnami/containers/tree/main/bitnami/openldap for available ones | `[see values.yaml]` |
 | `logLevel`                         | Set the container log level. Valid values: `none`, `error`, `warning`, `info`, `debug`, `trace`                                           | `info`              |
 | `customTLS.enabled`                      | Set to enable TLS/LDAPS with custom certificate - should also set `tls.secret`                                                                                    | `false`             |
-| `customTLS.secret`                       | Secret containing TLS cert and key must contain the keys tls.key , tls.crt and ca.crt (if tls.CA.enabled: true)                                                                       | `""`                |
-| `customTLS.CA.enabled`                   | Set to enable custom CA crt file                                                                         | `false`
+| `customTLS.secret`                       | Secret containing TLS cert and key must contain the keys tls.key , tls.crt and ca.crt                                                                       | `""`                |
 | `replication.enabled`              | Enable the multi-master replication | `true` |
 | `replication.retry`              | retry period for replication in sec | `60` |
 | `replication.timeout`              | timeout for replication  in sec| `1` |
@@ -97,11 +123,9 @@ Parameters related to Kubernetes.
 | `extraDeploy`                   | extraDeploy Array of extra objects to deploy with the release                                                                                | `""`                |
 | `service.annotations`              | Annotations to add to the service                                                                                                         | `{}`                |
 | `service.externalIPs`              | Service external IP addresses                                                                                                             | `[]`                |
-| `service.ldapPort`                 | External service port for LDAP                                                                                                            | `389`               |
 | `service.ldapPortNodePort`                 | Nodeport of External service port for LDAP if service.type is NodePort                                                                                                            | `nil`               |
 | `service.loadBalancerIP`           | IP address to assign to load balancer (if supported)                                                                                      | `""`                |
 | `service.loadBalancerSourceRanges` | List of IP CIDRs allowed access to load balancer (if supported)                                                                           | `[]`                |
-| `service.sslLdapPort`              | External service port for SSL+LDAP                                                                                                        | `636`               |
 | `service.sslLdapPortNodePort`                 | Nodeport of External service port for SSL if service.type is NodePort                                                                                                            | `nil`               |
 | `service.type`                     | Service type can be ClusterIP, NodePort, LoadBalancer                                                                                                                              | `ClusterIP`         |
 | `persistence.enabled`              | Whether to use PersistentVolumes or not                                                                                                   | `false`             |
@@ -207,17 +231,13 @@ $ kubectl delete pvc -l release=${RELEASE-NAME}
 
 ## Troubleshoot
 
-You can increase the level of log using 'logLevel'
+You can increase the level of log using `env.LDAP_LOGLEVEL`
 
-```
-# Set the container log level
-# Valid log levels: none, error, warning, info (default), debug, trace
-logLevel: info
-```
+Valid log levels can be found [here](https://www.openldap.org/doc/admin24/slapdconfig.html)
 
 ### Boostrap custom ldif
 
-**Warning** when using custom ldif in the `customLdifFiles:` section you do not have to and shouldn't create the high level object `organization` or the `admin` user such as : 
+**Warning** when using custom ldif in the `customLdifFiles:` section you  have to create the high level object `organization` or the `admin` user such as :
 
 ```
 dn: dc=test,dc=example
@@ -236,20 +256,29 @@ objectclass: top
 userpassword: foo
 ```
 
-This will result with the following error : 
-```
-***  ERROR  | 2021-11-21 08:53:38 | /container/run/startup/slapd failed with status 68
-Already exist
-```
-And the rest of your custom file will be skipped.
-
-All internal configuration like `cn=config` , `cn=module{0},cn=config` should be avoided as well.
+All internal configuration like `cn=config` , `cn=module{0},cn=config` cannot be configured yet.
 
 ## Changelog/Updating
 
+### To 4.0.0
+
+This major update switch the base image from [Osixia](https://github.com/osixia/docker-openldap) to [Bitnami Openldap](https://github.com/bitnami/containers/tree/main/bitnami/openldap)
+
+- Upgrade may not work fine between `3.x` and `4.x`
+- Ldap and Ldaps port are non privileged ports (`1389` and `1636`)
+- Replication is now purely setup by configuration
+- Extra schema cannot be added/modified
+
+A default tree (Root organisation, users and group) is created during startup, this can be skipped using `LDAP_SKIP_DEFAULT_TREE` , however you need to use `customLdifFiles` to create a root organisation.
+
+- This will be improved in a future update.
+
+Self service password is not fully working with this new version, troubleshooting is in progress and will be working in the next update.
+
 ### To 3.0.0
 
-This major update of the chart enable new feature for the deployment such as : 
+This major update of the chart enable new feature for the deployment such as :
+
 - supporting initcontainer
 - supporting sidecar
 - use global parameters to ease the configuration of the app

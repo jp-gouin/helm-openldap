@@ -23,7 +23,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
           - name: LDAP_SERVER
-            value: ldaps://{{ include "global.server" . }}
+            value: ldaps://{{ include "global.server" . }}:{{ .Values.global.sslLdapPort }}
           - name: LDAP_BINDDN
             value: {{ include "global.bindDN" . }}
           - name: LDAP_BINDPASS

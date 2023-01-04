@@ -18,11 +18,19 @@ metadata:
 {{- end }}
 data:
   LDAP_ROOT: {{ include "global.baseDomain" . }}
+  LDAP_EXTRA_SCHEMAS: "cosine,inetorgperson,nis,syncprov,serverid,csyncprov,rep,bsyncprov,brep"
   LDAP_CONFIG_ADMIN_ENABLED: "true"
+  LDAP_CONFIG_ADMIN_USERNAME: "config"
+  {{- if .Values.users }}
+  LDAP_USERS: {{ .Values.users }}
+  {{- end }}
+  {{- if .Values.userPasswords }}
+  LDAP_PASSWORDS: {{ .Values.userPasswords }}
+  {{- end }}
+  {{- if .Values.group }}
+  LDAP_GROUP: {{ .Values.group }}
+  {{- end }}
+  LDAP_TLS_CERT_FILE: /opt/bitnami/openldap/certs/tls.crt
+  LDAP_TLS_KEY_FILE: /opt/bitnami/openldap/certs/tls.key
+  LDAP_TLS_CA_FILE: /opt/bitnami/openldap/certs/ca.crt
 {{ toYaml .Values.env | indent 2 }}
-{{- if .Values.replication.enabled }}
-  LDAP_REPLICATION: "true"
-  LDAP_REPLICATION_CONFIG_SYNCPROV: "binddn=\"cn=admin,cn=config\" bindmethod=simple credentials=$LDAP_CONFIG_PASSWORD searchbase=\"cn=config\" type=refreshAndPersist retry=\"{{.Values.replication.retry }} +\" timeout={{.Values.replication.timeout }} starttls={{.Values.replication.starttls }} tls_reqcert={{.Values.replication.tls_reqcert }}"
-  LDAP_REPLICATION_DB_SYNCPROV: "binddn=\"cn=admin,$LDAP_BASE_DN\" bindmethod=simple credentials=$LDAP_ADMIN_PASSWORD searchbase=\"$LDAP_BASE_DN\" type=refreshAndPersist interval={{.Values.replication.interval }} retry=\"{{.Values.replication.retry }} +\" timeout={{.Values.replication.timeout }} starttls={{.Values.replication.starttls }} tls_reqcert={{.Values.replication.tls_reqcert }}"
-  LDAP_REPLICATION_HOSTS: "#PYTHON2BASH:[{{ template "replicalist" . }}]"
-{{- end }}
