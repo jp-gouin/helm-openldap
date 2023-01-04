@@ -17,7 +17,7 @@ customTLS:
   image:
     repository: alpine/openssl
     tag: latest
-  secret: "custom-cert"  # The name of a kubernetes.io/tls type secret to use for TLS
+  secret: "custom-cert" 
 customLdifFiles:
   00-root.ldif: |-
     # Root creation

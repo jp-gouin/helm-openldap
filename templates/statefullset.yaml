@@ -278,7 +278,7 @@ spec:
 {{- if .Values.customTLS.enabled }}
         - name: secret-certs
           secret:
-            secretName: {{ template "openldap.fullname" . }}-cert
+            secretName: {{ .Values.customTLS.secret }}
 {{- else }}
         - name: secret-certs
           emptyDir:
