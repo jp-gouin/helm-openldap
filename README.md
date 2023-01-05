@@ -48,7 +48,7 @@ $ helm install my-release helm-openldap/openldap-stack-ha
 
 ## Configuration
 
-We use the docker images provided by https://github.com/bitnami/containers/tree/main/bitnami/openldap. The docker image is highly configurable and well documented. Please consult to documentation for the docker image for more information.
+We use the container images provided by https://github.com/bitnami/containers/tree/main/bitnami/openldap. The container image is highly configurable and well documented. Please consult to documentation of the image for more information.
 
 The following table lists the configurable parameters of the openldap chart and their default values.
 
@@ -78,7 +78,6 @@ Parameters related to the configuration of the application.
 | `userPasswords`          | User password to create (comma seprated list)  | "" |
 | `group`          | Group to create and add list of user above | "" |
 | `env`                              | List of key value pairs as env variables to be sent to the docker image. See https://github.com/bitnami/containers/tree/main/bitnami/openldap for available ones | `[see values.yaml]` |
-| `logLevel`                         | Set the container log level. Valid values: `none`, `error`, `warning`, `info`, `debug`, `trace`                                           | `info`              |
 | `customTLS.enabled`                      | Set to enable TLS/LDAPS with custom certificate - should also set `tls.secret`                                                                                    | `false`             |
 | `customTLS.secret`                       | Secret containing TLS cert and key must contain the keys tls.key , tls.crt and ca.crt                                                                       | `""`                |
 | `replication.enabled`              | Enable the multi-master replication | `true` |
@@ -237,7 +236,7 @@ Valid log levels can be found [here](https://www.openldap.org/doc/admin24/slapdc
 
 ### Boostrap custom ldif
 
-**Warning** when using custom ldif in the `customLdifFiles:` section you  have to create the high level object `organization` or the `admin` user such as :
+**Warning** when using custom ldif in the `customLdifFiles:` section you  have to create the high level object `organization`
 
 ```
 dn: dc=test,dc=example
@@ -246,15 +245,9 @@ o: Example Inc.
 objectclass: top
 objectclass: dcObject
 objectclass: organization
-
-dn: cn=admin,dc=test,dc=example
-cn: admin
-description: LDAP administrator
-objectclass: simpleSecurityObject
-objectclass: organizationalRole
-objectclass: top
-userpassword: foo
 ```
+
+**note** the admin user is created by the application and should not be added as a custom ldif  
 
 All internal configuration like `cn=config` , `cn=module{0},cn=config` cannot be configured yet.
 
