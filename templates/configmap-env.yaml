@@ -19,8 +19,6 @@ metadata:
 data:
   LDAP_ROOT: {{ include "global.baseDomain" . }}
   LDAP_EXTRA_SCHEMAS: "cosine,inetorgperson,nis,syncprov,serverid,csyncprov,rep,bsyncprov,brep"
-  LDAP_CONFIG_ADMIN_ENABLED: "true"
-  LDAP_CONFIG_ADMIN_USERNAME: "config"
   {{- if .Values.users }}
   LDAP_USERS: {{ .Values.users }}
   {{- end }}

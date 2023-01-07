@@ -96,6 +96,7 @@ env:
  LDAPTLS_REQCERT: "never"
  LDAP_ENABLE_TLS: "yes"
  LDAP_CONFIG_ADMIN_ENABLED: "yes"
+ LDAP_CONFIG_ADMIN_USERNAME: "config"
  LDAP_SKIP_DEFAULT_TREE: "no"
 
 # Pod Disruption Budget for Stateful Set
