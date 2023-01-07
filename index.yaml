@@ -3,7 +3,7 @@ entries:
   openldap:
   - apiVersion: v2
     appVersion: 2.4.47
-    created: "2023-01-04T15:53:45.488261312Z"
+    created: "2023-01-07T16:08:13.771812997Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -32,7 +32,42 @@ entries:
   openldap-stack-ha:
   - apiVersion: v2
     appVersion: 2.6.3
-    created: "2023-01-04T15:53:45.519226064Z"
+    created: "2023-01-07T16:08:13.806740812Z"
+    dependencies:
+    - condition: ltb-passwd.enabled
+      name: ltb-passwd
+      repository: ""
+      version: 0.1.x
+    - condition: phpldapadmin.enabled
+      name: phpldapadmin
+      repository: ""
+      version: 0.1.x
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.x.x
+    description: Community developed LDAP software
+    digest: 4480ac0b427824e06d1fd22158ef741b0472083f145cdaf6a246f7870e7fa11e
+    home: https://www.openldap.org
+    icon: https://raw.githubusercontent.com/jp-gouin/helm-openldap/master/logo.png
+    keywords:
+    - ldap
+    - openldap
+    - iam-stack
+    - high availability
+    maintainers:
+    - email: jp-gouin@hotmail.fr
+      name: Jean-Philippe Gouin
+    name: openldap-stack-ha
+    sources:
+    - https://github.com/jp-gouin/helm-openldap
+    urls:
+    - openldap-stack-ha-4.0.1.tgz
+    version: 4.0.1
+  - apiVersion: v2
+    appVersion: 2.6.3
+    created: "2023-01-07T16:08:13.803522781Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -67,7 +102,7 @@ entries:
     version: 4.0.0
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2023-01-04T15:53:45.515758869Z"
+    created: "2023-01-07T16:08:13.797607842Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -102,7 +137,7 @@ entries:
     version: 3.0.2
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2023-01-04T15:53:45.511257476Z"
+    created: "2023-01-07T16:08:13.794324509Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -137,7 +172,7 @@ entries:
     version: 3.0.1
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2023-01-04T15:53:45.507097682Z"
+    created: "2023-01-07T16:08:13.791073977Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -172,7 +207,7 @@ entries:
     version: 3.0.0
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2023-01-04T15:53:45.503596788Z"
+    created: "2023-01-07T16:08:13.787790144Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -202,7 +237,7 @@ entries:
     version: 2.1.6
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2023-01-04T15:53:45.500825392Z"
+    created: "2023-01-07T16:08:13.784123095Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -232,7 +267,7 @@ entries:
     version: 2.1.5
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2023-01-04T15:53:45.497732697Z"
+    created: "2023-01-07T16:08:13.780836462Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -262,7 +297,7 @@ entries:
     version: 2.1.4
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2023-01-04T15:53:45.495174301Z"
+    created: "2023-01-07T16:08:13.778254358Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -292,7 +327,7 @@ entries:
     version: 2.1.3
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2023-01-04T15:53:45.492416305Z"
+    created: "2023-01-07T16:08:13.775787258Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -322,7 +357,7 @@ entries:
     version: 2.1.2
   - apiVersion: v2
     appVersion: 2.4.47
-    created: "2023-01-04T15:53:45.490324209Z"
+    created: "2023-01-07T16:08:13.773790677Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -350,4 +385,4 @@ entries:
     urls:
     - openldap-stack-ha-2.1.0.tgz
     version: 2.1.0
-generated: "2023-01-04T15:53:45.486379215Z"
+generated: "2023-01-07T16:08:13.769753413Z"
