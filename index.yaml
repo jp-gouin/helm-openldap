@@ -3,7 +3,7 @@ entries:
   openldap:
   - apiVersion: v2
     appVersion: 2.4.47
-    created: "2023-01-07T16:08:13.771812997Z"
+    created: "2023-01-08T17:28:59.981084757Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -32,7 +32,42 @@ entries:
   openldap-stack-ha:
   - apiVersion: v2
     appVersion: 2.6.3
-    created: "2023-01-07T16:08:13.806740812Z"
+    created: "2023-01-08T17:29:00.017828975Z"
+    dependencies:
+    - condition: ltb-passwd.enabled
+      name: ltb-passwd
+      repository: ""
+      version: 0.1.x
+    - condition: phpldapadmin.enabled
+      name: phpldapadmin
+      repository: ""
+      version: 0.1.x
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.x.x
+    description: Community developed LDAP software
+    digest: 425f832d5de319e232f7ae62f786a91de1dfa738e624c42c3707218121648721
+    home: https://www.openldap.org
+    icon: https://raw.githubusercontent.com/jp-gouin/helm-openldap/master/logo.png
+    keywords:
+    - ldap
+    - openldap
+    - iam-stack
+    - high availability
+    maintainers:
+    - email: jp-gouin@hotmail.fr
+      name: Jean-Philippe Gouin
+    name: openldap-stack-ha
+    sources:
+    - https://github.com/jp-gouin/helm-openldap
+    urls:
+    - openldap-stack-ha-4.0.2.tgz
+    version: 4.0.2
+  - apiVersion: v2
+    appVersion: 2.6.3
+    created: "2023-01-08T17:29:00.013663517Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -67,7 +102,7 @@ entries:
     version: 4.0.1
   - apiVersion: v2
     appVersion: 2.6.3
-    created: "2023-01-07T16:08:13.803522781Z"
+    created: "2023-01-08T17:29:00.010434771Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -102,7 +137,7 @@ entries:
     version: 4.0.0
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2023-01-07T16:08:13.797607842Z"
+    created: "2023-01-08T17:29:00.007260226Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -137,7 +172,7 @@ entries:
     version: 3.0.2
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2023-01-07T16:08:13.794324509Z"
+    created: "2023-01-08T17:29:00.002751163Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -172,7 +207,7 @@ entries:
     version: 3.0.1
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2023-01-07T16:08:13.791073977Z"
+    created: "2023-01-08T17:28:59.99900111Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -207,7 +242,7 @@ entries:
     version: 3.0.0
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2023-01-07T16:08:13.787790144Z"
+    created: "2023-01-08T17:28:59.995739264Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -237,7 +272,7 @@ entries:
     version: 2.1.6
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2023-01-07T16:08:13.784123095Z"
+    created: "2023-01-08T17:28:59.993257229Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -267,7 +302,7 @@ entries:
     version: 2.1.5
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2023-01-07T16:08:13.780836462Z"
+    created: "2023-01-08T17:28:59.9912285Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -297,7 +332,7 @@ entries:
     version: 2.1.4
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2023-01-07T16:08:13.778254358Z"
+    created: "2023-01-08T17:28:59.988433661Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -327,7 +362,7 @@ entries:
     version: 2.1.3
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2023-01-07T16:08:13.775787258Z"
+    created: "2023-01-08T17:28:59.985199515Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -357,7 +392,7 @@ entries:
     version: 2.1.2
   - apiVersion: v2
     appVersion: 2.4.47
-    created: "2023-01-07T16:08:13.773790677Z"
+    created: "2023-01-08T17:28:59.983181287Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -385,4 +420,4 @@ entries:
     urls:
     - openldap-stack-ha-2.1.0.tgz
     version: 2.1.0
-generated: "2023-01-07T16:08:13.769753413Z"
+generated: "2023-01-08T17:28:59.979294232Z"
