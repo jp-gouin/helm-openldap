@@ -12,7 +12,7 @@ More detail on the container image can be found [here](https://github.com/bitnam
 There are some major changes between the Osixia version and the Bitnami version , ergo the major gap of the chart version.
 
 - Upgrade may not work fine between `3.x` and `4.x`
-- Ldap and Ldaps port are non privileged ports (`1389` and `1636`)
+- Ldap and Ldaps port are non privileged ports (`1389` and `1636`) internally but are exposed through `global.ldapPort` and `global.sslLdapPort` (389 and 636) 
 - Replication is now purely setup by configuration
 Extra schemas are loaded using `LDAP_EXTRA_SCHEMAS: "cosine,inetorgperson,nis,syncprov,serverid,csyncprov,rep,bsyncprov,brep"`
   - For now this list is harcoded and will be configurable in a future update.
@@ -64,8 +64,8 @@ Global parameters to configure the deployment of the application.
 | `global.ldapDomain`                     | Domain LDAP                                                                                                                         | `example.org`                 |
 | `global.adminPassword`                     | Administration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
 | `global.configPassword`                     | Configuration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
-| `global.ldapPort`                     | Ldap port                                                                                                                         | `1389`                 |
-| `global.sslLdapPort`                     | Ldaps port                                                                                                                         | `1636`                 |
+| `global.ldapPort`                     | Ldap port                                                                                                                         | `389`                 |
+| `global.sslLdapPort`                     | Ldaps port                                                                                                                         | `636`                 |
 
 ### Application parameters
 

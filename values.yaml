@@ -11,14 +11,14 @@ global:
   ## imagePullSecrets:
   ##   - myRegistryKeySecretName
   ##
-  imagePullSecrets: [""]
+  #imagePullSecrets: [""]
   storageClass: ""
   ldapDomain: "example.org"
   ## Default Passwords to use, stored as a secret. Not used if existingSecret is set.
   adminPassword:  Not@SecurePassw0rd
   configPassword: Not@SecurePassw0rd
-  ldapPort: 1389
-  sslLdapPort: 1636
+  ldapPort: 389
+  sslLdapPort: 636
 
 ## @section Common parameters
 
