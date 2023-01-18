@@ -140,9 +140,9 @@ spec:
           {{- end }}
           ports:
             - name: ldap-port
-              containerPort: 1389
+              containerPort: {{ .Values.ldapPort }}
             - name: ssl-ldap-port
-              containerPort: 1636
+              containerPort: {{ .Values.sslLdapPort }}
           {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
             tcpSocket:
