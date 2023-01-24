@@ -1,7 +1,7 @@
 [![build](https://github.com/jp-gouin/helm-openldap/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/jp-gouin/helm-openldap/actions/workflows/ci.yml)
 [![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/helm-openldap)](https://artifacthub.io/packages/search?repo=helm-openldap)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/apache/apisix/blob/master/LICENSE)
-![Version](https://img.shields.io/static/v1?label=Openldap&message=2.6.3&color=blue) 
+![Version](https://img.shields.io/static/v1?label=Openldap&message=2.6.3&color=blue)
 
 # OpenLDAP Helm Chart
 ## Disclaimer
@@ -12,7 +12,7 @@ More detail on the container image can be found [here](https://github.com/bitnam
 There are some major changes between the Osixia version and the Bitnami version , ergo the major gap of the chart version.
 
 - Upgrade may not work fine between `3.x` and `4.x`
-- Ldap and Ldaps port are non privileged ports (`1389` and `1636`) internally but are exposed through `global.ldapPort` and `global.sslLdapPort` (389 and 636) 
+- Ldap and Ldaps port are non privileged ports (`1389` and `1636`) internally but are exposed through `global.ldapPort` and `global.sslLdapPort` (389 and 636)
 - Replication is now purely setup by configuration
 Extra schemas are loaded using `LDAP_EXTRA_SCHEMAS: "cosine,inetorgperson,nis,syncprov,serverid,csyncprov,rep,bsyncprov,brep"`
   - For now this list is harcoded and will be configurable in a future update.
@@ -60,8 +60,8 @@ Global parameters to configure the deployment of the application.
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | `global.imageRegistry`                     | Global image registry                                                                                                                        | `""`                 |
 | `global.imagePullSecrets`                     | Global list of imagePullSecrets                                                                                                                        | `[]`                 |
-| `global.storageClass`                     | storage class                                                                                                                        | `3`                 |
 | `global.ldapDomain`                     | Domain LDAP                                                                                                                         | `example.org`                 |
+| `global.existingSecret`                     | Use existing secret for credentials - the expected keys are LDAP_ADMIN_PASSWORD and LDAP_CONFIG_PASSWORD                                         | `""`                |
 | `global.adminPassword`                     | Administration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
 | `global.configPassword`                     | Configuration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
 | `global.ldapPort`                     | Ldap port                                                                                                                         | `389`                 |
@@ -176,7 +176,7 @@ Setup the env part of the configuration to access the OpenLdap server
 
 **Note** : The ldap host should match the following `namespace.Appfullname`
 
-Example : 
+Example :
 ```
 phpldapadmin:
   enabled: true
@@ -189,7 +189,7 @@ phpldapadmin:
     - phpldapadmin.local
   env:
     PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT: "never"
-     
+
 ```
 ## Self-service-password
 To enable Self-service-password set `ltb-passwd.enabled`  to `true`
@@ -202,7 +202,7 @@ Set `bindDN` accordingly to your ldap domain
 
 **Note** : The ldap server host should match the following `ldap://namespace.Appfullname`
 
-Example : 
+Example :
 ```
 ltb-passwd:
   enabled : true
@@ -225,7 +225,7 @@ $ kubectl delete pvc -l release=${RELEASE-NAME}
 
 ## Custom Secret
 
-`existingSecret` can be used to override the default secret.yaml provided
+`global.existingSecret` can be used to override the default secret.yaml provided
 
 
 ## Troubleshoot
@@ -247,7 +247,7 @@ objectclass: dcObject
 objectclass: organization
 ```
 
-**note** the admin user is created by the application and should not be added as a custom ldif  
+**note** the admin user is created by the application and should not be added as a custom ldif
 
 All internal configuration like `cn=config` , `cn=module{0},cn=config` cannot be configured yet.
 

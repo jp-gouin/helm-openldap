@@ -46,7 +46,7 @@ Create the name of the service account to use
 Generate chart secret name
 */}}
 {{- define "openldap.secretName" -}}
-{{ default (include "openldap.fullname" .) .Values.existingSecret }}
+{{ default (include "openldap.fullname" .) .Values.global.existingSecret }}
 {{- end -}}
 
 {{/*
@@ -171,28 +171,28 @@ dc={{ $part }},
 {{- end -}}
 
 {{/*
-Return the proper Docker Image Registry Secret Names
+Return the server name
 */}}
 {{- define "global.server" -}}
 {{- printf "%s.%s" .Release.Name .Release.Namespace  -}}
 {{- end -}}
 
 {{/*
-Return the proper Docker Image Registry Secret Names
+Return the bdmin indDN
 */}}
 {{- define "global.bindDN" -}}
 {{- printf "cn=admin,%s" (include "global.baseDomain" .) -}}
 {{- end -}}
 
 {{/*
-Return the proper Docker Image Registry Secret Names
+Return the ldaps port
 */}}
 {{- define "global.ldapsPort" -}}
 {{- printf "%d" .Values.global.sslLdapPort  -}}
 {{- end -}}
 
 {{/*
-Return the proper Docker Image Registry Secret Names
+Return the ldap port
 */}}
 {{- define "global.ldapPort" -}}
 {{- printf "%d" .Values.global.ldapPort  -}}

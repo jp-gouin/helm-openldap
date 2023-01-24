@@ -17,6 +17,12 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       {{- include "ltb-passwd.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.initContainers }}
+      initContainers:
+      {{- with .Values.initContainers }}
+        {{- tpl (toYaml .) $ | nindent 6 }}
+      {{- end }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: {{ include "ltb-passwd.image" . }}
@@ -50,16 +56,26 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if .Values.ldap.custom }}
+          {{- if or (.Values.ldap.custom) (.Values.volumeMounts) }}
           volumeMounts:
+          {{- if .Values.ldap.custom }}
             - mountPath: /etc/openldap
               name: ldap-conf
           {{- end }}
-      {{- if .Values.ldap.custom }}
+          {{- if .Values.volumeMounts }}
+            {{- toYaml .Values.volumeMounts | nindent 12 }}
+          {{- end }}
+          {{- end }}
+      {{- if or (.Values.ldap.custom) (.Values.volumes) }}
       volumes:
+      {{- if .Values.ldap.custom }}
       - name: ldap-conf
         configMap:
           name: {{ include "ltb-passwd.fullname" . }}-ldap-cm
+      {{- end }}
+      {{- with .Values.volumes }}
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

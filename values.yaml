@@ -12,8 +12,9 @@ global:
   ##   - myRegistryKeySecretName
   ##
   #imagePullSecrets: [""]
-  storageClass: ""
   ldapDomain: "example.org"
+  # Specifies an existing secret to be used for admin and config user passwords. The expected key are LDAP_ADMIN_PASSWORD and LDAP_CONFIG_PASSWORD.
+  existingSecret: ""
   ## Default Passwords to use, stored as a secret. Not used if existingSecret is set.
   adminPassword:  Not@SecurePassw0rd
   configPassword: Not@SecurePassw0rd
@@ -57,8 +58,6 @@ image:
 # Valid log levels: none, error, warning, info (default), debug, trace
 logLevel: info
 
-# Specifies an existing secret to be used for admin and config user passwords. The expected key are LDAP_ADMIN_PASSWORD and LDAP_CONFIG_PASSWORD.
-existingSecret: ""
 
 # Settings for enabling TLS with custom certificate
 # need a secret with tls.crt, tls.key and ca.crt keys with associated files
@@ -82,7 +81,7 @@ service:
   ##
   externalIPs: []
 
-  #loadBalancerIP: 
+  #loadBalancerIP:
   #loadBalancerSourceRanges: []
   type: ClusterIP
   sessionAffinity: None
@@ -109,7 +108,7 @@ pdb:
 ## User list to create (comma separated list) , can't be use with customLdifFiles
 #users: user1,user2
 
-## User password to create (comma seprated list) 
+## User password to create (comma seprated list)
 #userPasswords: password1,password2
 
 ## Group to create and add list of user above
@@ -147,7 +146,7 @@ pdb:
 # Custom files with provided contents to be added in container.
 
 replication:
-  enabled: true    
+  enabled: true
   # Enter the name of your cluster, defaults to "cluster.local"
   clusterName: "cluster.local"
   retry: 60
@@ -170,6 +169,7 @@ persistence:
   accessModes:
     - ReadWriteOnce
   size: 8Gi
+  storageClass: ""
 
 ## @param customLivenessProbe Custom livenessProbe that overrides the default one
 ##
@@ -207,7 +207,7 @@ containerSecurityContext:
   runAsUser: 1001
   runAsNonRoot: true
 
-## @param existingConfigmap The name of an existing ConfigMap with your custom configuration for OPENLDAP 
+## @param existingConfigmap The name of an existing ConfigMap with your custom configuration for OPENLDAP
 ##
 existingConfigmap:
 ## @param command Override default container command (useful when using custom images)
@@ -417,6 +417,8 @@ test:
   image:
     repository: dduportal/bats
     tag: 0.4.0
+
+## ltb-passwd
 ltb-passwd:
   enabled : true
   image:
@@ -431,12 +433,15 @@ ltb-passwd:
     - "ssl-ldap2.example"
   ldap:
     #server: ldaps://openldap-openldap-stack-ha
-    # existingSecret: openldaptest
+    #existingSecret: openldaptest
     #bindDN: cn=admin,dc=example,dc=org
     bindPWKey: LDAP_ADMIN_PASSWORD
 
+## phpldapadmin
 phpldapadmin:
   enabled: true
+  image:
+    tag: 0.9.0
   env:
     PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT: "never"
   ingress:

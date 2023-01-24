@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: tiredofit/self-service-password
-  tag: latest
+  tag: 5.3.1
   pullPolicy: Always
   pullSecrets: []
 
@@ -32,20 +32,31 @@ ingress:
   # - secretName: ssl-ldap-dedicated-tls
   #   hosts:
   #   - ssl-ldap.local
+
+# -- Init containers to add to the pod
+## Note: Supports use of custom Helm templates
+initContainers: []
+
+# -- Additional volumeMounts to the application main container
+volumeMounts: []
+#  - mountPath: /usr/local/bin/my_tool
+#    name: xxxxxx
+#    subPath: foo
+
+# -- Additional volumes to the application pod
+volumes: []
+#  - name: xxxxx
+#    emptyDir: {}
 resources: {}
 nodeSelector: {}
 tolerations: []
 affinity: {}
 ldap:
-  #searchBase: dc=example,dc=org
-  # existingSecret: ssp-ldap
-  #bindDN: cn=admin,dc=example,dc=org
-  #bindPWKey: LDAP_ADMIN_PASSWORD
   custom:
     - name: TLS_REQCERT
       value: never
 env:
-- name: SECRETEKEY
+- name: SECRETKEY
   value: "password"
 - name: LDAP_LOGIN_ATTRIBUTE
   value: "cn"
@@ -53,4 +64,3 @@ env:
   value: "false"
 - name: CHANGE_SSHKEY
   value: "true"
-  

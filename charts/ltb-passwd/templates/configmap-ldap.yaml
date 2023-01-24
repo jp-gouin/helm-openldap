@@ -12,6 +12,6 @@ metadata:
 data:
   ldap.conf: |
     {{- range $ldapconfig := .Values.ldap.custom }}
-    {{ $ldapconfig.name }} {{ $ldapconfig.value }}     
+    {{ $ldapconfig.name }} {{ $ldapconfig.value }}
     {{- end }}
 {{- end }}
