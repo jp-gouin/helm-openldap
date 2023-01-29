@@ -31,14 +31,14 @@ spec:
           - name: LDAP_SERVER
             value: ldaps://{{ include "global.server" . }}:{{ .Values.global.sslLdapPort }}
           - name: LDAP_BINDDN
-            value: {{ include "global.bindDN" . }}
+            value: {{ default (include "global.bindDN" .) (.Values.bindDN) }}
           - name: LDAP_BINDPASS
             valueFrom:
               secretKeyRef:
                 name: {{ template "ltb-passwd.secretName" . }}
-                key: LDAP_ADMIN_PASSWORD
+                key: {{ default "LDAP_ADMIN_PASSWORD" (.Values.passKey) }}
           - name: LDAP_BASE_SEARCH
-            value: {{ include "global.baseDomain" . | quote }}
+            value: {{ default (include "global.baseDomain" . | quote) (.Values.searchBase | quote) }}
           {{- with .Values.env }}
           {{- toYaml . | nindent 10 }}
           {{- end }}

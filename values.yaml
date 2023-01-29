@@ -13,7 +13,7 @@ global:
   ##
   #imagePullSecrets: [""]
   ldapDomain: "example.org"
-  # Specifies an existing secret to be used for admin and config user passwords. The expected key are LDAP_ADMIN_PASSWORD and LDAP_CONFIG_PASSWORD.
+  # Specifies an existing secret to be used for admin and config user passwords. The expected key are LDAP_ADMIN_PASSWORD and LDAP_CONFIG_ADMIN_PASSWORD.
   existingSecret: ""
   ## Default Passwords to use, stored as a secret. Not used if existingSecret is set.
   adminPassword:  Not@SecurePassw0rd
@@ -48,7 +48,7 @@ extraDeploy: []
 replicaCount: 3
 
 image:
-  # From repository https://github.com/osixia/docker-openldap
+  # From repository https://hub.docker.com/r/bitnami/openldap/
   repository: bitnami/openldap
   tag: 2.6.3
   pullPolicy: Always
@@ -87,7 +87,7 @@ service:
   sessionAffinity: None
 
 # Default configuration for openldap as environment variables. These get injected directly in the container.
-# Use the env variables from https://github.com/osixia/docker-openldap#beginner-guide
+# Use the env variables from https://hub.docker.com/r/bitnami/openldap/
 env:
  BITNAMI_DEBUG: "true"
  LDAP_LOGLEVEL: "256"
@@ -114,6 +114,10 @@ pdb:
 ## Group to create and add list of user above
 #group: myGroup
 
+## Existing configmap with custom ldif
+# Can't be use with customLdifFiles
+# Same format as customLdifFiles
+# customLdifCm: my-custom-cm
 
 # Custom openldap configuration files used to override default settings
 # DO NOT FORGET to put the Root Organisation object as it won't be created while using customLdifFiles

@@ -3,7 +3,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-## TODO: add this in the deployment.yaml
 env:
   # PHPLDAPADMIN_LDAP_HOSTS: ...
   PHPLDAPADMIN_HTTPS: "false"
@@ -24,8 +23,6 @@ image:
 ## Enable persistence using Persistent Volume Claims
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
 ##
-
-## TODO persistence
 
 # -- Init containers to add to the pod
 ## Note: Supports use of custom Helm templates

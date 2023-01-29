@@ -70,7 +70,7 @@ Generate olcSyncRepl list
 {{- $name := (include "openldap.fullname" .) }}
 {{- $namespace := .Release.Namespace }}
 {{- $cluster := .Values.replication.clusterName }}
-{{- $configPassword := .Values.global.configPassword }}
+{{- $configPassword := "%%CONFIG_PASSWORD%%" }}
 {{- $retry := .Values.replication.retry }}
 {{- $timeout := .Values.replication.timeout }}
 {{- $starttls := .Values.replication.starttls }}
@@ -90,7 +90,7 @@ Generate olcSyncRepl list
 {{- $domain := (include "global.baseDomain" .) }}
 {{- $namespace := .Release.Namespace }}
 {{- $cluster := .Values.replication.clusterName }}
-{{- $configPassword := .Values.global.configPassword }}
+{{- $configPassword := "%%CONFIG_PASSWORD%%" }}
 {{- $retry := .Values.replication.retry }}
 {{- $timeout := .Values.replication.timeout }}
 {{- $starttls := .Values.replication.starttls }}

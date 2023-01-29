@@ -12,7 +12,7 @@ OpenLDAP-Stack-HA has been installed. You can access the server from within the 
 You can access the LDAP adminPassword and configPassword using:
 
   kubectl get secret --namespace {{ .Release.Namespace }} {{ template "openldap.secretName" . }} -o jsonpath="{.data.LDAP_ADMIN_PASSWORD}" | base64 --decode; echo
-  kubectl get secret --namespace {{ .Release.Namespace }} {{ template "openldap.secretName" . }} -o jsonpath="{.data.LDAP_CONFIG_PASSWORD}" | base64 --decode; echo
+  kubectl get secret --namespace {{ .Release.Namespace }} {{ template "openldap.secretName" . }} -o jsonpath="{.data.LDAP_CONFIG_ADMIN_PASSWORD}" | base64 --decode; echo
 
 
 You can access the LDAP service, from within the cluster (or with kubectl port-forward) with a command like (replace password and domain):

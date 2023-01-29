@@ -20,7 +20,7 @@ spec:
       app.kubernetes.io/component: {{ template "openldap.fullname" . }}
   serviceName: {{ template "openldap.fullname" . }}-headless
   {{- if .Values.updateStrategy }}
-  updateStrategy: 
+  updateStrategy:
 {{ toYaml .Values.updateStrategy | nindent 4 }}
   {{- end }}
   template:
@@ -40,8 +40,8 @@ spec:
       initContainers:
       {{- if .Values.initContainers }}
         {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
-      {{- end }} 
-        - name: init-chmod-secret
+      {{- end }}
+        - name: init-tls-secret
           image: {{ include "openldap.initContainerImage" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
@@ -76,8 +76,28 @@ spec:
             - name: foo
               mountPath: bar
       {{- end }}
+        - name: update-replication
+          image: {{ include "openldap.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              ls -al /cm-schemas-acls /custom_schemas
+              cp -p /cm-schemas-acls/*.ldif /custom_schemas/
+              ls -al /custom_schemas
+              sed -i -e "s/%%CONFIG_PASSWORD%%/${LDAP_CONFIG_PASSWORD}/g" /custom_schemas/*
+          volumeMounts:
+            - name: cm-replication-acls
+              mountPath: "/cm-schemas-acls"
+            - name: replication-acls
+              mountPath: "/custom_schemas"
+          envFrom:
+            - secretRef:
+                name: {{ template "openldap.secretName" . }}
+
       {{- /*
- serviceAccountName: {{ template "openldap.serviceAccountName" . }} 
+ serviceAccountName: {{ template "openldap.serviceAccountName" . }}
 */ -}}
       {{- include "openldap.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.hostAliases }}
@@ -183,27 +203,9 @@ spec:
               mountPath: /bitnami/openldap/
             - name: certs
               mountPath: /opt/bitnami/openldap/certs
-          {{- if .Values.replication.enabled }}
-            - name: syncprov
-              mountPath: /opt/bitnami/openldap/etc/schema/syncprov.ldif
-              subPath: syncprov.ldif
-            - name: serverid
-              mountPath: /opt/bitnami/openldap/etc/schema/serverid.ldif
-              subPath: serverid.ldif
-            - name: csyncprov
-              mountPath: /opt/bitnami/openldap/etc/schema/csyncprov.ldif
-              subPath: csyncprov.ldif
-            - name: rep
-              mountPath: /opt/bitnami/openldap/etc/schema/rep.ldif
-              subPath: rep.ldif
-            - name: bsyncprov
-              mountPath: /opt/bitnami/openldap/etc/schema/bsyncprov.ldif
-              subPath: bsyncprov.ldif
-            - name: brep
-              mountPath: /opt/bitnami/openldap/etc/schema/brep.ldif
-              subPath: brep.ldif
-          {{- end }}
-{{- if .Values.customLdifFiles }}
+            - name: replication-acls
+              mountPath: /custom_schemas
+{{- if or (.Values.customLdifFiles) (.Values.customLdifCm) }}
             - name: custom-ldif-files
               mountPath: /ldifs/
 {{- end }}
@@ -229,47 +231,17 @@ spec:
             claimName: {{ .Values.persistence.existingClaim }}
 {{- end }}
 {{- end }}
-        - name: syncprov
+        - name: cm-replication-acls
           configMap:
-            name: {{ template "openldap.fullname" . }}-replication
-            items:
-            - key: "syncprov.ldif"
-              path: "syncprov.ldif"
-        - name: serverid
-          configMap:
-            name: {{ template "openldap.fullname" . }}-replication
-            items:
-            - key: "serverid.ldif"
-              path: "serverid.ldif"
-        - name: csyncprov
-          configMap:
-            name: {{ template "openldap.fullname" . }}-replication
-            items:
-            - key: "csyncprov.ldif"
-              path: "csyncprov.ldif"
-        - name: rep
-          configMap:
-            name: {{ template "openldap.fullname" . }}-replication
-            items:
-            - key: "rep.ldif"
-              path: "rep.ldif"
-        - name: bsyncprov
-          configMap:
-            name: {{ template "openldap.fullname" . }}-replication
-            items:
-            - key: "bsyncprov.ldif"
-              path: "bsyncprov.ldif"
-        - name: brep
-          configMap:
-            name: {{ template "openldap.fullname" . }}-replication
-            items:
-            - key: "brep.ldif"
-              path: "brep.ldif"     
-          
+            name: {{ template "openldap.fullname" . }}-replication-acls
 {{- if .Values.customLdifFiles }}
         - name: custom-ldif-files
           configMap:
             name: {{ template "openldap.fullname" . }}-customldif
+{{- else if .Values.customLdifCm }}
+        - name: custom-ldif-files
+          configMap:
+            name: {{ .Values.customLdifCm }}
 {{- end }}
         - name: certs
           emptyDir:
@@ -288,6 +260,9 @@ spec:
           configMap:
             name: {{ template "openldap.fullname" $ }}-fs-{{ .name }}
 {{- end }}
+        - name: replication-acls
+          emptyDir:
+            medium: Memory
         {{- if .Values.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

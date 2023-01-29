@@ -39,6 +39,9 @@ Configuration is done within `values.yaml`:
 | `ldap.searchBase`                  | LDAP Search Base for the users                                                                                                            | ` `                                |
 | `ldap.binduserSecret`              | Name of an **existing** secret to fetch the credentials for the bind user from. Needs keys `BINDDN` and `BINDPW`                          | ` `                                |
 | `env`                              | List of key value pairs as env variables to be sent to the docker image. See https://github.com/tiredofit/docker-self-service-password for available ones | `[see values.yaml]`|
+| `bindDN`                           | bindDN to authenticate on LDAP. Optional. Default to cn=admin,dc=...
+| `passkey`                          | key of credential secret to authenticate on LDAP. Optional. Default to LDAP_ADMIN_PASSWORD
+| `searchBase`                       | Search base for user. Default to dc=...
 | `replicaCount`                     | Number of replicas                                                                                                                        | `1`                                |
 | `image.repository`                 | Container image repository                                                                                                                | ` tiredofit/self-service-password` |
 | `image.tag`                        | Container image tag                                                                                                                       | `latest`                           |

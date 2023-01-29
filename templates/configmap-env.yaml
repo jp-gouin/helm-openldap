@@ -1,7 +1,7 @@
 #
 # A ConfigMap spec for openldap slapd that map directly to env variables in the Pod.
 # List of environment variables supported is from the docker image:
-# https://github.com/osixia/docker-openldap#beginner-guide
+# https://hub.docker.com/r/bitnami/openldap/
 # Note that passwords are defined as secrets
 #
 apiVersion: v1
@@ -18,7 +18,8 @@ metadata:
 {{- end }}
 data:
   LDAP_ROOT: {{ include "global.baseDomain" . }}
-  LDAP_EXTRA_SCHEMAS: "cosine,inetorgperson,nis,syncprov,serverid,csyncprov,rep,bsyncprov,brep"
+  LDAP_EXTRA_SCHEMAS: "cosine,inetorgperson,nis"
+  LDAP_CUSTOM_SCHEMA_DIR: "/custom_schemas"
   {{- if .Values.users }}
   LDAP_USERS: {{ .Values.users }}
   {{- end }}

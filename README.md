@@ -14,11 +14,11 @@ There are some major changes between the Osixia version and the Bitnami version 
 - Upgrade may not work fine between `3.x` and `4.x`
 - Ldap and Ldaps port are non privileged ports (`1389` and `1636`) internally but are exposed through `global.ldapPort` and `global.sslLdapPort` (389 and 636)
 - Replication is now purely setup by configuration
-Extra schemas are loaded using `LDAP_EXTRA_SCHEMAS: "cosine,inetorgperson,nis,syncprov,serverid,csyncprov,rep,bsyncprov,brep"`
+Extra schemas are loaded using `LDAP_EXTRA_SCHEMAS: "cosine,inetorgperson,nis"` and `LDAP_CUSTOM_SCHEMA_DIR` for replication and ACLs (custom or default ones) ldif files.
   - For now this list is harcoded and will be configurable in a future update.
   - (let me know if you need this feature priorityzed)
 
-A default tree (Root organisation, users and group) is created during startup, this can be skipped using `LDAP_SKIP_DEFAULT_TREE` , however you need to use `customLdifFiles` to create a root organisation.
+A default tree (Root organisation, users and group) is created during startup, this can be skipped using `LDAP_SKIP_DEFAULT_TREE` , however you need to use `customLdifFiles` or `customLdifCm` to create a root organisation.
 
 - This will be improved in a future update.
 
@@ -61,7 +61,7 @@ Global parameters to configure the deployment of the application.
 | `global.imageRegistry`                     | Global image registry                                                                                                                        | `""`                 |
 | `global.imagePullSecrets`                     | Global list of imagePullSecrets                                                                                                                        | `[]`                 |
 | `global.ldapDomain`                     | Domain LDAP                                                                                                                         | `example.org`                 |
-| `global.existingSecret`                     | Use existing secret for credentials - the expected keys are LDAP_ADMIN_PASSWORD and LDAP_CONFIG_PASSWORD                                         | `""`                |
+| `global.existingSecret`                     | Use existing secret for credentials - the expected keys are LDAP_ADMIN_PASSWORD and LDAP_CONFIG_ADMIN_PASSWORD                                         | `""`                |
 | `global.adminPassword`                     | Administration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
 | `global.configPassword`                     | Configuration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
 | `global.ldapPort`                     | Ldap port                                                                                                                         | `389`                 |
@@ -236,7 +236,7 @@ Valid log levels can be found [here](https://www.openldap.org/doc/admin24/slapdc
 
 ### Boostrap custom ldif
 
-**Warning** when using custom ldif in the `customLdifFiles:` section you  have to create the high level object `organization`
+**Warning** when using custom ldif in the `customLdifFiles` or `customLdifCm` section you  have to create the high level object `organization`
 
 ```
 dn: dc=test,dc=example
@@ -262,7 +262,7 @@ This major update switch the base image from [Osixia](https://github.com/osixia/
 - Replication is now purely setup by configuration
 - Extra schema cannot be added/modified
 
-A default tree (Root organisation, users and group) is created during startup, this can be skipped using `LDAP_SKIP_DEFAULT_TREE` , however you need to use `customLdifFiles` to create a root organisation.
+A default tree (Root organisation, users and group) is created during startup, this can be skipped using `LDAP_SKIP_DEFAULT_TREE` , however you need to use `customLdifFiles` or `customLdifCm` to create a root organisation.
 
 - This will be improved in a future update.
 
