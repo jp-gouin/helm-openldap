@@ -13,8 +13,7 @@ There are some major changes between the Osixia version and the Bitnami version 
 
 - Upgrade may not work fine between `3.x` and `4.x`
 - Ldap and Ldaps port are non privileged ports (`1389` and `1636`) internally but are exposed through `global.ldapPort` and `global.sslLdapPort` (389 and 636)
-- Replication is now purely setup by configuration
-Extra schemas are loaded using `LDAP_EXTRA_SCHEMAS: "cosine,inetorgperson,nis"` and `LDAP_CUSTOM_SCHEMA_DIR` for replication and ACLs (custom or default ones) ldif files.
+- Replication is now purely setup by configuration. Extra schemas are loaded using `LDAP_EXTRA_SCHEMAS: "cosine,inetorgperson,nis,syncprov,serverid,csyncprov,rep,bsyncprov,brep,acls".
   - For now this list is harcoded and will be configurable in a future update.
   - (let me know if you need this feature priorityzed)
 

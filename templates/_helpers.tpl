@@ -90,7 +90,7 @@ Generate olcSyncRepl list
 {{- $domain := (include "global.baseDomain" .) }}
 {{- $namespace := .Release.Namespace }}
 {{- $cluster := .Values.replication.clusterName }}
-{{- $configPassword := "%%CONFIG_PASSWORD%%" }}
+{{- $adminPassword := "%%ADMIN_PASSWORD%%" }}
 {{- $retry := .Values.replication.retry }}
 {{- $timeout := .Values.replication.timeout }}
 {{- $starttls := .Values.replication.starttls }}
@@ -104,7 +104,7 @@ Generate olcSyncRepl list
       provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389
       binddn={{ printf "cn=admin,%s" $domain }}
       bindmethod=simple
-      credentials={{ $configPassword }}
+      credentials={{ $adminPassword }}
       searchbase={{ $domain }}
       type=refreshAndPersist
       interval={{ $interval }}

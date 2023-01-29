@@ -18,8 +18,7 @@ metadata:
 {{- end }}
 data:
   LDAP_ROOT: {{ include "global.baseDomain" . }}
-  LDAP_EXTRA_SCHEMAS: "cosine,inetorgperson,nis"
-  LDAP_CUSTOM_SCHEMA_DIR: "/custom_schemas"
+  LDAP_EXTRA_SCHEMAS: "cosine,inetorgperson,nis,syncprov,serverid,csyncprov,rep,bsyncprov,brep,acls"
   {{- if .Values.users }}
   LDAP_USERS: {{ .Values.users }}
   {{- end }}

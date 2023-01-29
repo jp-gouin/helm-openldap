@@ -83,15 +83,16 @@ spec:
             - sh
             - -c
             - |
-              ls -al /cm-schemas-acls /custom_schemas
-              cp -p /cm-schemas-acls/*.ldif /custom_schemas/
-              ls -al /custom_schemas
-              sed -i -e "s/%%CONFIG_PASSWORD%%/${LDAP_CONFIG_PASSWORD}/g" /custom_schemas/*
+              ls -al /cm-schemas-acls /custom_config
+              cp -p /cm-schemas-acls/*.ldif /custom_config/
+              ls -al /custom_config
+              sed -i -e "s/%%CONFIG_PASSWORD%%/${LDAP_CONFIG_ADMIN_PASSWORD}/g" /custom_config/*
+              sed -i -e "s/%%ADMIN_PASSWORD%%/${LDAP_ADMIN_PASSWORD}/g" /custom_config/*
           volumeMounts:
             - name: cm-replication-acls
               mountPath: "/cm-schemas-acls"
             - name: replication-acls
-              mountPath: "/custom_schemas"
+              mountPath: "/custom_config"
           envFrom:
             - secretRef:
                 name: {{ template "openldap.secretName" . }}
@@ -203,8 +204,29 @@ spec:
               mountPath: /bitnami/openldap/
             - name: certs
               mountPath: /opt/bitnami/openldap/certs
+            {{- if .Values.replication.enabled }}
             - name: replication-acls
-              mountPath: /custom_schemas
+              mountPath: /opt/bitnami/openldap/etc/schema/syncprov.ldif
+              subPath: syncprov.ldif
+            - name: replication-acls
+              mountPath: /opt/bitnami/openldap/etc/schema/serverid.ldif
+              subPath: serverid.ldif
+            - name: replication-acls
+              mountPath: /opt/bitnami/openldap/etc/schema/csyncprov.ldif
+              subPath: csyncprov.ldif
+            - name: replication-acls
+              mountPath: /opt/bitnami/openldap/etc/schema/rep.ldif
+              subPath: rep.ldif
+            - name: replication-acls
+              mountPath: /opt/bitnami/openldap/etc/schema/bsyncprov.ldif
+              subPath: bsyncprov.ldif
+            - name: replication-acls
+              mountPath: /opt/bitnami/openldap/etc/schema/brep.ldif
+              subPath: brep.ldif
+            {{- end }}
+            - name: replication-acls
+              mountPath: /opt/bitnami/openldap/etc/schema/acls.ldif
+              subPath: acls.ldif
 {{- if or (.Values.customLdifFiles) (.Values.customLdifCm) }}
             - name: custom-ldif-files
               mountPath: /ldifs/

@@ -88,6 +88,7 @@ service:
 
 # Default configuration for openldap as environment variables. These get injected directly in the container.
 # Use the env variables from https://hub.docker.com/r/bitnami/openldap/
+# Be careful, do not modify the following values unless you know exactly what your are doing
 env:
  BITNAMI_DEBUG: "true"
  LDAP_LOGLEVEL: "256"
@@ -95,7 +96,7 @@ env:
  LDAPTLS_REQCERT: "never"
  LDAP_ENABLE_TLS: "yes"
  LDAP_CONFIG_ADMIN_ENABLED: "yes"
- LDAP_CONFIG_ADMIN_USERNAME: "config"
+ LDAP_CONFIG_ADMIN_USERNAME: "admin"
  LDAP_SKIP_DEFAULT_TREE: "no"
 
 # Pod Disruption Budget for Stateful Set
