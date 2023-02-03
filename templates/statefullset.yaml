@@ -49,8 +49,7 @@ spec:
             - -c
             - |
               {{- if not .Values.customTLS.enabled}}
-              openssl req -x509 -newkey rsa:4096 -nodes -subj '/CN=example.org'
-              -keyout /tmp-certs/tls.key -out /tmp-certs/tls.crt -days 365
+              openssl req -x509 -newkey rsa:4096 -nodes -subj '/CN=example.org' -keyout /tmp-certs/tls.key -out /tmp-certs/tls.crt -days 365
               cp /tmp-certs/tls.crt /tmp-certs/ca.crt
               chmod 777  /tmp-certs/*
               {{- end }}
