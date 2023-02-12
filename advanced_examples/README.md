@@ -111,7 +111,7 @@ data:
     objectClass: top
   03-foo-user.ldif: |-
     dn: cn=foo,ou=users,dc=mydomain,dc=com
-    cn: ojavaux
+    cn: foo
     objectClass: inetOrgPerson
     objectClass: top
     sn: Foo Foo
@@ -217,7 +217,7 @@ In long:
 ```yaml
   03-foo-user.ldif: |-
     dn: cn=foo,ou=users,dc=mydomain,dc=com
-    cn: ojavaux
+    cn: foo
     objectClass: inetOrgPerson
     objectClass: top
     sn: Foo Foo
