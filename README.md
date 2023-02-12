@@ -79,6 +79,9 @@ Parameters related to the configuration of the application.
 | `env`                              | List of key value pairs as env variables to be sent to the docker image. See https://github.com/bitnami/containers/tree/main/bitnami/openldap for available ones | `[see values.yaml]` |
 | `customTLS.enabled`                      | Set to enable TLS/LDAPS with custom certificate - should also set `tls.secret`                                                                                    | `false`             |
 | `customTLS.secret`                       | Secret containing TLS cert and key must contain the keys tls.key , tls.crt and ca.crt                                                                       | `""`                |
+| `customLdifFiles`                       | Custom openldap configuration files used to override default settings                                                                      | `""`                |
+| `customLdifCm`                       | Existing configmap with custom ldif. Can't be use with customLdifFiles                                                            | `""`                |
+| `customAcls`                       | Custom openldap ACLs. Overrides default ones.                                                                      | `""`                |
 | `replication.enabled`              | Enable the multi-master replication | `true` |
 | `replication.retry`              | retry period for replication in sec | `60` |
 | `replication.timeout`              | timeout for replication  in sec| `1` |

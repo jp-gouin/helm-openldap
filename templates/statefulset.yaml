@@ -204,29 +204,11 @@ spec:
               mountPath: /bitnami/openldap/
             - name: certs
               mountPath: /opt/bitnami/openldap/certs
-            {{- if .Values.replication.enabled }}
+            {{- range $file := (include "openldap.schemaFiles" . | split ",") }}
             - name: replication-acls
-              mountPath: /opt/bitnami/openldap/etc/schema/syncprov.ldif
-              subPath: syncprov.ldif
-            - name: replication-acls
-              mountPath: /opt/bitnami/openldap/etc/schema/serverid.ldif
-              subPath: serverid.ldif
-            - name: replication-acls
-              mountPath: /opt/bitnami/openldap/etc/schema/csyncprov.ldif
-              subPath: csyncprov.ldif
-            - name: replication-acls
-              mountPath: /opt/bitnami/openldap/etc/schema/rep.ldif
-              subPath: rep.ldif
-            - name: replication-acls
-              mountPath: /opt/bitnami/openldap/etc/schema/bsyncprov.ldif
-              subPath: bsyncprov.ldif
-            - name: replication-acls
-              mountPath: /opt/bitnami/openldap/etc/schema/brep.ldif
-              subPath: brep.ldif
+              mountPath: /opt/bitnami/openldap/etc/schema/{{ $file }}.ldif
+              subPath: {{ $file }}.ldif
             {{- end }}
-            - name: replication-acls
-              mountPath: /opt/bitnami/openldap/etc/schema/acls.ldif
-              subPath: acls.ldif
 {{- if or (.Values.customLdifFiles) (.Values.customLdifCm) }}
             - name: custom-ldif-files
               mountPath: /ldifs/

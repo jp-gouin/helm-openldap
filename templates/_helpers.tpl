@@ -152,6 +152,18 @@ Return the proper Openldap init container image name
 {{- end -}}
 
 {{/*
+Return the list of schemas files to mount
+Cannot return list => return string comma separated
+*/}}
+{{- define "openldap.schemaFiles" -}}
+  {{- if .Values.replication.enabled }}
+    {{- print "syncprov,serverid,csyncprov,rep,bsyncprov,brep,acls" }}
+  {{- else -}}
+    {{- print "acls" }}
+  {{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper base domain
 */}}
 {{- define "global.baseDomain" -}}

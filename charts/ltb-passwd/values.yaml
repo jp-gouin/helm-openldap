@@ -55,6 +55,12 @@ ldap:
   custom:
     - name: TLS_REQCERT
       value: never
+  # if you want to restrict search base tree for users instead of complete domain
+  # searchBase: "ou=....,dc=mydomain,dc=com"
+  # if you want to use a dedicated bindDN for the search with less permissions instead of cn=admin one
+  # bindDN: "cn=....,dc=mydomain,dc=com"
+  # if you want to use a specific key of the credentials secret instead of the default one (LDAP_ADMIN_PASSWORD)
+  # passKey: LDAP_MY_KEY
 env:
 - name: SECRETKEY
   value: "password"
