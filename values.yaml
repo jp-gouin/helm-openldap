@@ -14,7 +14,7 @@ global:
   #imagePullSecrets: [""]
   ldapDomain: "example.org"
   # Specifies an existing secret to be used for admin and config user passwords. The expected key are LDAP_ADMIN_PASSWORD and LDAP_CONFIG_ADMIN_PASSWORD.
-  existingSecret: ""
+  existingSecret: "supersecret"
   ## Default Passwords to use, stored as a secret. Not used if existingSecret is set.
   adminPassword:  Not@SecurePassw0rd
   configPassword: Not@SecurePassw0rd
@@ -108,15 +108,15 @@ pdb:
 
 ## User list to create (comma separated list) , can't be use with customLdifFiles
 ## Default set by bitnami image
-#users: user01,user02
+# users: user01,user02
 
 ## User password to create (comma separated list, one for each user)
 ## Default set by bitnami image
-#userPasswords: bitnami1, bitnami2
+# userPasswords: bitnami1, bitnami2
 
 ## Group to create and add list of user above
 ## Default set by bitnami image
-#group: readers
+# group: readers
 
 ## Existing configmap with custom ldif
 # Can't be use with customLdifFiles

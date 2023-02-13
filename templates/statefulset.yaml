@@ -49,10 +49,8 @@ spec:
             - -c
             - |
               {{- if not .Values.customTLS.enabled}}
-              openssl req -x509 -newkey rsa:4096 -nodes -subj '/CN={{ .Values.global.ldapDomain }}' -keyout tls.key -out tls.crt -days 365
-              cp tls.crt ca.crt
-              cp *.crt /tmp-certs/
-              cp tls.key /tmp-certs/
+              openssl req -x509 -newkey rsa:4096 -nodes -subj '/CN={{ .Values.global.ldapDomain }}' -keyout /tmp-certs/tls.key -out /tmp-certs/tls.crt -days 365
+              cp /tmp-certs/tls.crt /tmp-certs/ca.crt
               chmod 777  /tmp-certs/*
               {{- end }}
               cp -Lr /tmp-certs/* /certs
@@ -76,6 +74,7 @@ spec:
             - name: foo
               mountPath: bar
       {{- end }}
+      {{- if .Values.global.existingSecret }}
         - name: update-replication
           image: {{ include "openldap.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -96,6 +95,7 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ template "openldap.secretName" . }}
+      {{- end }}
 
       {{- /*
  serviceAccountName: {{ template "openldap.serviceAccountName" . }}
@@ -235,9 +235,18 @@ spec:
             claimName: {{ .Values.persistence.existingClaim }}
 {{- end }}
 {{- end }}
+{{- if .Values.global.existingSecret }}
         - name: cm-replication-acls
           configMap:
             name: {{ template "openldap.fullname" . }}-replication-acls
+        - name: replication-acls
+          emptyDir:
+            medium: Memory
+{{- else }}
+        - name: replication-acls
+          configMap:
+            name: {{ template "openldap.fullname" . }}-replication-acls
+{{- end }}
 {{- if .Values.customLdifFiles }}
         - name: custom-ldif-files
           configMap:
@@ -264,13 +273,10 @@ spec:
           configMap:
             name: {{ template "openldap.fullname" $ }}-fs-{{ .name }}
 {{- end }}
-        - name: replication-acls
-          emptyDir:
-            medium: Memory
         {{- if .Values.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
-{{- if (not .Values.persistence.existingClaim) }}
+{{- if and (not .Values.persistence.existingClaim)  .Values.persistence.enabled }}
   volumeClaimTemplates:
     - metadata:
         name: data
@@ -293,7 +299,7 @@ spec:
         storageClassName: "{{ .Values.persistence.storageClass }}"
       {{- end }}
 {{- end }}
-{{- else }}
+{{- else if (not .Values.persistence.enabled) }}
         - name: data
           emptyDir: {}
 {{- end }}
