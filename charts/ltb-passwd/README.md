@@ -35,10 +35,11 @@ Configuration is done within `values.yaml`:
 
 | Parameter                          | Description                                                                                                                               | Default                            |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| `ldap.server`                      | LDAP Server URL, should be of the form: `ldap://ldap.svc:389`                                                                             | ` `                                |
-| `ldap.searchBase`                  | LDAP Search Base for the users                                                                                                            | ` `                                |
-| `ldap.binduserSecret`              | Name of an **existing** secret to fetch the credentials for the bind user from. Needs keys `BINDDN` and `BINDPW`                          | ` `                                |
 | `env`                              | List of key value pairs as env variables to be sent to the docker image. See https://github.com/tiredofit/docker-self-service-password for available ones | `[see values.yaml]`|
+| `ldap.bindDN`                      | bindDN to authenticate on LDAP. Optional. Default to cn=admin,dc=...                                                                      | ` `                                |
+| `ldap.passkey`                     | key of credential secret to authenticate on LDAP. Optional. Default to LDAP_ADMIN_PASSWORD                                                | ` `                                |
+| `ldap.searchBase`                  | LDAP Search base for users. Default to dc=...                                                                                             | ` `                                |
+| `ldap.custom`                      | LDAP client custom configuration                                                                                                          | ` `                                |
 | `replicaCount`                     | Number of replicas                                                                                                                        | `1`                                |
 | `image.repository`                 | Container image repository                                                                                                                | ` tiredofit/self-service-password` |
 | `image.tag`                        | Container image tag                                                                                                                       | `latest`                           |
@@ -50,6 +51,9 @@ Configuration is done within `values.yaml`:
 | `ingress.hosts`                    | Hostnames to redirect to the webapp                                                                                                       | `[]`                               |
 | `ingress.tls`                      | TLS Configuration                                                                                                                         | `[]`                               |
 | `resources`                        | Container resource requests and limits in yaml                                                                                            | `{}`                               |
+| `initContainers`                   | Init containers to add to the application                                                                                                 | `[]`                               |
+| `volumeMounts`                     | Additional volumeMounts to the application main container                                                                                 | `[]`                               |
+| `volumes`                          | Additional volumes to the application pod                                                                                                 | `[]`                               |
 | `nodeSelector`                     | NodeSelector to run the image on                                                                                                          | `{}`                               |
 | `tolerations`                      | Tolerations for the service pod                                                                                                           | `[]`                               |
 | `affinity`                         | Attractions for the service pod                                                                                                           | `{}`                               |

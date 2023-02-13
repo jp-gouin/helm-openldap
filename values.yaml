@@ -12,8 +12,9 @@ global:
   ##   - myRegistryKeySecretName
   ##
   #imagePullSecrets: [""]
-  storageClass: ""
   ldapDomain: "example.org"
+  # Specifies an existing secret to be used for admin and config user passwords. The expected key are LDAP_ADMIN_PASSWORD and LDAP_CONFIG_ADMIN_PASSWORD.
+  existingSecret: ""
   ## Default Passwords to use, stored as a secret. Not used if existingSecret is set.
   adminPassword:  Not@SecurePassw0rd
   configPassword: Not@SecurePassw0rd
@@ -47,7 +48,7 @@ extraDeploy: []
 replicaCount: 3
 
 image:
-  # From repository https://github.com/osixia/docker-openldap
+  # From repository https://hub.docker.com/r/bitnami/openldap/
   repository: bitnami/openldap
   tag: 2.6.3
   pullPolicy: Always
@@ -57,8 +58,6 @@ image:
 # Valid log levels: none, error, warning, info (default), debug, trace
 logLevel: info
 
-# Specifies an existing secret to be used for admin and config user passwords. The expected key are LDAP_ADMIN_PASSWORD and LDAP_CONFIG_PASSWORD.
-existingSecret: ""
 
 # Settings for enabling TLS with custom certificate
 # need a secret with tls.crt, tls.key and ca.crt keys with associated files
@@ -82,13 +81,14 @@ service:
   ##
   externalIPs: []
 
-  #loadBalancerIP: 
+  #loadBalancerIP:
   #loadBalancerSourceRanges: []
   type: ClusterIP
   sessionAffinity: None
 
 # Default configuration for openldap as environment variables. These get injected directly in the container.
-# Use the env variables from https://github.com/osixia/docker-openldap#beginner-guide
+# Use the env variables from https://hub.docker.com/r/bitnami/openldap/
+# Be careful, do not modify the following values unless you know exactly what your are doing
 env:
  BITNAMI_DEBUG: "true"
  LDAP_LOGLEVEL: "256"
@@ -96,7 +96,7 @@ env:
  LDAPTLS_REQCERT: "never"
  LDAP_ENABLE_TLS: "yes"
  LDAP_CONFIG_ADMIN_ENABLED: "yes"
- LDAP_CONFIG_ADMIN_USERNAME: "config"
+ LDAP_CONFIG_ADMIN_USERNAME: "admin"
  LDAP_SKIP_DEFAULT_TREE: "no"
 
 # Pod Disruption Budget for Stateful Set
@@ -107,14 +107,21 @@ pdb:
   maxUnavailable: ""
 
 ## User list to create (comma separated list) , can't be use with customLdifFiles
-#users: user1,user2
+## Default set by bitnami image
+#users: user01,user02
 
-## User password to create (comma seprated list) 
-#userPasswords: password1,password2
+## User password to create (comma separated list, one for each user)
+## Default set by bitnami image
+#userPasswords: bitnami1, bitnami2
 
 ## Group to create and add list of user above
-#group: myGroup
+## Default set by bitnami image
+#group: readers
 
+## Existing configmap with custom ldif
+# Can't be use with customLdifFiles
+# Same format as customLdifFiles
+# customLdifCm: my-custom-cm
 
 # Custom openldap configuration files used to override default settings
 # DO NOT FORGET to put the Root Organisation object as it won't be created while using customLdifFiles
@@ -144,10 +151,27 @@ pdb:
 #     uid: jdupond
 #     uidnumber: 1000
 #     userpassword: {MD5}KOULhzfBhPTq9k7a9XfCGw==
-# Custom files with provided contents to be added in container.
+
+# Custom openldap ACLs
+# If not defined, the following default ACLs are applied:
+# customAcls: |-
+#   dn: olcDatabase={2}mdb,cn=config
+#   changetype: modify
+#   replace: olcAccess
+#   olcAccess: {0}to *
+#     by dn.exact=gidNumber=0+uidNumber=1001,cn=peercred,cn=external,cn=auth manage
+#     by * break
+#   olcAccess: {1}to attrs=userPassword,shadowLastChange
+#     by self write
+#     by dn="{{ include "global.bindDN" . }}" write
+#     by anonymous auth by * none
+#   olcAccess: {2}to *
+#     by dn="{{ include "global.bindDN" . }}" write
+#     by self read
+#     by * none
 
 replication:
-  enabled: true    
+  enabled: true
   # Enter the name of your cluster, defaults to "cluster.local"
   clusterName: "cluster.local"
   retry: 60
@@ -170,6 +194,7 @@ persistence:
   accessModes:
     - ReadWriteOnce
   size: 8Gi
+  storageClass: ""
 
 ## @param customLivenessProbe Custom livenessProbe that overrides the default one
 ##
@@ -207,7 +232,7 @@ containerSecurityContext:
   runAsUser: 1001
   runAsNonRoot: true
 
-## @param existingConfigmap The name of an existing ConfigMap with your custom configuration for OPENLDAP 
+## @param existingConfigmap The name of an existing ConfigMap with your custom configuration for OPENLDAP
 ##
 existingConfigmap:
 ## @param command Override default container command (useful when using custom images)
@@ -417,6 +442,8 @@ test:
   image:
     repository: dduportal/bats
     tag: 0.4.0
+
+## ltb-passwd
 ltb-passwd:
   enabled : true
   image:
@@ -429,14 +456,19 @@ ltb-passwd:
     ## Ingress Host
     hosts:
     - "ssl-ldap2.example"
-  ldap:
-    #server: ldaps://openldap-openldap-stack-ha
-    # existingSecret: openldaptest
-    #bindDN: cn=admin,dc=example,dc=org
-    bindPWKey: LDAP_ADMIN_PASSWORD
+  # ldap:
+    # if you want to restrict search base tree for users instead of complete domain
+    # searchBase: "ou=....,dc=mydomain,dc=com"
+    # if you want to use a dedicated bindDN for the search with less permissions instead of cn=admin one
+    # bindDN: "cn=....,dc=mydomain,dc=com"
+    # if you want to use a specific key of the credentials secret instead of the default one (LDAP_ADMIN_PASSWORD)
+    # passKey: LDAP_MY_KEY
 
+## phpldapadmin
 phpldapadmin:
   enabled: true
+  image:
+    tag: 0.9.0
   env:
     PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT: "never"
   ingress:

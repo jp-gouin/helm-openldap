@@ -5,7 +5,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "openldap.fullname" . }}-replication
+  name: {{ template "openldap.fullname" . }}-replication-acls
   labels:
     app: {{ template "openldap.name" . }}
     chart: {{ template "openldap.chart" . }}
@@ -15,26 +15,27 @@ metadata:
 {{ toYaml .Values.extraLabels | indent 4 }}
 {{- end }}
 data:
-  syncprov.ldif: | 
+  # replication
+  syncprov.ldif: |
     # Load syncprov module
     dn: cn=module{0},cn=config
     objectClass: olcModuleList
     cn: module{0}
     olcModuleLoad: syncprov
-  serverid.ldif: | 
+  serverid.ldif: |
     # Set server ID
     dn: cn=config
     changeType: modify
     add: olcServerID
     {{- include "olcServerIDs" . }}
-  csyncprov.ldif: | 
+  csyncprov.ldif: |
     # Add syncprov on config
     dn: olcOverlay=syncprov,olcDatabase={0}config,cn=config
     changetype: add
     objectClass: olcOverlayConfig
     objectClass: olcSyncProvConfig
     olcOverlay: syncprov
-  rep.ldif: | 
+  rep.ldif: |
     # Add sync replication on config
     dn: olcDatabase={0}config,cn=config
     changetype: modify
@@ -43,7 +44,7 @@ data:
     -
     add: olcMirrorMode
     olcMirrorMode: TRUE
-  bsyncprov.ldif: | 
+  bsyncprov.ldif: |
     dn: olcOverlay=syncprov,olcDatabase={2}mdb,cn=config
     objectClass: olcOverlayConfig
     objectClass: olcSyncProvConfig
@@ -59,12 +60,23 @@ data:
     changetype: modify
     add: olcMirrorMode
     olcMirrorMode: TRUE
-  
-
-    
-
-  
-
-   
-
-   
+  # acls
+  acls.ldif: |
+{{- if .Values.customAcls }}
+    {{- .Values.customAcls | nindent 4 }}
+{{- else }}
+    dn: olcDatabase={2}mdb,cn=config
+    changetype: modify
+    replace: olcAccess
+    olcAccess: {0}to *
+      by dn.exact=gidNumber=0+uidNumber=1001,cn=peercred,cn=external,cn=auth manage
+      by * break
+    olcAccess: {1}to attrs=userPassword,shadowLastChange
+      by self write
+      by dn="{{ include "global.bindDN" . }}" write
+      by anonymous auth by * none
+    olcAccess: {2}to *
+      by dn="{{ include "global.bindDN" . }}" write
+      by self read
+      by * none
+{{- end }}

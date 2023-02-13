@@ -46,7 +46,7 @@ Create the name of the service account to use
 Generate chart secret name
 */}}
 {{- define "openldap.secretName" -}}
-{{ default (include "openldap.fullname" .) .Values.existingSecret }}
+{{ default (include "openldap.fullname" .) .Values.global.existingSecret }}
 {{- end -}}
 
 {{/*
@@ -70,7 +70,7 @@ Generate olcSyncRepl list
 {{- $name := (include "openldap.fullname" .) }}
 {{- $namespace := .Release.Namespace }}
 {{- $cluster := .Values.replication.clusterName }}
-{{- $configPassword := .Values.global.configPassword }}
+{{- $configPassword := "%%CONFIG_PASSWORD%%" }}
 {{- $retry := .Values.replication.retry }}
 {{- $timeout := .Values.replication.timeout }}
 {{- $starttls := .Values.replication.starttls }}
@@ -90,7 +90,7 @@ Generate olcSyncRepl list
 {{- $domain := (include "global.baseDomain" .) }}
 {{- $namespace := .Release.Namespace }}
 {{- $cluster := .Values.replication.clusterName }}
-{{- $configPassword := .Values.global.configPassword }}
+{{- $adminPassword := "%%ADMIN_PASSWORD%%" }}
 {{- $retry := .Values.replication.retry }}
 {{- $timeout := .Values.replication.timeout }}
 {{- $starttls := .Values.replication.starttls }}
@@ -104,7 +104,7 @@ Generate olcSyncRepl list
       provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389
       binddn={{ printf "cn=admin,%s" $domain }}
       bindmethod=simple
-      credentials={{ $configPassword }}
+      credentials={{ $adminPassword }}
       searchbase={{ $domain }}
       type=refreshAndPersist
       interval={{ $interval }}
@@ -152,6 +152,18 @@ Return the proper Openldap init container image name
 {{- end -}}
 
 {{/*
+Return the list of schemas files to mount
+Cannot return list => return string comma separated
+*/}}
+{{- define "openldap.schemaFiles" -}}
+  {{- if .Values.replication.enabled }}
+    {{- print "syncprov,serverid,csyncprov,rep,bsyncprov,brep,acls" }}
+  {{- else -}}
+    {{- print "acls" }}
+  {{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper base domain
 */}}
 {{- define "global.baseDomain" -}}
@@ -171,28 +183,28 @@ dc={{ $part }},
 {{- end -}}
 
 {{/*
-Return the proper Docker Image Registry Secret Names
+Return the server name
 */}}
 {{- define "global.server" -}}
 {{- printf "%s.%s" .Release.Name .Release.Namespace  -}}
 {{- end -}}
 
 {{/*
-Return the proper Docker Image Registry Secret Names
+Return the bdmin indDN
 */}}
 {{- define "global.bindDN" -}}
 {{- printf "cn=admin,%s" (include "global.baseDomain" .) -}}
 {{- end -}}
 
 {{/*
-Return the proper Docker Image Registry Secret Names
+Return the ldaps port
 */}}
 {{- define "global.ldapsPort" -}}
 {{- printf "%d" .Values.global.sslLdapPort  -}}
 {{- end -}}
 
 {{/*
-Return the proper Docker Image Registry Secret Names
+Return the ldap port
 */}}
 {{- define "global.ldapPort" -}}
 {{- printf "%d" .Values.global.ldapPort  -}}

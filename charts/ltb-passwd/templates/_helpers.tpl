@@ -3,7 +3,7 @@
 Expand the name of the chart.
 */}}
 {{- define "ltb-passwd.name" -}}
-{{ default .Release.Name .Values.existingSecret }}
+{{ default (printf "%s-ltb" .Release.Name) .Values.nameOverride }}
 {{- end -}}
 
 {{/*
@@ -48,7 +48,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Generate chart secret name
 */}}
 {{- define "ltb-passwd.secretName" -}}
-{{ default (include "ltb-passwd.fullname" .) .Values.existingSecret }}
+{{ default (include "ltb-passwd.fullname" .) .Values.global.existingSecret  }}
 {{- end -}}
 
 {{/*
