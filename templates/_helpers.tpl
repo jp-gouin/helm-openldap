@@ -169,17 +169,21 @@ Return the proper base domain
 {{- define "global.baseDomain" -}}
 {{- $bd := include "tmp.baseDomain" .}}
 {{- printf "%s" $bd | trimSuffix "," -}}
-{{- end -}}
+{{- end }}
 
 {{/*
-tmp methode to iterate through the ldapDomain
+tmp method to iterate through the ldapDomain
 */}}
 {{- define "tmp.baseDomain" -}}
+{{- if regexMatch ".*=.*,.*" .Values.global.ldapDomain }}
+{{- printf "%s" .Values.global.ldapDomain }}
+{{- else }}
 {{- $parts := split "." .Values.global.ldapDomain }}
   {{- range $index, $part := $parts }}
   {{- $index1 := $index | add 1 -}}
 dc={{ $part }},
   {{- end}}
+  {{- end -}}
 {{- end -}}
 
 {{/*
