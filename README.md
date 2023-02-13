@@ -21,8 +21,6 @@ A default tree (Root organisation, users and group) is created during startup, t
 
 - This will be improved in a future update.
 
-Self service password is not fully working with this new version, troubleshooting is in progress and will be working in the next update.
-
 ## Prerequisites Details
 * Kubernetes 1.8+
 * PV support on the underlying infrastructure
@@ -100,6 +98,8 @@ Parameters related to PHPLdapAdmin
 | `phpldapadmin.ingress`             | Ingress of Phpldapadmin | `{}` |
 | `phpldapadmin.env`  | Environment variables for PhpldapAdmin| `{PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT: "never"}` |
 
+For more advance configuration see [README.md](./advanced_examples/README.md)
+
 ### Self-service password configuration
 
 Parameters related to Self-service password.
@@ -108,6 +108,8 @@ Parameters related to Self-service password.
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 |`ltb-passwd.enabled`| Enable the deployment of Ltb-Passwd| `true` |
 |`ltb-passwd.ingress`| Ingress of the Ltb-Passwd service | `{}` |
+
+For more advance configuration see [README.md](./advanced_examples/README.md)
 
 ### Kubernetes parameters
 
@@ -267,8 +269,6 @@ This major update switch the base image from [Osixia](https://github.com/osixia/
 A default tree (Root organisation, users and group) is created during startup, this can be skipped using `LDAP_SKIP_DEFAULT_TREE` , however you need to use `customLdifFiles` or `customLdifCm` to create a root organisation.
 
 - This will be improved in a future update.
-
-Self service password is not fully working with this new version, troubleshooting is in progress and will be working in the next update.
 
 ### To 3.0.0
 
