@@ -13,9 +13,7 @@ There are some major changes between the Osixia version and the Bitnami version 
 
 - Upgrade may not work fine between `3.x` and `4.x`
 - Ldap and Ldaps port are non privileged ports (`1389` and `1636`) internally but are exposed through `global.ldapPort` and `global.sslLdapPort` (389 and 636)
-- Replication is now purely setup by configuration. Extra schemas are loaded using `LDAP_EXTRA_SCHEMAS: "cosine,inetorgperson,nis,syncprov,serverid,csyncprov,rep,bsyncprov,brep,acls".
-  - For now this list is harcoded and will be configurable in a future update.
-  - (let me know if you need this feature priorityzed)
+- Replication is now purely setup by configuration. Extra schemas are loaded using `LDAP_EXTRA_SCHEMAS: "cosine,inetorgperson,nis,syncprov,serverid,csyncprov,rep,bsyncprov,brep,acls`. You can add your own schemas via the `customSchemaFiles` option.
 
 A default tree (Root organisation, users and group) is created during startup, this can be skipped using `LDAP_SKIP_DEFAULT_TREE` , however you need to use `customLdifFiles` or `customLdifCm` to create a root organisation.
 
@@ -57,7 +55,7 @@ Global parameters to configure the deployment of the application.
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | `global.imageRegistry`                     | Global image registry                                                                                                                        | `""`                 |
 | `global.imagePullSecrets`                     | Global list of imagePullSecrets                                                                                                                        | `[]`                 |
-| `global.ldapDomain`                     | Domain LDAP can be explicit `dc=example,dc=org` or domain based `example.org`                                                                                                                         | `example.org`                 | 
+| `global.ldapDomain`                     | Domain LDAP can be explicit `dc=example,dc=org` or domain based `example.org`                                                                                                                         | `example.org`                 |
 | `global.existingSecret`                     | Use existing secret for credentials - the expected keys are LDAP_ADMIN_PASSWORD and LDAP_CONFIG_ADMIN_PASSWORD                                         | `""`                |
 | `global.adminPassword`                     | Administration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
 | `global.configPassword`                     | Configuration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
@@ -77,6 +75,7 @@ Parameters related to the configuration of the application.
 | `env`                              | List of key value pairs as env variables to be sent to the docker image. See https://github.com/bitnami/containers/tree/main/bitnami/openldap for available ones | `[see values.yaml]` |
 | `customTLS.enabled`                      | Set to enable TLS/LDAPS with custom certificate - should also set `tls.secret`                                                                                    | `false`             |
 | `customTLS.secret`                       | Secret containing TLS cert and key must contain the keys tls.key , tls.crt and ca.crt                                                                       | `""`                |
+| `customSchemaFiles` | Custom openldap schema files used in addition to default schemas                                                                    | `""`                |
 | `customLdifFiles`                       | Custom openldap configuration files used to override default settings                                                                      | `""`                |
 | `customLdifCm`                       | Existing configmap with custom ldif. Can't be use with customLdifFiles                                                            | `""`                |
 | `customAcls`                       | Custom openldap ACLs. Overrides default ones.                                                                      | `""`                |
