@@ -181,17 +181,8 @@ Return the list of all schema files to use
 Cannot return list => return string comma separated
 */}}
 {{- define "openldap.schemaFiles" -}}
-  {{- /*  begin of shared part with "openldap.builtinSchemaFiles" */ -}}
-  {{- $schemas := "" -}}
-  {{- if .Values.replication.enabled -}}
-    {{- $schemas = "syncprov,serverid,csyncprov,rep,bsyncprov,brep,acls" -}}
-  {{- else -}}
-    {{- $schemas = "acls" -}}
-  {{- end -}}
-  {{- /* end of shared part with "openldap.builtinSchemaFiles" */ -}}
-  {{- /*  begin of shared part with "openldap.customSchemaFiles" */ -}}
-  {{- $custom_schemas := ((join "," (.Values.customSchemaFiles | keys))  | replace ".ldif" "") -}}
-  {{- /*  end of shared part with "openldap.customSchemaFiles" */ -}}
+  {{- $schemas := (include "openldap.builtinSchemaFiles" .) -}}
+  {{- $custom_schemas := (include "openldap.customSchemaFiles" .) -}}
   {{- if gt (len $custom_schemas) 0 -}}
     {{- $schemas = print $schemas "," $custom_schemas -}}
   {{- end -}}
