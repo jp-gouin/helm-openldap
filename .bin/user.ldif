@@ -1,0 +1,19 @@
+dn: uid=einstein,dc=example,dc=org
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: ownCloud
+objectClass: person
+objectClass: posixAccount
+objectClass: top
+uid: einstein
+givenName: Albert
+sn: Einstein
+cn: einstein
+displayName: Albert Einstein
+description: A German-born theoretical physicist who developed the theory of relativity, one of the two pillars of modern physics (alongside quantum mechanics).
+mail: einstein@example.org
+uidNumber: 20000
+gidNumber: 30000
+homeDirectory: /home/einstein
+ownCloudUUID:: NGM1MTBhZGEtYzg2Yi00ODE1LTg4MjAtNDJjZGY4MmMzZDUx
+userPassword:: e1NTSEF9TXJEcXpFNGdKbXZxbVRVTGhvWEZ1VzJBbkV3NWFLK3J3WTIvbHc9PQ==

@@ -68,11 +68,34 @@ jobs:
         run: |
            echo "test access to openldap database"
            kubectl apply -f .bin/chaos.yaml
+      - name: test write
+        shell: bash
+        run: |
+           echo "test access to openldap database"
+           LDAPTLS_REQCERT=never ldapadd -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -f  .bin/user.ldif
+           LDAPTLS_REQCERT=never ldapsearch -o nettimeout=20 -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org' > /tmp/test-write.txt
+           if [ $(grep "numResponses" /tmp/test-write.txt | cut -d ":" -f 2 | tr -d ' ') -ne 5 ]; then exit 1 ; fi
+           if ! grep -q "objectClass: ownCloud" /tmp/test-write.txt; then  echo exit 1; fi
       - name: chaos tests
         shell: bash
         run: |
            echo "test access to openldap database"
            for i in {1..20}; do  LDAPTLS_REQCERT=never ldapsearch -o nettimeout=20 -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org' && sleep 60 ; done
+      - name: deploy openldap-stack-ha-single-node
+        shell: bash
+        run: |
+          helm delete openldap-stack-ha
+          cd "$GITHUB_WORKSPACE"
+          helm install openldap-stack-ha -n single --create-namespace -f .bin/singleNode.yaml .
+          kubectl rollout status sts openldap-stack-ha -n single
+      - name: verify single node deployment
+        shell: bash
+        run: |
+           echo "test access to openldap database"
+           sudo apt-get install -y ldap-utils
+           LDAPTLS_REQCERT=never ldapsearch -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org' > /tmp/test-single-node.txt
+           cat /tmp/test-single-node.txt
+           if [ $(grep "numResponses" /tmp/test-single-node.txt | cut -d ":" -f 2 | tr -d ' ') -ne 6 ]; then exit 1 ; fi
 
 
       

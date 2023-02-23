@@ -1,0 +1,648 @@
+---
+# Source: openldap-stack-ha/templates/secret-ltb.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: openldap-ltb-passwd
+  labels:
+    app: openldap
+    chart: openldap-4.1.0
+    release: openldap
+    heritage: Helm
+type: Opaque
+data:
+  LDAP_ADMIN_PASSWORD: "Tm90QFNlY3VyZVBhc3N3MHJk"
+---
+# Source: openldap-stack-ha/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: openldap
+  labels:
+    app: openldap
+    chart: openldap-4.1.0
+    release: openldap
+    heritage: Helm
+type: Opaque
+data:
+  LDAP_ADMIN_PASSWORD: "Tm90QFNlY3VyZVBhc3N3MHJk"
+  LDAP_CONFIG_ADMIN_PASSWORD: "Tm90QFNlY3VyZVBhc3N3MHJk"
+---
+# Source: openldap-stack-ha/charts/ltb-passwd/templates/configmap-ldap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openldap-ltb-passwd-ldap-cm
+  labels:
+    app: openldap-ltb
+    chart: ltb-passwd-0.1.0
+    release: openldap
+    heritage: Helm
+data:
+  ldap.conf: |
+    TLS_REQCERT never
+---
+# Source: openldap-stack-ha/charts/phpldapadmin/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openldap-phpldapadmin
+  labels:
+    app: phpldapadmin
+    chart: phpldapadmin-0.1.2
+    release: openldap
+    heritage: Helm
+data:
+  PHPLDAPADMIN_HTTPS: "false"
+  PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT: never
+  PHPLDAPADMIN_TRUST_PROXY_SSL: "true"
+  PHPLDAPADMIN_LDAP_HOSTS: "#PYTHON2BASH:[{ 'openldap.default'  : [{'server': [{'tls': True},{'port':389}]},{'login': [{'bind_id': 'cn=admin,dc=example,dc=org'  }]}]}]"
+---
+# Source: openldap-stack-ha/templates/configmap-env.yaml
+#
+# A ConfigMap spec for openldap slapd that map directly to env variables in the Pod.
+# List of environment variables supported is from the docker image:
+# https://hub.docker.com/r/bitnami/openldap/
+# Note that passwords are defined as secrets
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openldap-env
+  labels:
+    app: openldap
+    chart: openldap-4.1.0
+    release: openldap
+    heritage: Helm
+data:
+  LDAP_ROOT: dc=example,dc=org
+  LDAP_EXTRA_SCHEMAS: cosine,inetorgperson,nis,syncprov,serverid,csyncprov,rep,bsyncprov,brep,acls
+  LDAP_TLS_CERT_FILE: /opt/bitnami/openldap/certs/tls.crt
+  LDAP_TLS_KEY_FILE: /opt/bitnami/openldap/certs/tls.key
+  LDAP_TLS_CA_FILE: /opt/bitnami/openldap/certs/ca.crt
+  BITNAMI_DEBUG: "true"
+  LDAP_CONFIG_ADMIN_ENABLED: "yes"
+  LDAP_CONFIG_ADMIN_USERNAME: admin
+  LDAP_ENABLE_TLS: "yes"
+  LDAP_LOGLEVEL: "256"
+  LDAP_SKIP_DEFAULT_TREE: "no"
+  LDAP_TLS_ENFORCE: "false"
+  LDAPTLS_REQCERT: never
+---
+# Source: openldap-stack-ha/templates/configmap-replication-acls.yaml
+#
+# A ConfigMap spec for openldap slapd that map directly to files under
+# /container/service/slapd/assets/config/bootstrap/ldif/custom
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openldap-replication-acls
+  labels:
+    app: openldap
+    chart: openldap-4.1.0
+    release: openldap
+    heritage: Helm
+data:
+  # replication
+  syncprov.ldif: |
+    # Load syncprov module
+    dn: cn=module{0},cn=config
+    objectClass: olcModuleList
+    cn: module{0}
+    olcModuleLoad: syncprov
+  serverid.ldif: |
+    # Set server ID
+    dn: cn=config
+    changeType: modify
+    add: olcServerID
+    olcServerID: 1 ldap://openldap-0.openldap-headless.default.svc.cluster.local:1389
+    olcServerID: 2 ldap://openldap-1.openldap-headless.default.svc.cluster.local:1389
+    olcServerID: 3 ldap://openldap-2.openldap-headless.default.svc.cluster.local:1389
+  csyncprov.ldif: |
+    # Add syncprov on config
+    dn: olcOverlay=syncprov,olcDatabase={0}config,cn=config
+    changetype: add
+    objectClass: olcOverlayConfig
+    objectClass: olcSyncProvConfig
+    olcOverlay: syncprov
+  rep.ldif: |
+    # Add sync replication on config
+    dn: olcDatabase={0}config,cn=config
+    changetype: modify
+    add: olcSyncRepl
+    olcSyncRepl: rid=001 provider=ldap://openldap-0.openldap-headless.default.svc.cluster.local:1389 binddn="cn=admin,cn=config" bindmethod=simple credentials=Not@SecurePassw0rd searchbase="cn=config" type=refreshAndPersist retry="60 +" timeout=1 starttls=critical tls_reqcert=never
+    olcSyncRepl: rid=002 provider=ldap://openldap-1.openldap-headless.default.svc.cluster.local:1389 binddn="cn=admin,cn=config" bindmethod=simple credentials=Not@SecurePassw0rd searchbase="cn=config" type=refreshAndPersist retry="60 +" timeout=1 starttls=critical tls_reqcert=never
+    olcSyncRepl: rid=003 provider=ldap://openldap-2.openldap-headless.default.svc.cluster.local:1389 binddn="cn=admin,cn=config" bindmethod=simple credentials=Not@SecurePassw0rd searchbase="cn=config" type=refreshAndPersist retry="60 +" timeout=1 starttls=critical tls_reqcert=never
+    -
+    add: olcMirrorMode
+    olcMirrorMode: TRUE
+  bsyncprov.ldif: |
+    dn: olcOverlay=syncprov,olcDatabase={2}mdb,cn=config
+    objectClass: olcOverlayConfig
+    objectClass: olcSyncProvConfig
+    olcOverlay: syncprov
+    olcSpSessionLog: 100
+  brep.ldif: |
+    dn: olcDatabase={2}mdb,cn=config
+    changetype: modify
+    add: olcSyncrepl
+    olcSyncrepl:
+      rid=101
+      provider=ldap://openldap-0.openldap-headless.default.svc.cluster.local:1389
+      binddn=cn=admin,dc=example,dc=org
+      bindmethod=simple
+      credentials=Not@SecurePassw0rd
+      searchbase=dc=example,dc=org
+      type=refreshAndPersist
+      interval=00:00:00:10
+      network-timeout=0
+      retry="60 +"
+      timeout=1
+      starttls=critical
+      tls_reqcert=never
+    olcSyncrepl:
+      rid=102
+      provider=ldap://openldap-1.openldap-headless.default.svc.cluster.local:1389
+      binddn=cn=admin,dc=example,dc=org
+      bindmethod=simple
+      credentials=Not@SecurePassw0rd
+      searchbase=dc=example,dc=org
+      type=refreshAndPersist
+      interval=00:00:00:10
+      network-timeout=0
+      retry="60 +"
+      timeout=1
+      starttls=critical
+      tls_reqcert=never
+    olcSyncrepl:
+      rid=103
+      provider=ldap://openldap-2.openldap-headless.default.svc.cluster.local:1389
+      binddn=cn=admin,dc=example,dc=org
+      bindmethod=simple
+      credentials=Not@SecurePassw0rd
+      searchbase=dc=example,dc=org
+      type=refreshAndPersist
+      interval=00:00:00:10
+      network-timeout=0
+      retry="60 +"
+      timeout=1
+      starttls=critical
+      tls_reqcert=never
+
+    dn: olcDatabase={2}mdb,cn=config
+    changetype: modify
+    add: olcMirrorMode
+    olcMirrorMode: TRUE
+  # acls
+  acls.ldif: |
+    dn: olcDatabase={2}mdb,cn=config
+    changetype: modify
+    replace: olcAccess
+    olcAccess: {0}to *
+      by dn.exact=gidNumber=0+uidNumber=1001,cn=peercred,cn=external,cn=auth manage
+      by * break
+    olcAccess: {1}to attrs=userPassword,shadowLastChange
+      by self write
+      by dn="cn=admin,dc=example,dc=org" write
+      by anonymous auth by * none
+    olcAccess: {2}to *
+      by dn="cn=admin,dc=example,dc=org" write
+      by self read
+      by * none
+---
+# Source: openldap-stack-ha/charts/ltb-passwd/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: openldap-ltb-passwd
+  labels:
+    app.kubernetes.io/name: openldap-ltb
+    helm.sh/chart: ltb-passwd-0.1.0
+    app.kubernetes.io/instance: openldap
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: openldap-ltb
+    app.kubernetes.io/instance: openldap
+---
+# Source: openldap-stack-ha/charts/phpldapadmin/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: openldap-phpldapadmin
+  labels:
+    app: phpldapadmin
+    chart: phpldapadmin-0.1.2
+    release: openldap
+    heritage: Helm
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: http
+    protocol: TCP
+    name: http
+  selector:
+    app: phpldapadmin
+    release: openldap
+---
+# Source: openldap-stack-ha/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: openldap
+  namespace: default
+  labels:
+    app.kubernetes.io/component: openldap
+    chart: openldap-4.1.0
+    release: openldap
+    heritage: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - name: ldap-port
+      protocol: TCP
+      port: 389
+      targetPort: ldap-port
+      nodePort: null
+    - name: ssl-ldap-port
+      protocol: TCP
+      port: 636
+      targetPort: ssl-ldap-port
+      nodePort: null
+  sessionAffinity: None
+  selector:
+    app.kubernetes.io/component: openldap
+    release: openldap
+---
+# Source: openldap-stack-ha/templates/svc-headless.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: openldap-headless
+  labels:
+    app.kubernetes.io/component: openldap
+    chart: openldap-4.1.0
+    release: openldap
+    heritage: Helm
+spec:
+  ports:
+  - port: 389
+    name: ldap-port
+    targetPort: ldap-port
+  clusterIP: None
+  selector:
+    app.kubernetes.io/component: openldap
+    release: openldap  
+  type: ClusterIP
+  sessionAffinity: None
+---
+# Source: openldap-stack-ha/charts/ltb-passwd/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openldap-ltb-passwd
+  labels:
+    app.kubernetes.io/name: openldap-ltb
+    helm.sh/chart: ltb-passwd-0.1.0
+    app.kubernetes.io/instance: openldap
+    app.kubernetes.io/version: "1.3"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openldap-ltb
+      app.kubernetes.io/instance: openldap
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: openldap-ltb
+        app.kubernetes.io/instance: openldap
+    spec:
+      
+      containers:
+        - name: ltb-passwd
+          image: tiredofit/self-service-password:5.2.3
+          imagePullPolicy: Always
+          env:
+          - name: LDAP_SERVER
+            value: ldaps://openldap.default:636
+          - name: LDAP_BINDDN
+            value: cn=admin,dc=example,dc=org
+          - name: LDAP_BINDPASS
+            valueFrom:
+              secretKeyRef:
+                name: openldap-ltb-passwd
+                key: LDAP_ADMIN_PASSWORD
+          - name: LDAP_BASE_SEARCH
+            value: "dc=example,dc=org"
+          - name: SECRETKEY
+            value: password
+          - name: LDAP_LOGIN_ATTRIBUTE
+            value: cn
+          - name: LDAP_STARTTLS
+            value: "false"
+          - name: CHANGE_SSHKEY
+            value: "true"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {}
+          volumeMounts:
+            - mountPath: /etc/openldap
+              name: ldap-conf
+      volumes:
+      - name: ldap-conf
+        configMap:
+          name: openldap-ltb-passwd-ldap-cm
+---
+# Source: openldap-stack-ha/charts/phpldapadmin/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: openldap-phpldapadmin
+  labels:
+    app: phpldapadmin
+    chart: phpldapadmin-0.1.2
+    release: openldap
+    heritage: Helm
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: phpldapadmin
+      release: openldap
+  template:
+    metadata:
+      labels:
+        app: phpldapadmin
+        release: openldap
+    spec:
+      
+      containers:
+      - name: phpldapadmin
+        image: osixia/phpldapadmin:0.9.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: openldap-phpldapadmin
+        livenessProbe:
+            httpGet:
+              path: /
+              port: http
+        readinessProbe:
+            httpGet:
+              path: /
+              port: http
+        resources:
+            {}
+---
+# Source: openldap-stack-ha/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name:  openldap
+  labels:
+    app.kubernetes.io/name: openldap-stack-ha
+    helm.sh/chart: openldap-stack-ha-4.1.0
+    app.kubernetes.io/instance: openldap
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: openldap
+    chart: openldap-4.1.0
+    release: openldap
+    heritage: Helm
+spec:
+  replicas: 3
+  selector:
+    matchLabels: 
+      app.kubernetes.io/name: openldap-stack-ha
+      app.kubernetes.io/instance: openldap
+      app.kubernetes.io/component: openldap
+  serviceName: openldap-headless
+  updateStrategy:
+
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        checksum/configmap-env: 8c20e10a3d140b444f32143352964021b8ef34733eb3018442abe81a9ddec9ec
+      labels:
+        app.kubernetes.io/name: openldap-stack-ha
+        helm.sh/chart: openldap-stack-ha-4.1.0
+        app.kubernetes.io/instance: openldap
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: openldap
+        release: openldap
+    spec:
+      initContainers:
+        - name: init-tls-secret
+          image: alpine/openssl:latest
+          imagePullPolicy: Always
+          command:
+            - sh
+            - -c
+            - |
+              openssl req -x509 -newkey rsa:4096 -nodes -subj '/CN=example.org' -keyout /tmp-certs/tls.key -out /tmp-certs/tls.crt -days 365
+              cp /tmp-certs/tls.crt /tmp-certs/ca.crt
+              chmod 777  /tmp-certs/*
+              cp -Lr /tmp-certs/* /certs
+          volumeMounts:
+            - name: certs
+              mountPath: "/certs"
+            - name: secret-certs
+              mountPath: "/tmp-certs"
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: openldap-stack-ha
+                    app.kubernetes.io/instance: openldap
+                    app.kubernetes.io/component: openldap
+                namespaces:
+                  - "default"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1001
+      containers:
+        - name: openldap-stack-ha
+          image: bitnami/openldap:2.6.3
+          imagePullPolicy: Always
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+          envFrom:
+            - configMapRef:
+                name: openldap-env
+            - secretRef:
+                name: openldap
+          resources:
+            limits: {}
+            requests: {}
+          ports:
+            - name: ldap-port
+              containerPort: 1389
+            - name: ssl-ldap-port
+              containerPort: 1636
+          livenessProbe:
+            tcpSocket:
+              port: ldap-port
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 10
+          readinessProbe:
+            tcpSocket:
+              port: ldap-port
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 10
+          startupProbe:
+            tcpSocket:
+              port: ldap-port
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 30
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/openldap/
+            - name: certs
+              mountPath: /opt/bitnami/openldap/certs
+            - name: replication-acls
+              mountPath: /opt/bitnami/openldap/etc/schema/syncprov.ldif
+              subPath: syncprov.ldif
+            - name: replication-acls
+              mountPath: /opt/bitnami/openldap/etc/schema/serverid.ldif
+              subPath: serverid.ldif
+            - name: replication-acls
+              mountPath: /opt/bitnami/openldap/etc/schema/csyncprov.ldif
+              subPath: csyncprov.ldif
+            - name: replication-acls
+              mountPath: /opt/bitnami/openldap/etc/schema/rep.ldif
+              subPath: rep.ldif
+            - name: replication-acls
+              mountPath: /opt/bitnami/openldap/etc/schema/bsyncprov.ldif
+              subPath: bsyncprov.ldif
+            - name: replication-acls
+              mountPath: /opt/bitnami/openldap/etc/schema/brep.ldif
+              subPath: brep.ldif
+            - name: replication-acls
+              mountPath: /opt/bitnami/openldap/etc/schema/acls.ldif
+              subPath: acls.ldif
+      volumes:
+        - name: replication-acls
+          configMap:
+            name: openldap-replication-acls
+        - name: certs
+          emptyDir:
+            medium: Memory
+        - name: secret-certs
+          emptyDir:
+            medium: Memory
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        annotations:
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "8Gi"
+---
+# Source: openldap-stack-ha/charts/ltb-passwd/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: openldap-ltb-passwd
+  labels:
+    app: openldap-ltb
+    chart: ltb-passwd-0.1.0
+    release: openldap
+    heritage: Helm
+spec:
+  rules:
+    - host: ssl-ldap2.example
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: openldap-ltb-passwd
+                port:
+                  name: http
+---
+# Source: openldap-stack-ha/charts/phpldapadmin/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: openldap-phpldapadmin
+  labels:
+    app: phpldapadmin
+    chart: phpldapadmin-0.1.2
+    release: openldap
+    heritage: Helm
+spec:
+  rules:
+    - host: phpldapadmin.example
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: openldap-phpldapadmin
+                port:
+                  name: http
+---
+# Source: openldap-stack-ha/templates/configmap-customldif.yaml
+#
+# A ConfigMap spec for openldap slapd that map directly to files under
+# /container/service/slapd/assets/config/bootstrap/ldif/custom
+#
+---
+# Source: openldap-stack-ha/templates/configmap-customschema.yaml
+#
+# A ConfigMap spec for openldap slapd that map directly to files under
+# /opt/bitnami/openldap/etc/schema/custom
+#
