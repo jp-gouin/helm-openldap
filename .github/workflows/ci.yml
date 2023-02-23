@@ -95,7 +95,7 @@ jobs:
            sudo apt-get install -y ldap-utils
            LDAPTLS_REQCERT=never ldapsearch -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org' > /tmp/test-single-node.txt
            cat /tmp/test-single-node.txt
-           if [ $(grep "numResponses" /tmp/test-write.txt | cut -d ":" -f 2 | tr -d ' ') -ne 6 ]; then exit 1 ; fi
+           if [ $(grep "numResponses" /tmp/test-single-node.txt | cut -d ":" -f 2 | tr -d ' ') -ne 6 ]; then exit 1 ; fi
 
 
       
