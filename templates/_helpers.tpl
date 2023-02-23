@@ -151,16 +151,42 @@ Return the proper Openldap init container image name
 {{- include "common.images.image" (dict "imageRoot" .Values.customTLS.image "global" .Values.global) -}}
 {{- end -}}
 
+
 {{/*
-Return the list of schemas files to mount
+Return the list of builtin schema files to mount
+Cannot return list => return string comma separated
+*/}}
+{{- define "openldap.builtinSchemaFiles" -}}
+  {{- $schemas := "" -}}
+  {{- if .Values.replication.enabled -}}
+    {{- $schemas = "syncprov,serverid,csyncprov,rep,bsyncprov,brep,acls" -}}
+  {{- else -}}
+    {{- $schemas = "acls" -}}
+  {{- end -}}
+  {{- print $schemas -}}
+{{- end -}}
+
+{{/*
+Return the list of custom schema files to use
+Cannot return list => return string comma separated
+*/}}
+{{- define "openldap.customSchemaFiles" -}}
+  {{- $schemas := "" -}}
+  {{- $schemas := ((join "," (.Values.customSchemaFiles | keys))  | replace ".ldif" "") -}}
+  {{- print $schemas -}}
+{{- end -}}
+
+{{/*
+Return the list of all schema files to use
 Cannot return list => return string comma separated
 */}}
 {{- define "openldap.schemaFiles" -}}
-  {{- if .Values.replication.enabled }}
-    {{- print "syncprov,serverid,csyncprov,rep,bsyncprov,brep,acls" }}
-  {{- else -}}
-    {{- print "acls" }}
+  {{- $schemas := (include "openldap.builtinSchemaFiles" .) -}}
+  {{- $custom_schemas := (include "openldap.customSchemaFiles" .) -}}
+  {{- if gt (len $custom_schemas) 0 -}}
+    {{- $schemas = print $schemas "," $custom_schemas -}}
   {{- end -}}
+  {{- print $schemas -}}
 {{- end -}}
 
 {{/*

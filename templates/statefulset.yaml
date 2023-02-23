@@ -204,11 +204,18 @@ spec:
               mountPath: /bitnami/openldap/
             - name: certs
               mountPath: /opt/bitnami/openldap/certs
-            {{- range $file := (include "openldap.schemaFiles" . | split ",") }}
+            {{- range $file := (include "openldap.builtinSchemaFiles" . | split ",") }}
             - name: replication-acls
               mountPath: /opt/bitnami/openldap/etc/schema/{{ $file }}.ldif
               subPath: {{ $file }}.ldif
             {{- end }}
+{{- if .Values.customSchemaFiles}}
+            {{- range $file := (include "openldap.customSchemaFiles" . | split ",") }}
+            - name: custom-schema-files
+              mountPath: /opt/bitnami/openldap/etc/schema/{{ $file }}.ldif
+              subPath: {{ $file }}.ldif
+            {{- end }}
+{{- end }}
 {{- if or (.Values.customLdifFiles) (.Values.customLdifCm) }}
             - name: custom-ldif-files
               mountPath: /ldifs/
@@ -255,6 +262,11 @@ spec:
         - name: custom-ldif-files
           configMap:
             name: {{ .Values.customLdifCm }}
+{{- end }}
+{{- if .Values.customSchemaFiles }}
+        - name: custom-schema-files
+          configMap:
+            name: {{ template "openldap.fullname" . }}-customschema
 {{- end }}
         - name: certs
           emptyDir:

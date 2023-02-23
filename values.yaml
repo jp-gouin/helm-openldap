@@ -119,10 +119,17 @@ pdb:
 ## Default set by bitnami image
 # group: readers
 
+# Custom openldap schema files used to be used in addition to default schemas
+# customSchemaFiles:
+#   custom.ldif: |-
+#     # custom schema
+#   anothercustom.ldif: |-
+#     # another custom schema
+
 ## Existing configmap with custom ldif
 # Can't be use with customLdifFiles
 # Same format as customLdifFiles
-# customLdifCm: my-custom-cm
+# customLdifCm: my-custom-ldif-cm
 
 # Custom openldap configuration files used to override default settings
 # DO NOT FORGET to put the Root Organisation object as it won't be created while using customLdifFiles
