@@ -452,6 +452,7 @@ test:
     tag: 0.4.0
 
 ## ltb-passwd
+# For more parameters check following file: ./charts/ltb-passwd/values.yaml
 ltb-passwd:
   enabled : true
   image:
@@ -459,11 +460,18 @@ ltb-passwd:
   ingress:
     enabled: true
     annotations: {}
+    # See https://kubernetes.io/docs/concepts/services-networking/ingress/#ingressclass-scope
+    # ingressClassName: nginx
     path: /
     pathType: Prefix
     ## Ingress Host
     hosts:
     - "ssl-ldap2.example"
+    ## Ingress cert
+    tls: []
+    # - secretName: ssl-ldap2.example
+    #   hosts:
+    #   - ssl-ldap2.example
   # ldap:
     # if you want to restrict search base tree for users instead of complete domain
     # searchBase: "ou=....,dc=mydomain,dc=com"
@@ -473,6 +481,7 @@ ltb-passwd:
     # passKey: LDAP_MY_KEY
 
 ## phpldapadmin
+## For more parameters check following file: ./charts/phpldapadmin/values.yaml
 phpldapadmin:
   enabled: true
   image:
@@ -482,8 +491,15 @@ phpldapadmin:
   ingress:
     enabled: true
     annotations: {}
+    ## See https://kubernetes.io/docs/concepts/services-networking/ingress/#ingressclass-scope
+    # ingressClassName: nginx
     path: /
     pathType: Prefix
     ## Ingress Host
     hosts:
     - phpldapadmin.example
+    ## Ingress cert
+    tls: []
+    # - secretName: phpldapadmin.example
+    #   hosts:
+    #   - phpldapadmin.example

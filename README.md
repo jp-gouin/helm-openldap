@@ -186,6 +186,8 @@ phpldapadmin:
   ingress:
     enabled: true
     annotations: {}
+    # Assuming that ingress-nginx is used
+    ingressClassName: nginx
     path: /
     ## Ingress Host
     hosts:
@@ -212,6 +214,8 @@ ltb-passwd:
   ingress:
     enabled: true
     annotations: {}
+    # Assuming that ingress-nginx is used
+    ingressClassName: nginx
     host: "ssl-ldap2.local"
 
 ```
