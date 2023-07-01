@@ -97,7 +97,8 @@ Parameters related to PHPLdapAdmin
 | `phpldapadmin.ingress`             | Ingress of Phpldapadmin | `{}` |
 | `phpldapadmin.env`  | Environment variables for PhpldapAdmin| `{PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT: "never"}` |
 
-For more advance configuration see [README.md](./advanced_examples/README.md)
+For more advance configuration see [README.md](./advanced_examples/README.md)  
+For all possible chart parameters see chart's [README.md](./charts/phpldapadmin/README.md)
 
 ### Self-service password configuration
 
@@ -108,7 +109,8 @@ Parameters related to Self-service password.
 |`ltb-passwd.enabled`| Enable the deployment of Ltb-Passwd| `true` |
 |`ltb-passwd.ingress`| Ingress of the Ltb-Passwd service | `{}` |
 
-For more advance configuration see [README.md](./advanced_examples/README.md)
+For more advance configuration see [README.md](./advanced_examples/README.md)  
+For all possible parameters see chart's [README.md](./charts/ltb-passwd/README.md)
 
 ### Kubernetes parameters
 

@@ -66,6 +66,8 @@ service:
 ingress:
   enabled: false
   annotations: {}
+  ## See https://kubernetes.io/docs/concepts/services-networking/ingress/#ingressclass-scope
+  # ingressClassName: nginx
   path: /
   ## Ingress Host
   # hosts:
