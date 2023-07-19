@@ -17,7 +17,7 @@ metadata:
 {{- end }}
 data:
 {{- range $key, $val := .Values.customSchemaFiles }}
-  {{ $key }}: |-
+  {{ $key }}.ldif: |-
 {{ $val | indent 4}}
 {{- end }}
 {{- end }}
