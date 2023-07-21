@@ -147,7 +147,7 @@ Parameters related to Kubernetes.
 | `containerSecurityContext`              | Set OPENLDAP  pod's Security Context fsGroup | `true` |
 | `existingConfigmap`              | existingConfigmap The name of an existing ConfigMap with your custom configuration for OPENLDAP  | `` |
 | `podLabels`              | podLabels Extra labels for OPENLDAP  pods| `{}` |
-| `podAnnotations`              | Enable the multi-master replication | `true` |
+| `podAnnotations`              | podAnnotations Extra annotations for OPENLDAP  pods | `{}` |
 | `podAffinityPreset`              | podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`| `` |
 | `podAntiAffinityPreset`              | podAntiAffinityPreset Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` | `soft` |
 | `pdb.enabled`                      | Enable Pod Disruption Budget                                                                                                              | `false`             |
