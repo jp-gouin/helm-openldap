@@ -56,7 +56,7 @@ spec:
               chmod 777  /tmp-certs/*
               {{- end }}
               cp -Lr /tmp-certs/* /certs
-              [ -e /certs/ca.crt ] || cp -a /certs/{tls,ca}.crt
+              [ -e /certs/ca.crt ] || cp -a /certs/tls.crt /certs/ca.crt
           volumeMounts:
             - name: certs
               mountPath: "/certs"
