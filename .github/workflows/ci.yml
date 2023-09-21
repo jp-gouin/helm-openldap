@@ -28,7 +28,7 @@ jobs:
       - name: setup chaos mesh
         shell: bash
         run: |
-          curl -sSL https://mirrors.chaos-mesh.org/v2.1.3/install.sh  | bash -s -- --local kind
+          curl -sSL https://mirrors.chaos-mesh.org/v2.6.2/install.sh  | bash -s -- --local kind
       - name: setup certs
         shell: bash
         run: |
