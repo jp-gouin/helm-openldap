@@ -53,10 +53,10 @@ spec:
             - |
               {{- if not .Values.customTLS.enabled}}
               openssl req -x509 -newkey rsa:4096 -nodes -subj '/CN={{ .Values.global.ldapDomain }}' -keyout /tmp-certs/tls.key -out /tmp-certs/tls.crt -days 365
-              cp /tmp-certs/tls.crt /tmp-certs/ca.crt
               chmod 777  /tmp-certs/*
               {{- end }}
               cp -Lr /tmp-certs/* /certs
+              [ -e /certs/ca.crt ] || cp -a /certs/tls.crt /certs/ca.crt
           volumeMounts:
             - name: certs
               mountPath: "/certs"
