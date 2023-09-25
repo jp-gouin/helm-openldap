@@ -17,7 +17,10 @@ global:
   # Specifies an existing secret to be used for admin and config user passwords. The expected key are LDAP_ADMIN_PASSWORD and LDAP_CONFIG_ADMIN_PASSWORD.
   # existingSecret: ""
   ## Default Passwords to use, stored as a secret. Not used if existingSecret is set.
-  adminPassword:  Not@SecurePassw0rd
+  adminUser: "admin"
+  adminPassword: Not@SecurePassw0rd
+  configUserEnabled: true
+  configUser: "admin"
   configPassword: Not@SecurePassw0rd
   ldapPort: 389
   sslLdapPort: 636
@@ -96,8 +99,6 @@ env:
  LDAP_TLS_ENFORCE: "false"
  LDAPTLS_REQCERT: "never"
  LDAP_ENABLE_TLS: "yes"
- LDAP_CONFIG_ADMIN_ENABLED: "yes"
- LDAP_CONFIG_ADMIN_USERNAME: "admin"
  LDAP_SKIP_DEFAULT_TREE: "no"
 
 # Pod Disruption Budget for Stateful Set

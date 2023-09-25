@@ -69,6 +69,7 @@ Generate olcSyncRepl list
 {{- define "olcSyncRepls" -}}
 {{- $name := (include "openldap.fullname" .) }}
 {{- $namespace := .Release.Namespace }}
+{{- $bindDNUser := .Values.global.adminUser }}
 {{- $cluster := .Values.replication.clusterName }}
 {{- $configPassword :=  ternary .Values.global.configPassword "%%CONFIG_PASSWORD%%" (empty .Values.global.existingSecret) }}
 {{- $retry := .Values.replication.retry }}
@@ -78,7 +79,7 @@ Generate olcSyncRepl list
 {{- $nodeCount := .Values.replicaCount | int }}
   {{- range $index0 := until $nodeCount }}
     {{- $index1 := $index0 | add1 }}
-    olcSyncRepl: rid=00{{ $index1 }} provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389 binddn="cn=admin,cn=config" bindmethod=simple credentials={{ $configPassword }} searchbase="cn=config" type=refreshAndPersist retry="{{ $retry }} +" timeout={{ $timeout }} starttls={{ $starttls }} tls_reqcert={{ $tls_reqcert }}
+    olcSyncRepl: rid=00{{ $index1 }} provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389 binddn="cn={{ $bindDNUser }},cn=config" bindmethod=simple credentials={{ $configPassword }} searchbase="cn=config" type=refreshAndPersist retry="{{ $retry }} +" timeout={{ $timeout }} starttls={{ $starttls }} tls_reqcert={{ $tls_reqcert }}
   {{- end -}}
 {{- end -}}
 
@@ -88,6 +89,7 @@ Generate olcSyncRepl list
 {{- define "olcSyncRepls2" -}}
 {{- $name := (include "openldap.fullname" .) }}
 {{- $domain := (include "global.baseDomain" .) }}
+{{- $bindDNUser := .Values.global.adminUser }} 
 {{- $namespace := .Release.Namespace }}
 {{- $cluster := .Values.replication.clusterName }}
 {{- $adminPassword := ternary .Values.global.adminPassword "%%ADMIN_PASSWORD%%" (empty .Values.global.existingSecret) }}
@@ -102,7 +104,7 @@ Generate olcSyncRepl list
     olcSyncrepl:
       rid=10{{ $index1 }}
       provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389
-      binddn={{ printf "cn=admin,%s" $domain }}
+      binddn={{ printf "cn=%s,%s" $bindDNUser $domain }}
       bindmethod=simple
       credentials={{ $adminPassword }}
       searchbase={{ $domain }}
@@ -223,7 +225,7 @@ Return the server name
 Return the bdmin indDN
 */}}
 {{- define "global.bindDN" -}}
-{{- printf "cn=admin,%s" (include "global.baseDomain" .) -}}
+{{- printf "cn=%s,%s" .Values.global.adminUser (include "global.baseDomain" .) -}}
 {{- end -}}
 
 {{/*
