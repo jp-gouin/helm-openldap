@@ -64,6 +64,7 @@ Global parameters to configure the deployment of the application.
 | `global.configPassword`                     | Configuration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
 | `global.ldapPort`                     | Ldap port                                                                                                                         | `389`                 |
 | `global.sslLdapPort`                     | Ldaps port                                                                                                                         | `636`                 |
+| `global.serverOverride`                  | Override global.server used by phpldapadmin and ltb                                                                                | `""`                  |
 
 ### Application parameters
 
