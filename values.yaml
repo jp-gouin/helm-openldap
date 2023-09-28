@@ -24,6 +24,8 @@ global:
   configPassword: Not@SecurePassw0rd
   ldapPort: 389
   sslLdapPort: 636
+  ## Override global.server used by phpldapadmin and ltb
+  # serverOverride: ""
 
 ## @section Common parameters
 

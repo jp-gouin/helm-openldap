@@ -218,7 +218,11 @@ dc={{ $part }},
 Return the server name
 */}}
 {{- define "global.server" -}}
+{{- if .Values.global.serverOverride -}}
+{{- .Values.global.serverOverride -}}
+{{- else -}}
 {{- printf "%s.%s" .Release.Name .Release.Namespace  -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
