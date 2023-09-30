@@ -480,6 +480,18 @@ ltb-passwd:
     # bindDN: "cn=....,dc=mydomain,dc=com"
     # if you want to use a specific key of the credentials secret instead of the default one (LDAP_ADMIN_PASSWORD)
     # passKey: LDAP_MY_KEY
+  env:
+  - name: SECRETKEY
+    value: "password"
+  - name: LDAP_LOGIN_ATTRIBUTE
+    value: "cn"
+  - name: LDAP_STARTTLS
+    value: "false"
+  - name: CHANGE_SSHKEY
+    value: "true"
+  - name: NGINX_LISTEN_PORT
+    value: "[::]:80 ipv6only=off"
+
 
 ## phpldapadmin
 ## For more parameters check following file: ./charts/phpldapadmin/values.yaml
