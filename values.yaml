@@ -69,7 +69,7 @@ logLevel: info
 customTLS:
   enabled: false
   image:
-    repository: alpine/openssl
+    repository: kyreddy/alpine-openssl
     tag: latest
   secret: ""  # The name of a kubernetes.io/tls type secret to use for TLS
 ## Add additional labels to all resources
