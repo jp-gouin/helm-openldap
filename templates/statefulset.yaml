@@ -33,6 +33,9 @@ spec:
         {{- if .Values.customLdifFiles}}
         checksum/configmap-customldif: {{ include (print $.Template.BasePath "/configmap-customldif.yaml") . | sha256sum }}
         {{- end }}
+        {{- if .Values.customSchemaFiles}}
+        checksum/configmap-customschema: {{ include (print $.Template.BasePath "/configmap-customschema.yaml") . | sha256sum }}
+        {{- end }}
       labels: {{- include "common.labels.standard" . | nindent 8 }}
         app.kubernetes.io/component: {{ template "openldap.fullname" . }}
         release: {{ .Release.Name }}
@@ -213,11 +216,8 @@ spec:
               subPath: {{ $file }}.ldif
             {{- end }}
 {{- if .Values.customSchemaFiles}}
-            {{- range $file := (include "openldap.customSchemaFiles" . | split ",") }}
             - name: custom-schema-files
-              mountPath: /opt/bitnami/openldap/etc/schema/{{ $file }}.ldif
-              subPath: {{ $file }}.ldif
-            {{- end }}
+              mountPath: /schemas/
 {{- end }}
 {{- if or (.Values.customLdifFiles) (.Values.customLdifCm) }}
             - name: custom-ldif-files

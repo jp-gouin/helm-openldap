@@ -169,14 +169,6 @@ Cannot return list => return string comma separated
 {{- end -}}
 
 {{/*
-Return the list of custom schema files to use
-Cannot return list => return string comma separated
-*/}}
-{{- define "openldap.customSchemaFiles" -}}
-  {{- $schemas := "" -}}
-  {{- $schemas := ((join "," (.Values.customSchemaFiles | keys))  | replace ".ldif" "") -}}
-  {{- print $schemas -}}
-{{- end -}}
 
 {{/*
 Return the list of all schema files to use
@@ -184,10 +176,6 @@ Cannot return list => return string comma separated
 */}}
 {{- define "openldap.schemaFiles" -}}
   {{- $schemas := (include "openldap.builtinSchemaFiles" .) -}}
-  {{- $custom_schemas := (include "openldap.customSchemaFiles" .) -}}
-  {{- if gt (len $custom_schemas) 0 -}}
-    {{- $schemas = print $schemas "," $custom_schemas -}}
-  {{- end -}}
   {{- print $schemas -}}
 {{- end -}}
 
