@@ -149,8 +149,16 @@ Return the proper Docker Image Registry Secret Names
 {{/*
 Return the proper Openldap init container image name
 */}}
-{{- define "openldap.initContainerImage" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.customTLS.image "global" .Values.global) -}}
+{{- define "openldap.initTLSSecretImage" -}}
+{{- include "common.images.image" (dict "imageRoot" .Values.initTLSSecret.image "global" .Values.global) -}}
+{{- end -}}
+
+
+{{/*
+Return the proper Openldap volume permissions init container image name
+*/}}
+{{- define "openldap.volumePermissionsImage" -}}
+{{- include "common.images.image" (dict "imageRoot" .Values.volumePermissions.image "global" .Values.global) -}}
 {{- end -}}
 
 

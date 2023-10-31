@@ -45,18 +45,25 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
       {{- end }}
         - name: init-tls-secret
-          image: {{ include "openldap.initContainerImage" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ include "openldap.initTLSSecretImage" . }}
+          imagePullPolicy: {{ .Values.initTLSSecret.image.pullPolicy | quote }}
           command:
             - sh
             - -c
             - |
-              {{- if not .Values.customTLS.enabled}}
+              {{- if and .Values.initTLSSecret.tls_enabled .Values.initTLSSecret.secret }}
+              {{- else }}
               openssl req -x509 -newkey rsa:4096 -nodes -subj '/CN={{ .Values.global.ldapDomain }}' -keyout /tmp-certs/tls.key -out /tmp-certs/tls.crt -days 365
               chmod 777  /tmp-certs/*
               {{- end }}
               cp -Lr /tmp-certs/* /certs
               [ -e /certs/ca.crt ] || cp -a /certs/tls.crt /certs/ca.crt
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.initTLSSecret.resources }}
+          resources: {{- toYaml .Values.initTLSSecret.resources | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: certs
               mountPath: "/certs"
@@ -64,7 +71,7 @@ spec:
               mountPath: "/tmp-certs"
       {{- if .Values.volumePermissions.enabled }}
         - name: volume-permissions
-          image: {{ include "openldap.initContainerImage" . }}
+          image: {{ include "openldap.volumePermissionsImage" . }}
           imagePullPolicy: {{ .Values.volumePermissions.image.pullPolicy | quote }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.volumePermissions.command "context" $) | nindent 12 }}
           {{- if .Values.containerSecurityContext.enabled }}
@@ -90,6 +97,12 @@ spec:
               ls -al /custom_config
               sed -i -e "s/%%CONFIG_PASSWORD%%/${LDAP_CONFIG_ADMIN_PASSWORD}/g" /custom_config/*
               sed -i -e "s/%%ADMIN_PASSWORD%%/${LDAP_ADMIN_PASSWORD}/g" /custom_config/*
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.updateReplication.resources }}
+          resources: {{- toYaml .Values.updateReplication.resources | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: cm-replication-acls
               mountPath: "/cm-schemas-acls"
@@ -274,10 +287,10 @@ spec:
         - name: certs
           emptyDir:
             medium: Memory
-{{- if .Values.customTLS.enabled }}
+{{- if .Values.initTLSSecret.tls_enabled }}
         - name: secret-certs
           secret:
-            secretName: {{ .Values.customTLS.secret }}
+            secretName: {{ .Values.initTLSSecret.secret }}
 {{- else }}
         - name: secret-certs
           emptyDir:

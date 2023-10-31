@@ -63,16 +63,6 @@ image:
 logLevel: info
 
 
-# Settings for enabling TLS with custom certificate
-# need a secret with tls.crt, tls.key and ca.crt keys with associated files
-# Ref: https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#create-a-secret
-customTLS:
-  enabled: false
-  image:
-    repository: alpine/openssl
-    tag: latest
-  secret: ""  # The name of a kubernetes.io/tls type secret to use for TLS
-## Add additional labels to all resources
 extraLabels: {}
 
 service:
@@ -371,6 +361,42 @@ serviceAccount:
 
 ## @section Init Container Parameters
 
+## 'initTlsSecret' init container parameters
+## need a secret with tls.crt, tls.key and ca.crt keys with associated files
+## based on the *containerSecurityContext parameters
+##
+initTLSSecret:
+  tls_enabled: false
+  ##  openssl image
+  ## @param initTlsSecret.image.registry openssl image registry
+  ## @param initTlsSecret.image.repository openssl image name
+  ## @param initTlsSecret.image.tag openssl image tag
+  ##
+  image:
+    registry: docker.io
+    repository: alpine/openssl
+    tag: latest
+    ## @param image.pullPolicy openssl image pull policy
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+  # The name of a kubernetes.io/tls type secret to use for TLS
+  secret: "" 
+  ## init-tls-secret container's resource requests and limits
+  ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+  ## @param initTlsSecret.resources.limits The resources limits for the init container
+  ## @param initTlsSecret.resources.requests The requested resources for the init container
+  ##
+  resources:
+    ## Example:
+    ## limits:
+    ##   cpu: 500m
+    ##   memory: 1Gi
+    limits: {}
+    requests: {}
+
 ## 'volumePermissions' init container parameters
 ## Changes the owner and group of the persistent volume mount point to runAsUser:fsGroup values
 ##   based on the *podSecurityContext/*containerSecurityContext parameters
@@ -385,41 +411,46 @@ volumePermissions:
   ## @param volumePermissions.image.repository Bitnami Shell image repository
   ## @param volumePermissions.image.tag Bitnami Shell image tag (immutable tags are recommended)
   ## @param volumePermissions.image.pullPolicy Bitnami Shell image pull policy
-  ## @param volumePermissions.image.pullSecrets Bitnami Shell image pull secrets
   ##
   image:
     registry: docker.io
     repository: bitnami/bitnami-shell
     tag: 10-debian-10
     pullPolicy: IfNotPresent
-    ## Optionally specify an array of imagePullSecrets.
-    ## Secrets must be manually created in the namespace.
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-    ## e.g:
-    ## pullSecrets:
-    ##   - myRegistryKeySecretName
-    ##
-    pullSecrets: []
+
   ## Command to execute during the volumePermission startup
   ## command: ['sh', '-c', 'echo "hello world"']
   command: {}
   ## Init container's resource requests and limits
-  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
   ## @param volumePermissions.resources.limits The resources limits for the init container
   ## @param volumePermissions.resources.requests The requested resources for the init container
   ##
   resources:
+    ## Example:
+    ## limits:
+    ##   cpu: 500m
+    ##   memory: 1Gi
     limits: {}
     requests: {}
-  ## Init container Container Security Context
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
-  ## @param volumePermissions.containerSecurityContext.runAsUser Set init container's Security Context runAsUser
-  ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
-  ##   data folder to auto-determined user&group, using commands: `id -u`:`id -G | cut -d" " -f2`
-  ##   "auto" is especially useful for OpenShift which has scc with dynamic user ids (and 0 is not allowed)
+
+## 'updateReplication' init container parameters
+## based on the *global.existingSecret/*containerSecurityContext parameters
+##
+updateReplication:
+  ## Init container's resource requests and limits
+  ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+  ## @param volumePermissions.resources.limits The resources limits for the init container
+  ## @param volumePermissions.resources.requests The requested resources for the init container
   ##
-  containerSecurityContext:
-    runAsUser: 0
+  resources:
+    ## Example:
+    ## limits:
+    ##   cpu: 500m
+    ##   memory: 1Gi
+    limits: {}
+    requests: {}
+
 
 ## Configure extra options for liveness, readiness, and startup probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
