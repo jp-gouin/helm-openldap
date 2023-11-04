@@ -76,8 +76,8 @@ Parameters related to the configuration of the application.
 | `userPasswords`          | User password to create (comma seprated list)  | "" |
 | `group`          | Group to create and add list of user above | "" |
 | `env`                              | List of key value pairs as env variables to be sent to the docker image. See https://github.com/bitnami/containers/tree/main/bitnami/openldap for available ones | `[see values.yaml]` |
-| `customTLS.enabled`                      | Set to enable TLS/LDAPS with custom certificate - should also set `tls.secret`                                                                                    | `false`             |
-| `customTLS.secret`                       | Secret containing TLS cert and key must contain the keys tls.key , tls.crt and ca.crt                                                                       | `""`                |
+| `initTLSSecret.tls_enabled`                      | Set to enable TLS/LDAPS with custom certificate - Please also set `initTLSSecret.secret`, otherwise it will not take effect                                                                                    | `false`             |
+| `initTLSSecret.secret`                       | Secret containing TLS cert and key must contain the keys tls.key , tls.crt and ca.crt                                                                       | `""`                |
 | `customSchemaFiles` | Custom openldap schema files used in addition to default schemas                                                                    | `""`                |
 | `customLdifFiles`                       | Custom openldap configuration files used to override default settings                                                                      | `""`                |
 | `customLdifCm`                       | Existing configmap with custom ldif. Can't be use with customLdifFiles                                                            | `""`                |

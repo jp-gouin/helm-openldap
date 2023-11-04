@@ -12,12 +12,6 @@ phpldapadmin:
   ingress:
     hosts:
     - "phpldapadmin.example"
-customTLS:
-  enabled: true
-  image:
-    repository: alpine/openssl
-    tag: latest
-  secret: "custom-cert" 
 customSchemaFiles:
   10_owncloud_schema.ldif: |-
     # This LDIF files describes the ownCloud schema and can be used to
@@ -72,3 +66,11 @@ service:
   ldapPortNodePort: 30389
   sslLdapPortNodePort: 30636
   type: NodePort
+initTLSSecret:
+  tls_enabled: true
+  image:
+    registry: docker.io
+    repository: alpine/openssl
+    tag: latest
+    pullPolicy: IfNotPresent
+  secret: "custom-cert" 
