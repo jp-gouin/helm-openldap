@@ -18,10 +18,11 @@ data:
   # replication
   syncprov.ldif: |
     # Load syncprov module
-    dn: cn=module{0},cn=config
+    dn: cn=module,cn=config
+    cn: module
     objectClass: olcModuleList
-    cn: module{0}
-    olcModuleLoad: syncprov
+    olcModuleLoad: syncprov.so
+    olcModulePath: /opt/bitnami/openldap/lib/openldap
   serverid.ldif: |
     # Set server ID
     dn: cn=config
