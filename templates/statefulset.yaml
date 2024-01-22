@@ -41,9 +41,67 @@ spec:
         {{- end }}
     spec:
       initContainers:
-      {{- if .Values.initContainers }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
+        - name: init-schema
+          image: debian
+          imagePullPolicy: {{ .Values.initTLSSecret.image.pullPolicy | quote }}
+          command:
+            - sh
+            - -c
+            - |
+              host=$(hostname)
+              if [ "$host" = "{{ template "openldap.fullname" . }}-0" ]
+              then
+                echo "This is the main openldap so let's init all additional schemas and ldifs here"
+                cp -p -f /cm-schemas-acls/*.ldif /custom_config/ 
+                if [ -d /cm-schemas ]; then
+                  cp -p -f /cm-schemas/*.ldif /custom-schemas/ 
+                fi
+                if [ -d /cm-ldifs ]; then
+                  cp -p -f /cm-ldifs/*.ldif /custom-ldifs/ 
+                fi
+              else
+                cp -p -f /cm-schemas-acls/*.ldif /custom_config/
+                rm -rf /custom_config/acls.ldif
+                echo "let the replication takes care of everything :)"
+              fi
+            {{- if .Values.global.existingSecret }}
+              sed -i -e "s/%%CONFIG_PASSWORD%%/${LDAP_CONFIG_ADMIN_PASSWORD}/g" /custom_config/*
+              sed -i -e "s/%%ADMIN_PASSWORD%%/${LDAP_ADMIN_PASSWORD}/g" /custom_config/*
+            {{- end }}
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.initTLSSecret.resources }}
+          resources: {{- toYaml .Values.initTLSSecret.resources | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+    {{- if .Values.customSchemaFiles }}
+      {{- range $file := (include "openldap.customSchemaFiles" . | split ",") }}
+            - name: cm-custom-schema-files
+              mountPath: /cm-schemas/{{ $file }}.ldif
+              subPath: {{ $file }}.ldif
+            - name: custom-schema-files
+              mountPath: /custom-schemas/
       {{- end }}
+    {{- end }}
+    {{- if or (.Values.customLdifFiles) (.Values.customLdifCm) }}
+            - name: cm-custom-ldif-files
+              mountPath: /cm-ldifs/
+            - name: custom-ldif-files
+              mountPath: /custom-ldifs/
+    {{- end }}
+            - name: cm-replication-acls
+              mountPath: "/cm-schemas-acls"
+            - name: replication-acls
+              mountPath: "/custom_config"
+    {{- if .Values.global.existingSecret }}
+          envFrom:
+          - secretRef:
+              name: {{ template "openldap.secretName" . }}
+    {{- end }}
+        {{- if .Values.initContainers }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
+        {{- end }}
         - name: init-tls-secret
           image: {{ include "openldap.initTLSSecretImage" . }}
           imagePullPolicy: {{ .Values.initTLSSecret.image.pullPolicy | quote }}
@@ -84,35 +142,6 @@ spec:
             - name: foo
               mountPath: bar
       {{- end }}
-      {{- if .Values.global.existingSecret }}
-        - name: update-replication
-          image: {{ include "openldap.image" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command:
-            - sh
-            - -c
-            - |
-              ls -al /cm-schemas-acls /custom_config
-              cp -p /cm-schemas-acls/*.ldif /custom_config/
-              ls -al /custom_config
-              sed -i -e "s/%%CONFIG_PASSWORD%%/${LDAP_CONFIG_ADMIN_PASSWORD}/g" /custom_config/*
-              sed -i -e "s/%%ADMIN_PASSWORD%%/${LDAP_ADMIN_PASSWORD}/g" /custom_config/*
-          {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
-          {{- end }}
-          {{- if .Values.updateReplication.resources }}
-          resources: {{- toYaml .Values.updateReplication.resources | nindent 12 }}
-          {{- end }}
-          volumeMounts:
-            - name: cm-replication-acls
-              mountPath: "/cm-schemas-acls"
-            - name: replication-acls
-              mountPath: "/custom_config"
-          envFrom:
-            - secretRef:
-                name: {{ template "openldap.secretName" . }}
-      {{- end }}
-
       {{- /*
  serviceAccountName: {{ template "openldap.serviceAccountName" . }}
 */ -}}
@@ -258,31 +287,35 @@ spec:
             claimName: {{ .Values.persistence.existingClaim }}
 {{- end }}
 {{- end }}
-{{- if .Values.global.existingSecret }}
         - name: cm-replication-acls
           configMap:
             name: {{ template "openldap.fullname" . }}-replication-acls
         - name: replication-acls
           emptyDir:
             medium: Memory
-{{- else }}
-        - name: replication-acls
-          configMap:
-            name: {{ template "openldap.fullname" . }}-replication-acls
-{{- end }}
+
 {{- if .Values.customLdifFiles }}
-        - name: custom-ldif-files
+        - name: cm-custom-ldif-files
           configMap:
             name: {{ template "openldap.fullname" . }}-customldif
-{{- else if .Values.customLdifCm }}
         - name: custom-ldif-files
+          emptyDir:
+            medium: Memory
+{{- else if .Values.customLdifCm }}
+        - name: cm-custom-ldif-files
           configMap:
             name: {{ .Values.customLdifCm }}
+         - name: custom-ldif-files
+          emptyDir:
+            medium: Memory
 {{- end }}
 {{- if .Values.customSchemaFiles }}
-        - name: custom-schema-files
+        - name: cm-custom-schema-files
           configMap:
             name: {{ template "openldap.fullname" . }}-customschema
+        - name: custom-schema-files
+          emptyDir:
+            medium: Memory
 {{- end }}
         - name: certs
           emptyDir:

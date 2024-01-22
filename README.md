@@ -9,15 +9,10 @@ This version now use the [Bitnami Openldap](https://hub.docker.com/r/bitnami/ope
 
 More detail on the container image can be found [here](https://github.com/bitnami/containers/tree/main/bitnami/openldap)
 
-There are some major changes between the Osixia version and the Bitnami version , ergo the major gap of the chart version.
+The chart now support `Bitnami/Openldap 2.6.6`. 
 
-- Upgrade may not work fine between `3.x` and `4.x`
-- Ldap and Ldaps port are non privileged ports (`1389` and `1636`) internally but are exposed through `global.ldapPort` and `global.sslLdapPort` (389 and 636)
-- Replication is now purely setup by configuration. Extra schemas are loaded using `LDAP_EXTRA_SCHEMAS: "cosine,inetorgperson,nis,syncprov,serverid,csyncprov,rep,bsyncprov,brep,acls`. You can add your own schemas via the `customSchemaFiles` option.
-
-A default tree (Root organisation, users and group) is created during startup, this can be skipped using `LDAP_SKIP_DEFAULT_TREE` , however you need to use `customLdifFiles` or `customLdifCm` to create a root organisation.
-
-- This will be improved in a future update.
+Due to #115, the chart does not fully support scaling the `openldap` cluster. To scale the cluster please follow [scaling your cluster](#scaling-your-cluster)
+- This will be fixed in priority
 
 ## Prerequisites Details
 * Kubernetes 1.8+
@@ -239,6 +234,29 @@ $ kubectl delete pvc -l release=${RELEASE-NAME}
 
 `global.existingSecret` can be used to override the default secret.yaml provided
 
+## Scaling your cluster
+In order to scale the cluster, first use `helm` to updrgade the number of `replica`
+```
+helm upgrade -n openldap-ha --set replicaCount=4 openldap-ha .
+```
+Then connect to the `<openldap>-0` container, under `/opt/bitnami/openldap/etc/schema/`, edit :
+ 1. `serverid.ldif` and remove existing `olcServerID` (only keep the one you added by scaling)
+ 2. `brep.ldif` and remove existing `olcServerID` (only keep the one you added by scaling)
+ 3. Apply your changes
+
+```
+ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/serverid.ldif
+ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/brep.ldif
+```
+
+Tips : to edit in the container, use :
+```
+cat <<EOF > /tmp/serverid.ldif
+copy
+your 
+line
+EOF
+```
 
 ## Troubleshoot
 
