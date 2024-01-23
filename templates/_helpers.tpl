@@ -153,6 +153,12 @@ Return the proper Openldap init container image name
 {{- include "common.images.image" (dict "imageRoot" .Values.initTLSSecret.image "global" .Values.global) -}}
 {{- end -}}
 
+{{/*
+Return the proper Openldap init container image name
+*/}}
+{{- define "openldap.initSchemaImage" -}}
+{{- include "common.images.image" (dict "imageRoot" .Values.initSchema.image "global" .Values.global) -}}
+{{- end -}}
 
 {{/*
 Return the proper Openldap volume permissions init container image name

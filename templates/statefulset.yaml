@@ -42,8 +42,8 @@ spec:
     spec:
       initContainers:
         - name: init-schema
-          image: debian
-          imagePullPolicy: {{ .Values.initTLSSecret.image.pullPolicy | quote }}
+          image: {{ include "openldap.initSchemaImage" . }}
+          imagePullPolicy: {{ .Values.initSchema.image.pullPolicy | quote }}
           command:
             - sh
             - -c
@@ -305,7 +305,7 @@ spec:
         - name: cm-custom-ldif-files
           configMap:
             name: {{ .Values.customLdifCm }}
-         - name: custom-ldif-files
+        - name: custom-ldif-files
           emptyDir:
             medium: Memory
 {{- end }}

@@ -65,6 +65,12 @@ image:
 # Valid log levels: none, error, warning, info (default), debug, trace
 logLevel: info
 
+initSchema:
+  image: 
+    repository: debian
+    tag: latest
+    pullPolicy: Always
+    pullSecrets: []
 
 extraLabels: {}
 
