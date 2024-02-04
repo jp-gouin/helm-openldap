@@ -71,11 +71,18 @@ jobs:
       - name: test write
         shell: bash
         run: |
-           echo "test access to openldap database"
+           echo "Write test to openldap database"
            LDAPTLS_REQCERT=never ldapadd -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -f  .bin/user.ldif
            LDAPTLS_REQCERT=never ldapsearch -o nettimeout=20 -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org' > /tmp/test-write.txt
            if [ $(grep "numResponses" /tmp/test-write.txt | cut -d ":" -f 2 | tr -d ' ') -ne 5 ]; then exit 1 ; fi
            if ! grep -q "objectClass: ownCloud" /tmp/test-write.txt; then  echo exit 1; fi
+      - name: test memberOf
+        shell: bash
+        run: |
+           echo "MemberOf test to openldap database"
+           LDAPTLS_REQCERT=never ldapsearch -o nettimeout=20 -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org' "(memberOf=cn=testgroup,ou=Group,dc=example,dc=org)" > /tmp/test-write.txt
+           if [ $(grep "numResponses" /tmp/test-write.txt | cut -d ":" -f 2 | tr -d ' ') -ne 2 ]; then exit 1 ; fi
+           if ! grep -q "uid=test1,ou=People,dc=example,dc=org" /tmp/test-write.txt; then  echo exit 1; fi
       - name: chaos tests
         shell: bash
         run: |

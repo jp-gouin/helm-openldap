@@ -429,8 +429,8 @@ volumePermissions:
     pullPolicy: IfNotPresent
 
   ## Command to execute during the volumePermission startup
-  ## command: ['sh', '-c', 'echo "hello world"']
-  command: {}
+    command: [ 'sh', '-c', 'chmod -R g+rwX /bitnami' ]
+  ## command: {}
   ## Init container's resource requests and limits
   ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
   ## @param volumePermissions.resources.limits The resources limits for the init container

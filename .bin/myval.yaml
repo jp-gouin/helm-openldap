@@ -13,6 +13,20 @@ phpldapadmin:
     hosts:
     - "phpldapadmin.example"
 customSchemaFiles:
+  00-memberof.ldif: |-
+    # Load memberof module
+    dn: cn=module,cn=config
+    cn: module
+    objectClass: olcModuleList
+    olcModuleLoad: memberof.so
+    olcModulePath: /opt/bitnami/openldap/lib/openldap
+  01-memberof.ldif: |-
+    dn: olcOverlay=memberof,olcDatabase={2}mdb,cn=config
+    changetype: add
+    objectClass: olcOverlayConfig
+    objectClass: olcMemberOf
+    olcOverlay: memberof
+    olcMemberOfRefint: TRUE
   10_owncloud_schema.ldif: |-
     # This LDIF files describes the ownCloud schema and can be used to
     # add two optional attributes: ownCloudQuota and ownCloudUUID
@@ -62,6 +76,23 @@ customLdifFiles:
     uid: jdupond
     uidnumber: 1000
     userpassword: {MD5}KOULhzfBhPTq9k7a9XfCGw==
+  03-test-memberof.ldif: |-
+    dn: ou=Group,dc=example,dc=org
+    objectclass: organizationalUnit
+    ou: Group
+
+    dn: ou=People,dc=example,dc=org
+    objectclass: organizationalUnit
+    ou: People
+
+    dn: uid=test1,ou=People,dc=example,dc=org
+    objectclass: account
+    uid: test1
+
+    dn: cn=testgroup,ou=Group,dc=example,dc=org
+    objectclass: groupOfNames
+    cn: testgroup
+    member: uid=test1,ou=People,dc=example,dc=org
 service:
   ldapPortNodePort: 30389
   sslLdapPortNodePort: 30636

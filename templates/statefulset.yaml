@@ -80,9 +80,9 @@ spec:
             - name: cm-custom-schema-files
               mountPath: /cm-schemas/{{ $file }}.ldif
               subPath: {{ $file }}.ldif
+      {{- end }}
             - name: custom-schema-files
               mountPath: /custom-schemas/
-      {{- end }}
     {{- end }}
     {{- if or (.Values.customLdifFiles) (.Values.customLdifCm) }}
             - name: cm-custom-ldif-files
@@ -131,7 +131,7 @@ spec:
         - name: volume-permissions
           image: {{ include "openldap.volumePermissionsImage" . }}
           imagePullPolicy: {{ .Values.volumePermissions.image.pullPolicy | quote }}
-          command: {{- include "common.tplvalues.render" (dict "value" .Values.volumePermissions.command "context" $) | nindent 12 }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.volumePermissions.image.command "context" $) | nindent 12 }}
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
@@ -139,8 +139,8 @@ spec:
           resources: {{- toYaml .Values.volumePermissions.resources | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: foo
-              mountPath: bar
+            - mountPath: /bitnami
+              name: data
       {{- end }}
       {{- /*
  serviceAccountName: {{ template "openldap.serviceAccountName" . }}
