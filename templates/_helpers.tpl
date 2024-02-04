@@ -200,7 +200,7 @@ Cannot return list => return string comma separated
   {{- $schemas := (include "openldap.builtinSchemaFiles" .) -}}
   {{- $custom_schemas := (include "openldap.customSchemaFiles" .) -}}
   {{- if gt (len $custom_schemas) 0 -}}
-    {{- $schemas = print $custom_schemas "," $schemas  -}}
+    {{- $schemas = print $schemas "," $custom_schemas  -}}
   {{- end -}}
   {{- print $schemas -}}
 {{- end -}}

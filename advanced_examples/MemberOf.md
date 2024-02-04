@@ -1,10 +1,10 @@
 # Examples of MemberOf configuration
 
-## Enable MemberOf
+## Enable MemberOf 
 
 Use the following values to enable `memberof` attribute:
 
-this configuration works regardless of the `replication` configuration.
+This configuration works regardless of the `replication` configuration (`enabled` or `disabled`)
 
 ```
 # Default configuration for openldap as environment variables. These get injected directly in the container.
@@ -17,10 +17,6 @@ env:
  LDAP_ENABLE_TLS: "yes"
  LDAP_CONFIG_ADMIN_ENABLED: "yes"
  LDAP_SKIP_DEFAULT_TREE: "no"
-
-replicaCount: 1
-replication:
-  enabled: false
 
 customLdifFiles:
   00-root.ldif: |-
@@ -74,7 +70,7 @@ customSchemaFiles:
     dn: cn=module,cn=config
     cn: module
     objectClass: olcModuleList
-    olcModuleLoad: memberof.so
+    olcModuleLoad: memberof
     olcModulePath: /opt/bitnami/openldap/lib/openldap
 
   01-memberof.ldif: |-
@@ -85,6 +81,7 @@ customSchemaFiles:
     olcOverlay: memberof
     olcMemberOfRefint: TRUE
 ```
+
 Connect to your openldap instance and execute:
 
 ```
