@@ -14,18 +14,20 @@ phpldapadmin:
     - "phpldapadmin.example"
 customSchemaFiles:
   00-memberof.ldif: |-
+    # Load memberof module
     dn: cn=module,cn=config
     cn: module
     objectClass: olcModuleList
     olcModuleLoad: memberof
     olcModulePath: /opt/bitnami/openldap/lib/openldap
-  01-memberof.ldif: |-
+
     dn: olcOverlay=memberof,olcDatabase={2}mdb,cn=config
     changetype: add
     objectClass: olcOverlayConfig
     objectClass: olcMemberOf
     olcOverlay: memberof
     olcMemberOfRefint: TRUE
+    
   10_owncloud_schema.ldif: |-
     # This LDIF files describes the ownCloud schema and can be used to
     # add two optional attributes: ownCloudQuota and ownCloudUUID

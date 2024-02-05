@@ -73,7 +73,6 @@ customSchemaFiles:
     olcModuleLoad: memberof
     olcModulePath: /opt/bitnami/openldap/lib/openldap
 
-  01-memberof.ldif: |-
     dn: olcOverlay=memberof,olcDatabase={2}mdb,cn=config
     changetype: add
     objectClass: olcOverlayConfig

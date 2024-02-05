@@ -1,4 +1,6 @@
 logLevel: debug
+global:
+  ldapDomain: "singlenode.org"
 resources: 
   limits:
     cpu: "128m"
