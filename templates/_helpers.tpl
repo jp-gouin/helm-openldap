@@ -188,7 +188,7 @@ Cannot return list => return string comma separated
 */}}
 {{- define "openldap.customSchemaFiles" -}}
   {{- $schemas := "" -}}
-  {{- $schemas := ((join "," (.Values.customSchemaFiles | keys))  | replace ".ldif" "") -}}
+  {{- $schemas := ((join "," (.Values.customSchemaFiles | keys | sortAlpha))  | replace ".ldif" "") -}}
   {{- print $schemas -}}
 {{- end -}}
 
