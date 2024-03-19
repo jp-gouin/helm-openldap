@@ -79,6 +79,11 @@ service:
   ## If service type NodePort, define the value here
   #ldapPortNodePort:
   #sslLdapPortNodePort:
+
+  # Disable if you do not want to expose port on service
+  enableLdapPort: true
+  enableSslLdapPort: true
+
   ## List of IP addresses at which the service is available
   ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
   ##

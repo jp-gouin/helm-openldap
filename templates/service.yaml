@@ -24,6 +24,7 @@ spec:
   loadBalancerSourceRanges: {{ toYaml .Values.service.loadBalancerSourceRanges | nindent 4 }}
   {{- end }}
   ports:
+    {{- if .Values.service.enableLdapPort }}
     - name: ldap-port
       protocol: TCP
       port: {{ .Values.global.ldapPort }}
@@ -33,6 +34,8 @@ spec:
       {{- else if eq .Values.service.type "ClusterIP" }}
       nodePort: null
       {{- end }}
+    {{- end }}
+    {{- if .Values.service.enableSslLdapPort }}
     - name: ssl-ldap-port
       protocol: TCP
       port: {{ .Values.global.sslLdapPort }}
@@ -42,6 +45,7 @@ spec:
       {{- else if eq .Values.service.type "ClusterIP" }}
       nodePort: null
       {{- end }}
+    {{- end }}
   sessionAffinity: {{ .Values.service.sessionAffinity }}
   selector:
     app.kubernetes.io/component: {{ template "openldap.fullname" . }}

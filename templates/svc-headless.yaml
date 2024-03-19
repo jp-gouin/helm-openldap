@@ -9,9 +9,16 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   ports:
+  {{- if .Values.service.enableLdapPort }}
   - port: {{ .Values.global.ldapPort }}
     name: ldap-port
     targetPort: ldap-port
+  {{- end }}
+  {{- if .Values.service.enableSslLdapPort }}
+  - port: {{ .Values.global.sslLdapPort }}
+    name: ssl-ldap-port
+    targetPort: ssl-ldap-port
+  {{- end }}
   clusterIP: None
   selector:
     app.kubernetes.io/component: {{ template "openldap.fullname" . }}
