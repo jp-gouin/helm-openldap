@@ -20,6 +20,7 @@ spec:
   minAvailable: {{ .Values.pdb.minAvailable }}
   {{- end }}
   selector:
-    app.kubernetes.io/component: {{ template "openldap.fullname" . }}
-    release: {{ .Release.Name }}
+    matchLabels:
+      app.kubernetes.io/component: {{ template "openldap.fullname" . }}
+      release: {{ .Release.Name }}
 {{- end }}
