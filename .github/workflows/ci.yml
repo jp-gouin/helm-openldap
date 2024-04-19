@@ -105,6 +105,24 @@ jobs:
            LDAPTLS_REQCERT=never ldapsearch -x -D 'cn=admin,dc=singlenode,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=singlenode,dc=org' > /tmp/test-single-node.txt
            cat /tmp/test-single-node.txt
            if [ $(grep "numResponses" /tmp/test-single-node.txt | cut -d ":" -f 2 | tr -d ' ') -ne 6 ]; then exit 1 ; fi
+      - name: deploy openldap-stack-ha-disable-ldap-port
+        shell: bash
+        run: |
+          helm delete openldap-stack-ha
+          cd "$GITHUB_WORKSPACE"
+          kubectl -n no-ldap-port create secret generic custom-cert --from-file=./tls.crt --from-file=./tls.key --from-file=./ca.crt
+          helm install openldap-stack-ha -n no-ldap-port --create-namespace -f .bin/disbaleLdpaPort.yaml .
+          kubectl -n no-ldap-port rollout status sts openldap-stack-ha -n no-ldap-port
+      - name: verify no ldap port deployment
+        shell: bash
+        run: |
+           echo "test access to openldap database"
+           sudo apt-get install -y ldap-utils
+           echo "Write test to openldap database"
+           LDAPTLS_REQCERT=never ldapadd -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -f .bin/simpleUser.ldif
+           LDAPTLS_REQCERT=never ldapsearch -o nettimeout=20 -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org' > /tmp/test-write.txt
+           cat /tmp/test-write.txt
+           if [ $(grep "numResponses" /tmp/test-write.txt | cut -d ":" -f 2 | tr -d ' ') -ne 3 ]; then exit 1 ; fi
 
 
       
