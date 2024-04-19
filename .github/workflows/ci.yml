@@ -108,7 +108,7 @@ jobs:
       - name: deploy openldap-stack-ha-disable-ldap-port
         shell: bash
         run: |
-          helm delete openldap-stack-ha
+          helm delete -n single openldap-stack-ha
           cd "$GITHUB_WORKSPACE"
           kubectl -n no-ldap-port create secret generic custom-cert --from-file=./tls.crt --from-file=./tls.key --from-file=./ca.crt
           helm install openldap-stack-ha -n no-ldap-port --create-namespace -f .bin/disbaleLdpaPort.yaml .
