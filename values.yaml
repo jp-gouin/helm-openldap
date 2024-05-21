@@ -121,6 +121,8 @@ pdb:
 # group: readers
 
 # Custom openldap schema files used to be used in addition to default schemas
+# Note that the supplied files are sorted by name and inserted into 'LDAP_EXTRA_SCHEMAS' env var
+# after chart default schemas, allowing you to control the loading sequence.
 # customSchemaFiles:
 #   custom.ldif: |-
 #     # custom schema
