@@ -9,8 +9,8 @@ on:
       - "bitnami"
 jobs:
   call-ci-singlenode:
-    uses: ./.github/workflows/tests/ci-singlenode.yml
+    uses: ./.github/workflows/ci-singlenode.yml
   call-ci-other:
-    uses: ./.github/workflows/tests/ci-other.yml
+    uses: ./.github/workflows/ci-other.yml
   call-ci-ha:
-    uses: ./.github/workflows/tests/ci-ha.yml
+    uses: ./.github/workflows/ci-ha.yml
