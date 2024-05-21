@@ -1,0 +1,25 @@
+logLevel: debug
+resources:
+  limits:
+    cpu: "128m"
+    memory: "64Mi"
+replicaCount: 3
+customLdifFiles:
+  00-root.ldif: |-
+    # Root creation
+    dn: dc=example,dc=org
+    objectClass: dcObject
+    objectClass: organization
+    o: Example, Inc
+service:
+  enableLdapPort: false
+  sslLdapPortNodePort: 30636
+  type: NodePort
+initTLSSecret:
+  tls_enabled: true
+  image:
+    registry: docker.io
+    repository: alpine/openssl
+    tag: latest
+    pullPolicy: IfNotPresent
+  secret: "custom-cert"
