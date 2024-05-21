@@ -1,0 +1,34 @@
+name: 'Setup env'
+description: 'Greet someone'
+inputs:
+  install-chaos: 
+    description: 'Setup ChaosMesh'
+    required: true
+    default: false
+runs:
+  using: "composite"
+  steps:
+    - name: Lint
+      shell: bash
+      run: |
+        curl -fsSL -o /tmp/get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+        chmod 700 /tmp/get_helm.sh
+        /tmp/get_helm.sh
+        helm lint .
+    - name: setup cluster
+      shell: bash
+      run: |
+        curl -Lo /tmp/kind https://kind.sigs.k8s.io/dl/v0.23.0/kind-linux-amd64
+        chmod +x /tmp/kind
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+        rm -f kubectl
+        sudo apt update
+        sudo apt-get install -y ldap-utils
+        /tmp/kind create cluster --config=$GITHUB_WORKSPACE/.bin/kind-conf.yml --image=kindest/node:v1.29.4@sha256:3abb816a5b1061fb15c6e9e60856ec40d56b7b52bcea5f5f1350bc6e2320b6f8
+        kubectl apply -f https://projectcontour.io/quickstart/contour.yaml
+        kubectl patch daemonsets -n projectcontour envoy -p '{"spec":{"template":{"spec":{"nodeSelector":{"ingress-ready":"true"}}}}}'
+    - name: setup chaos mesh
+      shell: bash
+      run: |
+        curl -sSL https://mirrors.chaos-mesh.org/v2.6.2/install.sh  | bash -s -- --local kind
