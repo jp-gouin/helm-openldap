@@ -76,7 +76,7 @@ jobs:
            echo "Write test to openldap database"
            LDAPTLS_REQCERT=never ldapadd -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -f  .bin/user.ldif
            LDAPTLS_REQCERT=never ldapsearch -o nettimeout=20 -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org' > /tmp/test-write.txt
-           if [ $(grep "numResponses" /tmp/test-write.txt | cut -d ":" -f 2 | tr -d ' ') -ne 9 ]; then cat /tmp/test-write.txt ; fi
+           if [ ! $(grep -q "Einstein" /tmp/test-write.txt ]; then exit 1 ; fi
            if ! grep -q "objectClass: ownCloud" /tmp/test-write.txt; then  echo exit 1; fi
       - name: test memberOf
         shell: bash
