@@ -3,7 +3,7 @@ entries:
   openldap:
   - apiVersion: v2
     appVersion: 2.4.47
-    created: "2024-02-05T19:27:22.61102678Z"
+    created: "2024-05-22T12:03:16.132382102Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -32,7 +32,42 @@ entries:
   openldap-stack-ha:
   - apiVersion: v2
     appVersion: 2.6.6
-    created: "2024-02-05T19:27:22.652308542Z"
+    created: "2024-05-22T12:03:16.174935785Z"
+    dependencies:
+    - condition: ltb-passwd.enabled
+      name: ltb-passwd
+      repository: ""
+      version: 0.1.x
+    - condition: phpldapadmin.enabled
+      name: phpldapadmin
+      repository: ""
+      version: 0.1.x
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: ~2
+    description: Community developed LDAP software
+    digest: 5c42a1ec24a36760093ec2bcf5f1a4a5d8b588c667cab04c1132f6c9a794c635
+    home: https://www.openldap.org
+    icon: https://raw.githubusercontent.com/jp-gouin/helm-openldap/master/logo.png
+    keywords:
+    - ldap
+    - openldap
+    - iam-stack
+    - high availability
+    maintainers:
+    - email: jp-gouin@hotmail.fr
+      name: Jean-Philippe Gouin
+    name: openldap-stack-ha
+    sources:
+    - https://github.com/jp-gouin/helm-openldap
+    urls:
+    - openldap-stack-ha-4.2.3.tgz
+    version: 4.2.3
+  - apiVersion: v2
+    appVersion: 2.6.6
+    created: "2024-05-22T12:03:16.172521177Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -67,7 +102,7 @@ entries:
     version: 4.2.2
   - apiVersion: v2
     appVersion: 2.6.6
-    created: "2024-02-05T19:27:22.649891299Z"
+    created: "2024-05-22T12:03:16.170170188Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -102,7 +137,7 @@ entries:
     version: 4.2.1
   - apiVersion: v2
     appVersion: 2.6.6
-    created: "2024-02-05T19:27:22.647532406Z"
+    created: "2024-05-22T12:03:16.167061697Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -137,7 +172,7 @@ entries:
     version: 4.2.0
   - apiVersion: v2
     appVersion: 2.6.3
-    created: "2024-02-05T19:27:22.644352785Z"
+    created: "2024-05-22T12:03:16.164742367Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -172,7 +207,7 @@ entries:
     version: 4.1.2
   - apiVersion: v2
     appVersion: 2.6.3
-    created: "2024-02-05T19:27:22.642012916Z"
+    created: "2024-05-22T12:03:16.162422114Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -207,7 +242,7 @@ entries:
     version: 4.1.1
   - apiVersion: v2
     appVersion: 2.6.3
-    created: "2024-02-05T19:27:22.639672628Z"
+    created: "2024-05-22T12:03:16.159505678Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -242,7 +277,7 @@ entries:
     version: 4.1.0
   - apiVersion: v2
     appVersion: 2.6.3
-    created: "2024-02-05T19:27:22.636327196Z"
+    created: "2024-05-22T12:03:16.157130023Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -277,7 +312,7 @@ entries:
     version: 4.0.2
   - apiVersion: v2
     appVersion: 2.6.3
-    created: "2024-02-05T19:27:22.634039165Z"
+    created: "2024-05-22T12:03:16.154926057Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -312,7 +347,7 @@ entries:
     version: 4.0.1
   - apiVersion: v2
     appVersion: 2.6.3
-    created: "2024-02-05T19:27:22.631741596Z"
+    created: "2024-05-22T12:03:16.151953014Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -347,7 +382,7 @@ entries:
     version: 4.0.0
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2024-02-05T19:27:22.628663545Z"
+    created: "2024-05-22T12:03:16.149753767Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -382,7 +417,7 @@ entries:
     version: 3.0.2
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2024-02-05T19:27:22.626395181Z"
+    created: "2024-05-22T12:03:16.147387068Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -417,7 +452,7 @@ entries:
     version: 3.0.1
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2024-02-05T19:27:22.624082545Z"
+    created: "2024-05-22T12:03:16.14494558Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -452,7 +487,7 @@ entries:
     version: 3.0.0
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2024-02-05T19:27:22.621224422Z"
+    created: "2024-05-22T12:03:16.142087326Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -482,7 +517,7 @@ entries:
     version: 2.1.6
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2024-02-05T19:27:22.619490368Z"
+    created: "2024-05-22T12:03:16.140385426Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -512,7 +547,7 @@ entries:
     version: 2.1.5
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2024-02-05T19:27:22.617960455Z"
+    created: "2024-05-22T12:03:16.138969388Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -542,7 +577,7 @@ entries:
     version: 2.1.4
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2024-02-05T19:27:22.616520641Z"
+    created: "2024-05-22T12:03:16.137552509Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -572,7 +607,7 @@ entries:
     version: 2.1.3
   - apiVersion: v2
     appVersion: 2.4.57
-    created: "2024-02-05T19:27:22.613821949Z"
+    created: "2024-05-22T12:03:16.13519918Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -602,7 +637,7 @@ entries:
     version: 2.1.2
   - apiVersion: v2
     appVersion: 2.4.47
-    created: "2024-02-05T19:27:22.612424114Z"
+    created: "2024-05-22T12:03:16.133818648Z"
     dependencies:
     - condition: ltb-passwd.enabled
       name: ltb-passwd
@@ -630,4 +665,4 @@ entries:
     urls:
     - openldap-stack-ha-2.1.0.tgz
     version: 2.1.0
-generated: "2024-02-05T19:27:22.609635126Z"
+generated: "2024-05-22T12:03:16.131059167Z"
