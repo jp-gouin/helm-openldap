@@ -57,7 +57,7 @@ image:
   #tag: 2.6.3
   # Temporary fix
   repository: jpgouin/openldap
-  tag: 2.6.6-fix
+  tag: 2.6.7-fix
   pullPolicy: Always
   pullSecrets: []
 
@@ -122,7 +122,7 @@ pdb:
 # userPasswords: bitnami1, bitnami2
 
 ## Group to create and add list of user above
-## Default set by bitnami image
+  ## Default set by bitnami image
 # group: readers
 
 # Custom openldap schema files used to be used in addition to default schemas
@@ -365,16 +365,25 @@ sidecars: {}
 ##    command: ['sh', '-c', 'echo "hello world"']
 ##
 initContainers: {}
-## ServiceAccount configuration
+
+## Service Account
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
 ##
 serviceAccount:
-  ## @param serviceAccount.create Specifies whether a ServiceAccount should be created
+  ## @param serviceAccount.create Enable creation of ServiceAccount for Apache pod
   ##
   create: true
   ## @param serviceAccount.name The name of the ServiceAccount to use.
   ## If not set and create is true, a name is generated using the common.names.fullname template
   ##
   name: ""
+  ## @param serviceAccount.automountServiceAccountToken Allows auto mount of ServiceAccountToken on the serviceAccount created
+  ## Can be set to false if pods using this serviceAccount do not need to use K8s API
+  ##
+  automountServiceAccountToken: false
+  ## @param serviceAccount.annotations Additional custom annotations for the ServiceAccount
+  ##
+  annotations: {}  
 
 ## @section Init Container Parameters
 

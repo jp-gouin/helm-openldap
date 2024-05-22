@@ -142,9 +142,8 @@ spec:
             - mountPath: /bitnami
               name: data
       {{- end }}
-      {{- /*
- serviceAccountName: {{ template "openldap.serviceAccountName" . }}
-*/ -}}
+    
+      serviceAccountName: {{ template "openldap.serviceAccountName" . }}
       {{- include "openldap.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.hostAliases "context" $) | nindent 8 }}

@@ -16,10 +16,4 @@ service:
   sslLdapPortNodePort: 30636
   type: NodePort
 initTLSSecret:
-  tls_enabled: true
-  image:
-    registry: docker.io
-    repository: alpine/openssl
-    tag: latest
-    pullPolicy: IfNotPresent
-  secret: "custom-cert"
+  tls_enabled: false

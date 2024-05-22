@@ -1,6 +1,7 @@
 logLevel: debug
 global:
   ldapDomain: "singlenode.org"
+  existingSecret: "my-super-secret"
 resources: 
   limits:
     cpu: "128m"
