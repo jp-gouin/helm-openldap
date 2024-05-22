@@ -57,7 +57,7 @@ image:
   #tag: 2.6.3
   # Temporary fix
   repository: jpgouin/openldap
-  tag: 2.6.6-fix
+  tag: 2.6.7-fix
   pullPolicy: Always
   pullSecrets: []
 
