@@ -17,7 +17,6 @@ jobs:
       run: |
         cd "$GITHUB_WORKSPACE"
         helm install openldap-stack-ha -n no-ldap-port --create-namespace -f .bin/disableLdapPort.yaml .
-        kubectl -n no-ldap-port create secret generic custom-cert --from-file=./tls.crt --from-file=./tls.key --from-file=./ca.crt
         kubectl -n no-ldap-port rollout status sts openldap-stack-ha -n no-ldap-port
     - name: verify no ldap port deployment
       shell: bash

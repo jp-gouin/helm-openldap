@@ -16,8 +16,9 @@ jobs:
         shell: bash
         run: |
           cd "$GITHUB_WORKSPACE"
-          helm install openldap-stack-ha -n single --create-namespace -f .bin/singleNode.yaml .
+          kubectl create ns single
           kubectl create secret generic my-super-secret -n single --from-literal=LDAP_ADMIN_PASSWORD=Not@SecurePassw0rd --from-literal=LDAP_CONFIG_ADMIN_PASSWORD=Not@SecurePassw0rd
+          helm install openldap-stack-ha -n single -f .bin/singleNode.yaml .
           kubectl rollout status sts openldap-stack-ha -n single
       - name: verify single node deployment
         shell: bash
