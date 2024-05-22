@@ -29,7 +29,7 @@ runs:
         kubectl apply -f https://projectcontour.io/quickstart/contour.yaml
         kubectl patch daemonsets -n projectcontour envoy -p '{"spec":{"template":{"spec":{"nodeSelector":{"ingress-ready":"true"}}}}}'
     - name: setup chaos mesh
-      if: {{ inputs.install-chaos }}
+      if: ${{ inputs.install-chaos }}
       shell: bash
       run: |
         curl -sSL https://mirrors.chaos-mesh.org/v2.6.2/install.sh  | bash -s -- --local kind

@@ -20,6 +20,7 @@ jobs:
           kubectl create secret generic my-super-secret -n single --from-literal=LDAP_ADMIN_PASSWORD=Not@SecurePassw0rd --from-literal=LDAP_CONFIG_ADMIN_PASSWORD=Not@SecurePassw0rd
           helm install openldap-stack-ha -n single -f .bin/singleNode.yaml .
           kubectl rollout status sts openldap-stack-ha -n single
+          kubectl logs -n single openldap-stack-ha-0  
       - name: verify single node deployment
         shell: bash
         run: |
