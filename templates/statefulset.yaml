@@ -61,7 +61,6 @@ spec:
                 fi
               else
                 cp -p -f /cm-schemas-acls/*.ldif /custom_config/
-                rm -rf /custom_config/acls.ldif
                 echo "let the replication takes care of everything :)"
               fi
             {{- if .Values.global.existingSecret }}
