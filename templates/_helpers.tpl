@@ -217,7 +217,7 @@ Return the proper base domain
 tmp method to iterate through the ldapDomain
 */}}
 {{- define "tmp.baseDomain" -}}
-{{- if regexMatch ".*=.*,.*" .Values.global.ldapDomain }}
+{{- if regexMatch ".*=.*" .Values.global.ldapDomain }}
 {{- printf "%s" .Values.global.ldapDomain }}
 {{- else }}
 {{- $parts := split "." .Values.global.ldapDomain }}
