@@ -94,7 +94,7 @@ spec:
     {{- end }}
     {{- if .Values.customSchemaFiles }}
             - name: cm-custom-schema-files
-              mountPath: /cm-schemas
+              mountPath: /cm-custom-schemas
             - name: custom-schema-files
               mountPath: /custom-schemas
     {{- end }}
