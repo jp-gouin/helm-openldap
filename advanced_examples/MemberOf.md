@@ -1,12 +1,12 @@
 # Examples of MemberOf configuration
 
-## Enable MemberOf 
+## Enable MemberOf
 
 Use the following values to enable `memberof` attribute:
 
 This configuration works regardless of the `replication` configuration (`enabled` or `disabled`)
 
-```
+```ldif
 # Default configuration for openldap as environment variables. These get injected directly in the container.
 # Use the env variables from https://github.com/osixia/docker-openldap#beginner-guide
 env:
@@ -45,7 +45,7 @@ customLdifFiles:
     objectclass: posixGroup
     objectclass: top
     add: memberUid
-    memberUid: jdupond    
+    memberUid: jdupond
   03-test-memberof.ldif: |-
     dn: ou=Group,dc=example,dc=org
     objectclass: organizationalUnit
@@ -63,7 +63,7 @@ customLdifFiles:
     objectclass: groupOfNames
     cn: testgroup
     member: uid=test1,ou=People,dc=example,dc=org
-customSchemaFiles:
+extraSchemaFiles:
   #enable memberOf ldap search functionality, users automagically track groups they belong to
   00-memberof.ldif: |-
     # Load memberof module
@@ -83,11 +83,13 @@ customSchemaFiles:
 
 Connect to your openldap instance and execute:
 
-```
+```bash
 LDAPTLS_REQCERT=never ldapsearch -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://127.0.0.1:1636 -b 'dc=example,dc=org' "(memberOf=cn=testgroup,ou=Group,dc=example,dc=org)"
 ```
-You should get the following result: 
-```
+
+You should get the following result:
+
+```ldif
 # extended LDIF
 #
 # LDAPv3

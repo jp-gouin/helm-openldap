@@ -1,5 +1,5 @@
 logLevel: debug
-resources: 
+resources:
   limits:
     cpu: "128m"
     memory: "64Mi"
@@ -7,13 +7,13 @@ replicaCount: 3
 ltb-passwd:
   ingress:
     hosts:
-    - "ssl-ldap2.example"
+      - "ssl-ldap2.example"
 phpldapadmin:
   ingress:
     hosts:
-    - "phpldapadmin.example"
-customSchemaFiles:
-  00-memberof.ldif: |-
+      - "phpldapadmin.example"
+extraSchemaFiles:
+  memberof.ldif: |-
     # Load memberof module
     dn: cn=module,cn=config
     cn: module
@@ -27,8 +27,8 @@ customSchemaFiles:
     objectClass: olcMemberOf
     olcOverlay: memberof
     olcMemberOfRefint: TRUE
-    
-  10_owncloud_schema.ldif: |-
+customSchemaFiles:
+  00_owncloud_schema.ldif: |-
     # This LDIF files describes the ownCloud schema and can be used to
     # add two optional attributes: ownCloudQuota and ownCloudUUID
     # The ownCloudUUID is used to store a unique, non-reassignable, persistent identifier for users and groups
@@ -105,4 +105,4 @@ initTLSSecret:
     repository: alpine/openssl
     tag: latest
     pullPolicy: IfNotPresent
-  secret: "custom-cert" 
+  secret: "custom-cert"
