@@ -89,7 +89,7 @@ Generate olcSyncRepl list
 {{- define "olcSyncRepls2" -}}
 {{- $name := (include "openldap.fullname" .) }}
 {{- $domain := (include "global.baseDomain" .) }}
-{{- $bindDNUser := .Values.global.adminUser }} 
+{{- $bindDNUser := .Values.global.adminUser }}
 {{- $namespace := .Release.Namespace }}
 {{- $cluster := .Values.replication.clusterName }}
 {{- $adminPassword := ternary .Values.global.adminPassword "%%ADMIN_PASSWORD%%" (empty .Values.global.existingSecret) }}
@@ -186,9 +186,9 @@ Cannot return list => return string comma separated
 Return the list of custom schema files to use
 Cannot return list => return string comma separated
 */}}
-{{- define "openldap.customSchemaFiles" -}}
+{{- define "openldap.extraSchemaFiles" -}}
   {{- $schemas := "" -}}
-  {{- $schemas := ((join "," (.Values.customSchemaFiles | keys | sortAlpha))  | replace ".ldif" "") -}}
+  {{- $schemas := ((join "," (.Values.extraSchemaFiles | keys | sortAlpha))  | replace ".ldif" "") -}}
   {{- print $schemas -}}
 {{- end -}}
 
@@ -198,7 +198,7 @@ Cannot return list => return string comma separated
 */}}
 {{- define "openldap.schemaFiles" -}}
   {{- $schemas := (include "openldap.builtinSchemaFiles" .) -}}
-  {{- $custom_schemas := (include "openldap.customSchemaFiles" .) -}}
+  {{- $custom_schemas := (include "openldap.extraSchemaFiles" .) -}}
   {{- if gt (len $custom_schemas) 0 -}}
     {{- $schemas = print $schemas "," $custom_schemas  -}}
   {{- end -}}

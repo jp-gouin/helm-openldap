@@ -66,7 +66,7 @@ image:
 logLevel: info
 
 initSchema:
-  image: 
+  image:
     repository: debian
     tag: latest
     pullPolicy: Always
@@ -98,13 +98,12 @@ service:
 # Use the env variables from https://hub.docker.com/r/bitnami/openldap/
 # Be careful, do not modify the following values unless you know exactly what your are doing
 env:
- BITNAMI_DEBUG: "true"
- LDAP_LOGLEVEL: "256"
- LDAP_TLS_ENFORCE: "false"
- LDAPTLS_REQCERT: "never"
- LDAP_ENABLE_TLS: "yes"
- LDAP_SKIP_DEFAULT_TREE: "no"
-
+  BITNAMI_DEBUG: "true"
+  LDAP_LOGLEVEL: "256"
+  LDAP_TLS_ENFORCE: "false"
+  LDAPTLS_REQCERT: "never"
+  LDAP_ENABLE_TLS: "yes"
+  LDAP_SKIP_DEFAULT_TREE: "no"
 
 # Pod Disruption Budget for Stateful Set
 # Disabled by default, to ensure backwards compatibility
@@ -122,12 +121,20 @@ pdb:
 # userPasswords: bitnami1, bitnami2
 
 ## Group to create and add list of user above
-  ## Default set by bitnami image
+## Default set by bitnami image
 # group: readers
 
 # Custom openldap schema files used to be used in addition to default schemas
 # Note that the supplied files are sorted by name and inserted into 'LDAP_EXTRA_SCHEMAS' env var
 # after chart default schemas, allowing you to control the loading sequence.
+# extraSchemaFiles:
+#   custom.ldif: |-
+#     # custom schema
+#   anothercustom.ldif: |-
+#     # another custom schema
+
+# Custom openldap schema files used to be used in addition to default schemas
+# Note that the supplied schema files are imported in order of their filename
 # customSchemaFiles:
 #   custom.ldif: |-
 #     # custom schema
@@ -383,7 +390,7 @@ serviceAccount:
   automountServiceAccountToken: false
   ## @param serviceAccount.annotations Additional custom annotations for the ServiceAccount
   ##
-  annotations: {}  
+  annotations: {}
 
 ## @section Init Container Parameters
 
@@ -409,7 +416,7 @@ initTLSSecret:
     ##
     pullPolicy: IfNotPresent
   # The name of a kubernetes.io/tls type secret to use for TLS
-  secret: "" 
+  secret: ""
   ## init-tls-secret container's resource requests and limits
   ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
   ## @param initTlsSecret.resources.limits The resources limits for the init container
@@ -444,8 +451,8 @@ volumePermissions:
     tag: 10-debian-10
     pullPolicy: IfNotPresent
 
-  ## Command to execute during the volumePermission startup
-    command: [ 'sh', '-c', 'chmod -R g+rwX /bitnami' ]
+    ## Command to execute during the volumePermission startup
+    command: ["sh", "-c", "chmod -R g+rwX /bitnami"]
   ## command: {}
   ## Init container's resource requests and limits
   ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
@@ -476,7 +483,6 @@ updateReplication:
     ##   memory: 1Gi
     limits: {}
     requests: {}
-
 
 ## Configure extra options for liveness, readiness, and startup probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
@@ -512,7 +518,7 @@ test:
 ## ltb-passwd
 # For more parameters check following file: ./charts/ltb-passwd/values.yaml
 ltb-passwd:
-  enabled : true
+  enabled: true
   image:
     tag: 5.2.3
   ingress:
@@ -524,19 +530,19 @@ ltb-passwd:
     pathType: Prefix
     ## Ingress Host
     hosts:
-    - "ssl-ldap2.example"
+      - "ssl-ldap2.example"
     ## Ingress cert
     tls: []
     # - secretName: ssl-ldap2.example
     #   hosts:
     #   - ssl-ldap2.example
   # ldap:
-    # if you want to restrict search base tree for users instead of complete domain
-    # searchBase: "ou=....,dc=mydomain,dc=com"
-    # if you want to use a dedicated bindDN for the search with less permissions instead of cn=admin one
-    # bindDN: "cn=....,dc=mydomain,dc=com"
-    # if you want to use a specific key of the credentials secret instead of the default one (LDAP_ADMIN_PASSWORD)
-    # passKey: LDAP_MY_KEY
+  # if you want to restrict search base tree for users instead of complete domain
+  # searchBase: "ou=....,dc=mydomain,dc=com"
+  # if you want to use a dedicated bindDN for the search with less permissions instead of cn=admin one
+  # bindDN: "cn=....,dc=mydomain,dc=com"
+  # if you want to use a specific key of the credentials secret instead of the default one (LDAP_ADMIN_PASSWORD)
+  # passKey: LDAP_MY_KEY
 
 ## phpldapadmin
 ## For more parameters check following file: ./charts/phpldapadmin/values.yaml
@@ -555,7 +561,7 @@ phpldapadmin:
     pathType: Prefix
     ## Ingress Host
     hosts:
-    - phpldapadmin.example
+      - phpldapadmin.example
     ## Ingress cert
     tls: []
     # - secretName: phpldapadmin.example

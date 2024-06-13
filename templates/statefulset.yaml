@@ -33,6 +33,12 @@ spec:
         {{- if .Values.customLdifFiles}}
         checksum/configmap-customldif: {{ include (print $.Template.BasePath "/configmap-customldif.yaml") . | sha256sum }}
         {{- end }}
+        {{- if .Values.extraSchemaFiles}}
+        checksum/configmap-extraschema: {{ include (print $.Template.BasePath "/configmap-extraschema.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if .Values.customSchemaFiles}}
+        checksum/configmap-customschema: {{ include (print $.Template.BasePath "/configmap-customschema.yaml") . | sha256sum }}
+        {{- end }}
       labels: {{- include "common.labels.standard" . | nindent 8 }}
         app.kubernetes.io/component: {{ template "openldap.fullname" . }}
         release: {{ .Release.Name }}
@@ -52,12 +58,15 @@ spec:
               if [ "$host" = "{{ template "openldap.fullname" . }}-0" ]
               then
                 echo "This is the main openldap so let's init all additional schemas and ldifs here"
-                cp -p -f /cm-schemas-acls/*.ldif /custom_config/ 
-                if [ -d /cm-schemas ]; then
-                  cp -p -f /cm-schemas/*.ldif /custom-schemas/ 
+                cp -p -f /cm-schemas-acls/*.ldif /custom_config/
+                if [ -d /cm-extra-schemas ]; then
+                  cp -p -f /cm-extra-schemas/*.ldif /extra-schemas/
+                fi
+                if [ -d /cm-custom-schemas ]; then
+                  cp -p -f /cm-custom-schemas/*.ldif /custom-schemas/
                 fi
                 if [ -d /cm-ldifs ]; then
-                  cp -p -f /cm-ldifs/*.ldif /custom-ldifs/ 
+                  cp -p -f /cm-ldifs/*.ldif /custom-ldifs/
                 fi
               else
                 cp -p -f /cm-schemas-acls/*.ldif /custom_config/
@@ -74,14 +83,20 @@ spec:
           resources: {{- toYaml .Values.initTLSSecret.resources | nindent 12 }}
           {{- end }}
           volumeMounts:
-    {{- if .Values.customSchemaFiles }}
-      {{- range $file := (include "openldap.customSchemaFiles" . | split ",") }}
-            - name: cm-custom-schema-files
-              mountPath: /cm-schemas/{{ $file }}.ldif
+    {{- if .Values.extraSchemaFiles }}
+      {{- range $file := (include "openldap.extraSchemaFiles" . | split ",") }}
+            - name: cm-extra-schema-files
+              mountPath: /cm-extra-schemas/{{ $file }}.ldif
               subPath: {{ $file }}.ldif
       {{- end }}
+            - name: extra-schema-files
+              mountPath: /extra-schemas/
+    {{- end }}
+    {{- if .Values.customSchemaFiles }}
+            - name: cm-custom-schema-files
+              mountPath: /cm-schemas
             - name: custom-schema-files
-              mountPath: /custom-schemas/
+              mountPath: /custom-schemas
     {{- end }}
     {{- if or (.Values.customLdifFiles) (.Values.customLdifCm) }}
             - name: cm-custom-ldif-files
@@ -141,7 +156,7 @@ spec:
             - mountPath: /bitnami
               name: data
       {{- end }}
-    
+
       serviceAccountName: {{ template "openldap.serviceAccountName" . }}
       {{- include "openldap.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.hostAliases }}
@@ -252,16 +267,20 @@ spec:
               mountPath: /opt/bitnami/openldap/etc/schema/{{ $file }}.ldif
               subPath: {{ $file }}.ldif
             {{- end }}
-{{- if .Values.customSchemaFiles}}
-            {{- range $file := (include "openldap.customSchemaFiles" . | split ",") }}
-            - name: custom-schema-files
+{{- if .Values.extraSchemaFiles}}
+            {{- range $file := (include "openldap.extraSchemaFiles" . | split ",") }}
+            - name: extra-schema-files
               mountPath: /opt/bitnami/openldap/etc/schema/{{ $file }}.ldif
               subPath: {{ $file }}.ldif
             {{- end }}
 {{- end }}
+{{- if .Values.customSchemaFiles}}
+            - name: custom-schema-files
+              mountPath: /schemas # default value for LDAP_CUSTOM_SCHEMA_DIR, see https://github.com/bitnami/containers/blob/c969cdc2e0d547f67f89b7e4a21bc2e00716f6ab/bitnami/openldap/2.6/debian-12/rootfs/opt/bitnami/scripts/libopenldap.sh#L42
+{{- end }}
 {{- if or (.Values.customLdifFiles) (.Values.customLdifCm) }}
             - name: custom-ldif-files
-              mountPath: /ldifs/
+              mountPath: /ldifs # default value for LDAP_CUSTOM_LDIF_DIR, see https://github.com/bitnami/containers/blob/c969cdc2e0d547f67f89b7e4a21bc2e00716f6ab/bitnami/openldap/2.6/debian-
 {{- end }}
 {{- range .Values.customFileSets }}
 {{- $fs := . }}
@@ -304,6 +323,14 @@ spec:
           configMap:
             name: {{ .Values.customLdifCm }}
         - name: custom-ldif-files
+          emptyDir:
+            medium: Memory
+{{- end }}
+{{- if .Values.extraSchemaFiles }}
+        - name: cm-extra-schema-files
+          configMap:
+            name: {{ template "openldap.fullname" . }}-extraschema
+        - name: extra-schema-files
           emptyDir:
             medium: Memory
 {{- end }}
