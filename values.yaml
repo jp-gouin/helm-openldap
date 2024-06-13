@@ -124,17 +124,30 @@ pdb:
 ## Default set by bitnami image
 # group: readers
 
-# Custom openldap schema files used to be used in addition to default schemas
+# Custom openldap schema files used to be used in addition to default schemas (cosine, inetorgperson, nis)
 # Note that the supplied files are sorted by name and inserted into 'LDAP_EXTRA_SCHEMAS' env var
 # after chart default schemas, allowing you to control the loading sequence.
+# Unlike customSchemaFiles, extraSchemaFiles allows loading of modules.
 # extraSchemaFiles:
-#   custom.ldif: |-
-#     # custom schema
-#   anothercustom.ldif: |-
-#     # another custom schema
+#   memberof.ldif: |-
+#     # Load memberof module
+#     dn: cn=module,cn=config
+#     cn: module
+#     objectClass: olcModuleList
+#     olcModuleLoad: memberof
+#     olcModulePath: /opt/bitnami/openldap/lib/openldap
+#
+#     dn: olcOverlay=memberof,olcDatabase={2}mdb,cn=config
+#     changetype: add
+#     objectClass: olcOverlayConfig
+#     objectClass: olcMemberOf
+#     olcOverlay: memberof
+#     olcMemberOfRefint: TRUE
 
 # Custom openldap schema files used to be used in addition to default schemas
 # Note that the supplied schema files are imported in order of their filename
+# From the Bitnami documentation:
+# <...> custom internal schema files that could not be added as custom ldif files (i.e. containing some structuralObjectClass).
 # customSchemaFiles:
 #   custom.ldif: |-
 #     # custom schema
