@@ -128,6 +128,7 @@ Parameters related to Kubernetes.
 | `service.enableLdapPort`                 | Enable LDAP port on the service and headless service                                                                                | `true`              |
 | `service.enableSslLdapPort`                 | Enable SSL LDAP port on the service and headless service                                                                         | `true`              |
 | `service.ldapPortNodePort`                 | Nodeport of External service port for LDAP if service.type is NodePort                                                                                                            | `nil`               |
+| `service.clusterIP`                 | Static cluster IP to assign to the service (if supported)                                                            | `nil`              |
 | `service.loadBalancerIP`           | IP address to assign to load balancer (if supported)                                                                                      | `""`                |
 | `service.loadBalancerSourceRanges` | List of IP CIDRs allowed access to load balancer (if supported)                                                                           | `[]`                |
 | `service.sslLdapPortNodePort`                 | Nodeport of External service port for SSL if service.type is NodePort                                                                                                            | `nil`               |

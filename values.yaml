@@ -89,6 +89,8 @@ service:
   ##
   externalIPs: []
 
+  ## Define a static clusterIP
+  #clusterIP:
   #loadBalancerIP:
   #loadBalancerSourceRanges: []
   type: ClusterIP
