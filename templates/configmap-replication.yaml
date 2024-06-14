@@ -1,11 +1,16 @@
 #
 # A ConfigMap spec for openldap slapd that map directly to files under
 # /container/service/slapd/assets/config/bootstrap/ldif/custom
+
+# why are the files in /opt/bitnami/openldap/etc/schema also loaded?
+# Starts to runs within the adding LDAP extra schemas Section
+# and i think it is only loaded the first time - so this is nothing for configs
+
 #
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "openldap.fullname" . }}-replication-acls
+  name: {{ template "openldap.fullname" . }}-replication
   labels:
     app: {{ template "openldap.name" . }}
     chart: {{ template "openldap.chart" . }}
@@ -15,7 +20,7 @@ metadata:
 {{ toYaml .Values.extraLabels | indent 4 }}
 {{- end }}
 data:
-  # replication
+  # Replication
   syncprov.ldif: |
     # Load syncprov module
     dn: cn=module,cn=config
@@ -61,23 +66,3 @@ data:
     changetype: modify
     add: olcMirrorMode
     olcMirrorMode: TRUE
-  # acls
-  acls.ldif: |
-{{- if .Values.customAcls }}
-    {{- .Values.customAcls | nindent 4 }}
-{{- else }}
-    dn: olcDatabase={2}mdb,cn=config
-    changetype: modify
-    replace: olcAccess
-    olcAccess: {0}to *
-      by dn.exact=gidNumber=0+uidNumber=1001,cn=peercred,cn=external,cn=auth manage
-      by * break
-    olcAccess: {1}to attrs=userPassword,shadowLastChange
-      by self write
-      by dn="{{ include "global.bindDN" . }}" write
-      by anonymous auth by * none
-    olcAccess: {2}to *
-      by dn="{{ include "global.bindDN" . }}" write
-      by self read
-      by * none
-{{- end }}

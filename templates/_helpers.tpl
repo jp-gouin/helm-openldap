@@ -1,4 +1,3 @@
-{{/* vim: set filetype=mustache: */}}
 {{/*
 Expand the name of the chart.
 */}}
@@ -49,74 +48,10 @@ Generate chart secret name
 {{ default (include "openldap.fullname" .) .Values.global.existingSecret }}
 {{- end -}}
 
-{{/*
-Generate olcServerID list
-*/}}
-{{- define "olcServerIDs" }}
-{{- $name := (include "openldap.fullname" .) }}
-{{- $namespace := .Release.Namespace }}
-{{- $cluster := .Values.replication.clusterName }}
-{{- $nodeCount := .Values.replicaCount | int }}
-  {{- range $index0 := until $nodeCount }}
-    {{- $index1 := $index0 | add1 }}
-    olcServerID: {{ $index1 }} ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389
-  {{- end -}}
-{{- end -}}
 
-{{/*
-Generate olcSyncRepl list
-*/}}
-{{- define "olcSyncRepls" -}}
-{{- $name := (include "openldap.fullname" .) }}
-{{- $namespace := .Release.Namespace }}
-{{- $bindDNUser := .Values.global.adminUser }}
-{{- $cluster := .Values.replication.clusterName }}
-{{- $configPassword :=  ternary .Values.global.configPassword "%%CONFIG_PASSWORD%%" (empty .Values.global.existingSecret) }}
-{{- $retry := .Values.replication.retry }}
-{{- $timeout := .Values.replication.timeout }}
-{{- $starttls := .Values.replication.starttls }}
-{{- $tls_reqcert := .Values.replication.tls_reqcert }}
-{{- $nodeCount := .Values.replicaCount | int }}
-  {{- range $index0 := until $nodeCount }}
-    {{- $index1 := $index0 | add1 }}
-    olcSyncRepl: rid=00{{ $index1 }} provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389 binddn="cn={{ $bindDNUser }},cn=config" bindmethod=simple credentials={{ $configPassword }} searchbase="cn=config" type=refreshAndPersist retry="{{ $retry }} +" timeout={{ $timeout }} starttls={{ $starttls }} tls_reqcert={{ $tls_reqcert }}
-  {{- end -}}
-{{- end -}}
 
-{{/*
-Generate olcSyncRepl list
-*/}}
-{{- define "olcSyncRepls2" -}}
-{{- $name := (include "openldap.fullname" .) }}
-{{- $domain := (include "global.baseDomain" .) }}
-{{- $bindDNUser := .Values.global.adminUser }} 
-{{- $namespace := .Release.Namespace }}
-{{- $cluster := .Values.replication.clusterName }}
-{{- $adminPassword := ternary .Values.global.adminPassword "%%ADMIN_PASSWORD%%" (empty .Values.global.existingSecret) }}
-{{- $retry := .Values.replication.retry }}
-{{- $timeout := .Values.replication.timeout }}
-{{- $starttls := .Values.replication.starttls }}
-{{- $tls_reqcert := .Values.replication.tls_reqcert }}
-{{- $interval := .Values.replication.interval }}
-{{- $nodeCount := .Values.replicaCount | int }}
-  {{- range $index0 := until $nodeCount }}
-    {{- $index1 := $index0 | add1 }}
-    olcSyncrepl:
-      rid=10{{ $index1 }}
-      provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389
-      binddn={{ printf "cn=%s,%s" $bindDNUser $domain }}
-      bindmethod=simple
-      credentials={{ $adminPassword }}
-      searchbase={{ $domain }}
-      type=refreshAndPersist
-      interval={{ $interval }}
-      network-timeout=0
-      retry="{{ $retry }} +"
-      timeout={{ $timeout }}
-      starttls={{ $starttls }}
-      tls_reqcert={{ $tls_reqcert }}
-  {{- end -}}
-{{- end -}}
+
+
 
 {{/*
 Renders a value that contains template.
@@ -217,7 +152,7 @@ Return the proper base domain
 tmp method to iterate through the ldapDomain
 */}}
 {{- define "tmp.baseDomain" -}}
-{{- if regexMatch ".*=.*" .Values.global.ldapDomain }}
+{{- if regexMatch ".*=.*,.*" .Values.global.ldapDomain }}
 {{- printf "%s" .Values.global.ldapDomain }}
 {{- else }}
 {{- $parts := split "." .Values.global.ldapDomain }}
@@ -254,4 +189,78 @@ Return the ldap port
 */}}
 {{- define "global.ldapPort" -}}
 {{- printf "%d" .Values.global.ldapPort  -}}
+{{- end -}}
+
+
+
+
+# Replication - need to take a look later on 
+
+{{/*
+Generate olcServerID list
+*/}}
+{{- define "olcServerIDs" }}
+{{- $name := (include "openldap.fullname" .) }}
+{{- $namespace := .Release.Namespace }}
+{{- $cluster := .Values.replication.clusterName }}
+{{- $nodeCount := .Values.replicaCount | int }}
+  {{- range $index0 := until $nodeCount }}
+    {{- $index1 := $index0 | add1 }}
+    olcServerID: {{ $index1 }} ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389
+  {{- end -}}
+{{- end -}}
+
+{{/*
+Generate olcSyncRepl list
+*/}}
+{{- define "olcSyncRepls" -}}
+{{- $name := (include "openldap.fullname" .) }}
+{{- $namespace := .Release.Namespace }}
+{{- $bindDNUser := .Values.global.adminUser }}
+{{- $cluster := .Values.replication.clusterName }}
+{{- $configPassword :=  ternary .Values.global.configPassword "%%CONFIG_PASSWORD%%" (empty .Values.global.existingSecret) }}
+{{- $retry := .Values.replication.retry }}
+{{- $timeout := .Values.replication.timeout }}
+{{- $starttls := .Values.replication.starttls }}
+{{- $tls_reqcert := .Values.replication.tls_reqcert }}
+{{- $nodeCount := .Values.replicaCount | int }}
+  {{- range $index0 := until $nodeCount }}
+    {{- $index1 := $index0 | add1 }}
+    olcSyncRepl: rid=00{{ $index1 }} provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389 binddn="cn={{ $bindDNUser }},cn=config" bindmethod=simple credentials={{ $configPassword }} searchbase="cn=config" type=refreshAndPersist retry="{{ $retry }} +" timeout={{ $timeout }} starttls={{ $starttls }} tls_reqcert={{ $tls_reqcert }}
+  {{- end -}}
+{{- end -}}
+
+{{/*
+Generate olcSyncRepl list
+*/}}
+{{- define "olcSyncRepls2" -}}
+{{- $name := (include "openldap.fullname" .) }}
+{{- $domain := (include "global.baseDomain" .) }}
+{{- $bindDNUser := .Values.global.adminUser }} 
+{{- $namespace := .Release.Namespace }}
+{{- $cluster := .Values.replication.clusterName }}
+{{- $adminPassword := ternary .Values.global.adminPassword "%%ADMIN_PASSWORD%%" (empty .Values.global.existingSecret) }}
+{{- $retry := .Values.replication.retry }}
+{{- $timeout := .Values.replication.timeout }}
+{{- $starttls := .Values.replication.starttls }}
+{{- $tls_reqcert := .Values.replication.tls_reqcert }}
+{{- $interval := .Values.replication.interval }}
+{{- $nodeCount := .Values.replicaCount | int }}
+  {{- range $index0 := until $nodeCount }}
+    {{- $index1 := $index0 | add1 }}
+    olcSyncrepl:
+      rid=10{{ $index1 }}
+      provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389
+      binddn={{ printf "cn=%s,%s" $bindDNUser $domain }}
+      bindmethod=simple
+      credentials={{ $adminPassword }}
+      searchbase={{ $domain }}
+      type=refreshAndPersist
+      interval={{ $interval }}
+      network-timeout=0
+      retry="{{ $retry }} +"
+      timeout={{ $timeout }}
+      starttls={{ $starttls }}
+      tls_reqcert={{ $tls_reqcert }}
+  {{- end -}}
 {{- end -}}

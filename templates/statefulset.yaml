@@ -63,6 +63,10 @@ spec:
                 cp -p -f /cm-schemas-acls/*.ldif /custom_config/
                 echo "let the replication takes care of everything :)"
               fi
+              cp /tmp-init-scripts/01.sh /script/01.sh &&
+              cp /tmp-init-scripts/02.sh /script/02.sh &&
+              chmod +x /script/01.sh
+              chmod +x /script/02.sh
             {{- if .Values.global.existingSecret }}
               sed -i -e "s/%%CONFIG_PASSWORD%%/${LDAP_CONFIG_ADMIN_PASSWORD}/g" /custom_config/*
               sed -i -e "s/%%ADMIN_PASSWORD%%/${LDAP_ADMIN_PASSWORD}/g" /custom_config/*
@@ -74,6 +78,12 @@ spec:
           resources: {{- toYaml .Values.initTLSSecret.resources | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: init-scripts
+              mountPath: /tmp-init-scripts
+            - name: writable-init-scripts
+              mountPath: /script
+            - name: ldap-configuration
+              mountPath: /ldap-configuration
     {{- if .Values.customSchemaFiles }}
       {{- range $file := (include "openldap.customSchemaFiles" . | split ",") }}
             - name: cm-custom-schema-files
@@ -89,7 +99,7 @@ spec:
             - name: custom-ldif-files
               mountPath: /custom-ldifs/
     {{- end }}
-            - name: cm-replication-acls
+            - name: cm-replication
               mountPath: "/cm-schemas-acls"
             - name: replication-acls
               mountPath: "/custom_config"
@@ -115,6 +125,7 @@ spec:
               {{- end }}
               cp -Lr /tmp-certs/* /certs
               [ -e /certs/ca.crt ] || cp -a /certs/tls.crt /certs/ca.crt
+              echo "Files related to TLS moved where they belong"
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
@@ -126,22 +137,6 @@ spec:
               mountPath: "/certs"
             - name: secret-certs
               mountPath: "/tmp-certs"
-      {{- if .Values.volumePermissions.enabled }}
-        - name: volume-permissions
-          image: {{ include "openldap.volumePermissionsImage" . }}
-          imagePullPolicy: {{ .Values.volumePermissions.image.pullPolicy | quote }}
-          command: {{- include "common.tplvalues.render" (dict "value" .Values.volumePermissions.image.command "context" $) | nindent 12 }}
-          {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
-          {{- end }}
-          {{- if .Values.volumePermissions.resources }}
-          resources: {{- toYaml .Values.volumePermissions.resources | nindent 12 }}
-          {{- end }}
-          volumeMounts:
-            - mountPath: /bitnami
-              name: data
-      {{- end }}
-    
       serviceAccountName: {{ template "openldap.serviceAccountName" . }}
       {{- include "openldap.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.hostAliases }}
@@ -197,8 +192,9 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
             {{- end }}
+            # this should be cleaner
             - secretRef:
-                name: {{ template "openldap.secretName" . }}
+                name: {{ .Values.existingSecret.name }}
           {{- if .Values.resources }}
           resources: {{- toYaml .Values.resources | nindent 12 }}
           {{- end }}
@@ -243,8 +239,12 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: writable-init-scripts
+              mountPath: /script
             - name: data
               mountPath: /bitnami/openldap/
+            - name: ldap-configuration
+              mountPath: /ldap-configuration
             - name: certs
               mountPath: /opt/bitnami/openldap/certs
             {{- range $file := (include "openldap.builtinSchemaFiles" . | split ",") }}
@@ -285,9 +285,20 @@ spec:
             claimName: {{ .Values.persistence.existingClaim }}
 {{- end }}
 {{- end }}
-        - name: cm-replication-acls
+        - name: init-scripts
           configMap:
-            name: {{ template "openldap.fullname" . }}-replication-acls
+            name: entrypoint-script
+        - name: writable-init-scripts
+          emptyDir: {}
+        - name: ldap-configuration
+          secret:
+            secretName: ldap-configuration
+        # - name: ldap-configuration
+        #   configMap:
+        #     name: ldap-configuration
+        - name: cm-replication
+          configMap:
+            name: {{ template "openldap.fullname" . }}-replication
         - name: replication-acls
           emptyDir:
             medium: Memory
@@ -303,6 +314,13 @@ spec:
         - name: cm-custom-ldif-files
           configMap:
             name: {{ .Values.customLdifCm }}
+        - name: custom-ldif-files
+          emptyDir:
+            medium: Memory
+{{- else if .Values.customLdifSecret }}
+        - name: cm-custom-ldif-files
+          secret:
+            secretName: {{ .Values.customLdifSecret }}
         - name: custom-ldif-files
           emptyDir:
             medium: Memory

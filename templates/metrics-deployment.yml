@@ -1,0 +1,66 @@
+{{- if .Values.metrics.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "openldap.fullname" . }}-metrics
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: {{ template "openldap.fullname" . }}-metrics
+    chart: {{ template "openldap.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.metrics.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: {{ template "openldap.fullname" . }}-metrics
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: {{ template "openldap.fullname" . }}-metrics
+    spec:
+      containers:
+      - name: {{ template "openldap.fullname" . }}-metrics
+        image: "{{ .Values.metrics.image.repository }}:{{ .Values.metrics.image.tag }}"
+        imagePullPolicy: {{ .Values.metrics.image.pullPolicy | default "Always"}}
+        securityContext: 
+          enabled: true
+          runAsUser: 1000
+          runAsNonRoot: true
+          privileged: false
+          readOnlyRootFilesystem: false
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          seccompProfile:
+            type: "RuntimeDefault"
+        ports:
+          - name: {{ (index .Values.metrics.ports 0).name }}
+            protocol: TCP
+            containerPort: {{ (index .Values.metrics.ports 0).containerPort }}
+        env: 
+         - name: LDAP_ADDR
+           value: "{{ template "openldap.fullname" . }}-0.{{ template "openldap.fullname" . }}-headless.{{ .Release.Namespace }}.svc.cluster.local:1389"
+         - name: LDAP_USER
+           value: "cn=monitoring,ou=configuration-users,dc=schule-sh,dc=de"
+         - name: INTERVAL
+           value: 10s
+         - name: LDAP_PASS
+           valueFrom:
+             secretKeyRef:
+               name: {{ template "openldap.fullname" . }}
+               key: LDAP_MONITORING_PASSWORD
+        resources: 
+{{ toYaml .Values.metrics.resources | indent 12 }}
+{{ end }}
+

@@ -1,0 +1,23 @@
+{{- if .Values.metrics.serviceMonitor.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ template "openldap.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: {{ template "openldap.fullname" . }}
+    app.kubernetes.io/managed-by: Helm
+    chart: {{ template "openldap.chart" . }}
+    release: {{ .Release.Name }}
+spec:
+  namespaceSelector:
+    matchNames:
+      -  {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: {{ template "openldap.fullname" . }}-metrics
+      chart: {{ template "openldap.chart" . }}
+  endpoints:
+    - port: {{ (index .Values.metrics.serviceMonitor.endpoints 0).port }}
+      path: {{ (index .Values.metrics.serviceMonitor.endpoints 0).path }}
+{{ end }}

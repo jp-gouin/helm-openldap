@@ -1,0 +1,76 @@
+#
+# A ConfigMap spec for openldap slapd that map directly to env variables in the Pod.
+# List of environment variables supported is from the docker image:
+# https://hub.docker.com/r/bitnami/openldap/
+# Note that passwords are defined as secrets
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: entrypoint-script
+  labels:
+    app: {{ template "openldap.name" . }}
+    chart: {{ template "openldap.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.extraLabels }}
+{{ toYaml .Values.extraLabels | indent 4 }}
+{{- end }}
+data:
+  01.sh: |
+    #!/bin/sh
+    set -e
+    # found no way to check if ldap server is running with a while statement
+    sleep 5
+    # it is important that the above runs first, otherwise it fails - so that the ACLS are adjusted 
+    ldapmodify -Y EXTERNAL -H ldapi:/// -f /ldap-configuration/modify.ldif
+    # no sure why this sleep is needed again 
+    sleep 10
+    /bin/bash /script/02.sh
+
+  # this script is needed so that Helm Chart is stable if persistence is enabled
+  02.sh: |  
+    LDIF_FILE="/ldap-configuration/apply.ldif"
+
+    # Function to process each entry
+    process_entry() {
+      local entry_dn="$1"
+      local entry_ldif="$2"
+
+      # Check if entry exists
+      ldapsearch -Y External -H ldapi:/// -b "$entry_dn" -s base -LLL dn > /dev/null 2>&1
+
+      if [ $? -eq 0 ]; then
+        echo "Entry already exists: $entry_dn, updating entry by running ldapmodify"
+        echo "$entry_ldif" | sed 's/^dn: .*/changetype: modify/' | ldapmodify -Y External -H ldapi:/// 
+      else
+        echo "Entry does not exist, adding entry: $entry_dn"
+        echo "$entry_ldif" | ldapadd -Y External -H ldapi:/// 
+      fi
+    }
+
+    # Read the LDIF file and process each entry
+    current_dn=""
+    current_entry=""
+
+    # Read the LDIF file line by line
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        # Check for dn line to identify new entry
+        if echo "$line" | grep -q "^dn:"; then
+            # If current_dn is set, process the previous entry
+            if [ -n "$current_dn" ]; then
+                process_entry "$current_dn" "$current_entry"
+            fi
+            # Start a new entry
+            current_dn=$(echo "$line" | cut -d' ' -f2-)
+            current_entry="$line"
+        else
+            # Accumulate the current entry
+            current_entry="$current_entry"$'\n'"$line"
+        fi
+    done < "$LDIF_FILE"
+
+    # Process the last entry in the file
+    if [[ -n "$current_dn" ]]; then
+      process_entry "$current_dn" "$current_entry"
+    fi

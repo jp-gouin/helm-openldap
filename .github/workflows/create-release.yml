@@ -1,0 +1,54 @@
+# Push image to GHCR and Helm Chart to helm-charts-registry
+name: Release Image and Helm Chart
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+concurrency:
+  group: dbildungs-iam-ldap-image-helm-chart
+  cancel-in-progress: true
+
+jobs:
+  # GHRC Image
+  codeql_analyze:
+    name: "CodeQL"
+    uses: dBildungsplattform/dbp-github-workflows/.github/workflows/check-codeql.yaml@5
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+  release_image:
+    name: "Publish image and scan with trivy"
+    needs: 
+     - codeql_analyze
+    permissions:
+      packages: write
+      security-events: write
+      contents: read
+    uses: dBildungsplattform/dbp-github-workflows/.github/workflows/image-publish-trivy.yaml@7
+    with:
+      image_name: "dbildungs-iam-ldap"
+      run_trivy_scan: true
+      image_tag_generation: version_git_tag
+      container_registry: "ghcr.io"
+      fail_on_vulnerabilites: false
+      report_location: "Dockerfile"
+  
+  # Helm Chart
+  scan_helm:
+    uses: dBildungsplattform/dbp-github-workflows/.github/workflows/check-helm-kics.yaml@5
+    permissions:
+      contents: read
+
+  release_helm:
+    needs: scan_helm
+    uses: dBildungsplattform/dbp-github-workflows/.github/workflows/chart-release.yaml@5
+    secrets: inherit
+    with:
+      chart_name: "dbildungs-iam-ldap"
+      helm_chart_version_generation: specified 
+      image_tag_generation: specified 
+      helm_chart_version: "${{ github.ref_name }}"
+      image_tag: "${{ github.ref_name }}"

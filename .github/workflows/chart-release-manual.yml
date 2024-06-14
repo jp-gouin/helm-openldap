@@ -1,0 +1,33 @@
+name: Push Charts to helm-charts-registry manually with specified version
+
+on:
+  workflow_dispatch:
+    inputs:
+      chart_version:
+        type: string
+        description: "Chart version"
+        required: true
+      image_tag:
+        type: string
+        description: "image tag"
+        required: true
+
+concurrency:
+  group: dbildungs-iam-ldap-chart-manual
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    uses: dBildungsplattform/dbp-github-workflows/.github/workflows/check-helm-kics.yaml@5
+    permissions:
+      contents: read
+  release:
+    needs: scan
+    uses: dBildungsplattform/dbp-github-workflows/.github/workflows/chart-release.yaml@5
+    secrets: inherit
+    with:
+      chart_name: dbildungs-iam-ldap
+      helm_chart_version_generation: specified 
+      image_tag_generation: specified 
+      helm_chart_version: ${{ inputs.chart_version }}
+      image_tag: ${{ inputs.image_tag }}

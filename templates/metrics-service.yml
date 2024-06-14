@@ -1,0 +1,23 @@
+{{- if .Values.metrics.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "openldap.fullname" . }}-metrics
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: {{ template "openldap.fullname" . }}-metrics
+    chart: {{ template "openldap.chart" . }}
+    release: {{ .Release.Name }}
+{{- if .Values.extraLabels }}
+{{ toYaml .Values.extraLabels | indent 4 }}
+{{- end }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: metrics
+      protocol: TCP
+      port: {{ (index .Values.metrics.service.ports 0).port }}
+      targetPort: {{ (index .Values.metrics.service.ports 0).name }}
+  selector:
+    app.kubernetes.io/component: {{ template "openldap.fullname" . }}-metrics
+{{ end }}
