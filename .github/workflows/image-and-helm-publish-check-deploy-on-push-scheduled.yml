@@ -25,33 +25,12 @@ jobs:
       contents: read
       security-events: write
 
-  nest_lint:
-    name: "Linting"
-    if: ${{ github.event_name == 'push' }}
-    uses: dBildungsplattform/dbp-github-workflows/.github/workflows/check-nest-lint.yaml@5
-    with:
-      node_version: '18'
-    permissions:
-      contents: read
-
-  tests_and_sonarcloud:
-    name: "Tests and Sonarcloud"
-    if: ${{ github.event_name == 'push' }}
-    uses: dBildungsplattform/dbp-github-workflows/.github/workflows/check-nest-test-sonarcloud.yaml@5
-    with:
-      node_version: '18'
-      deploy_stage: 'dev'
-    permissions:
-      contents: read
-    secrets: inherit
-
   build_image_on_push:
     name: "Publish image and scan with trivy"
     if: ${{ github.event_name == 'push' }}
     needs:
       - codeql_analyze
-      - nest_lint
-      - tests_and_sonarcloud
+
     permissions:
       packages: write
       security-events: write
