@@ -71,9 +71,6 @@ spec:
               sed -i -e "s/%%CONFIG_PASSWORD%%/${LDAP_CONFIG_ADMIN_PASSWORD}/g" /custom_config/*
               sed -i -e "s/%%ADMIN_PASSWORD%%/${LDAP_ADMIN_PASSWORD}/g" /custom_config/*
             {{- end }}
-          {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
-          {{- end }}
           {{- if .Values.initTLSSecret.resources }}
           resources: {{- toYaml .Values.initTLSSecret.resources | nindent 12 }}
           {{- end }}
@@ -92,12 +89,6 @@ spec:
       {{- end }}
             - name: custom-schema-files
               mountPath: /custom-schemas/
-    {{- end }}
-    {{- if or (.Values.customLdifFiles) (.Values.customLdifCm) }}
-            - name: cm-custom-ldif-files
-              mountPath: /cm-ldifs/
-            - name: custom-ldif-files
-              mountPath: /custom-ldifs/
     {{- end }}
             - name: cm-replication
               mountPath: "/cm-schemas-acls"
@@ -126,9 +117,6 @@ spec:
               cp -Lr /tmp-certs/* /certs
               [ -e /certs/ca.crt ] || cp -a /certs/tls.crt /certs/ca.crt
               echo "Files related to TLS moved where they belong"
-          {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
-          {{- end }}
           {{- if .Values.initTLSSecret.resources }}
           resources: {{- toYaml .Values.initTLSSecret.resources | nindent 12 }}
           {{- end }}
@@ -169,9 +157,6 @@ spec:
         - name: {{ .Chart.Name }}
           image: {{ include "openldap.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
-          {{- end }}
           env:
             - name: POD_NAME
               valueFrom:
@@ -259,10 +244,7 @@ spec:
               subPath: {{ $file }}.ldif
             {{- end }}
 {{- end }}
-{{- if or (.Values.customLdifFiles) (.Values.customLdifCm) }}
-            - name: custom-ldif-files
-              mountPath: /ldifs/
-{{- end }}
+
 {{- range .Values.customFileSets }}
 {{- $fs := . }}
 {{- range .files }}
@@ -293,9 +275,6 @@ spec:
         - name: ldap-configuration
           secret:
             secretName: ldap-configuration
-        # - name: ldap-configuration
-        #   configMap:
-        #     name: ldap-configuration
         - name: cm-replication
           configMap:
             name: {{ template "openldap.fullname" . }}-replication
@@ -307,13 +286,6 @@ spec:
         - name: cm-custom-ldif-files
           configMap:
             name: {{ template "openldap.fullname" . }}-customldif
-        - name: custom-ldif-files
-          emptyDir:
-            medium: Memory
-{{- else if .Values.customLdifCm }}
-        - name: cm-custom-ldif-files
-          configMap:
-            name: {{ .Values.customLdifCm }}
         - name: custom-ldif-files
           emptyDir:
             medium: Memory

@@ -1,5 +1,3 @@
-# Default values for openldap.
-
 # Please, note that this will override the image parameters, including dependencies, configured to use the global value
 global:
   imageRegistry: ""
@@ -18,6 +16,10 @@ global:
   ldapPort: 389                               # LDAP_PORT_NUMBER
   sslLdapPort: 636                            # LDAP_LDAPS_PORT_NUMBER
 
+nameOverride: ""
+fullnameOverride: ""
+
+
 # this is not so clean 
 existingSecret:
   enabled: true
@@ -29,9 +31,6 @@ image:
   pullPolicy: Always
   pullSecrets: []
 
-# Valid log levels: none, error, warning, info (default), debug, trace
-logLevel: info
-
 extraLabels: {}
 
 service:
@@ -40,7 +39,6 @@ service:
   # ldapPortNodePort:
   # sslLdapPortNodePort:
 
-  # Disable if you do not want to expose port on service
   enableLdapPort: true
   enableSslLdapPort: true
 
@@ -48,15 +46,13 @@ service:
   # type: ClusterIP
   type: LoadBalancer
   externalIp: false
+  # if enabled you need to have to set the LOADBALANCER_IP key with value in the existingSecret
   # externalIp: true
   SourceRangesRestriction: false
-  # SourceRangesRestriction: true
-  # Only for staging and Prod 
-  # loadBalancerIP: 
+  # if enabled you need to have to set the LOADBALANCER_SOURCERANGES key with value in the existingSecret
   # servicecenter für den prometheus blackbox exporter freischalten
-  # loadBalancerSourceRanges: [""]
+  # SourceRangesRestriction: true
   # enableLdapPort: false
-
 
 
 # Use the env variables from https://hub.docker.com/r/bitnami/openldap/
@@ -68,7 +64,7 @@ env:
   # Configuration
   LDAP_SKIP_DEFAULT_TREE: "no"
   LDAP_ULIMIT_NOFILES: "1024" # staging and prod: 4096
-  # if something is not needed it can get removed by just not mentioning it here # order is importand, do not put nis in front, always append
+  # if something is not needed it can get removed by just not mentioning it here # order is importand, do not put nis in front, always append it
   # is this is enabled replication is not working
   # LDAP_EXTRA_SCHEMAS: cosine,inetorgperson,nis
 
@@ -89,17 +85,6 @@ pdb:
   minAvailable: 1
   maxUnavailable: ""
 
-## User list to create (comma separated list) , can't be use with customLdifFiles
-## Default set by bitnami image
-# users: user01,user02
-
-## User password to create (comma separated list, one for each user)
-## Default set by bitnami image
-# userPasswords: bitnami1, bitnami2
-
-## Group to create and add list of user above
-  ## Default set by bitnami image
-# group: readers
 
 # Custom openldap schema files used to be used in addition to default schemas
 # Note that the supplied files are sorted by name and inserted into 'LDAP_EXTRA_SCHEMAS' env var
@@ -110,15 +95,11 @@ pdb:
 #   anothercustom.ldif: |-
 #     # another custom schema
 
-## Existing configmap with custom ldif
-# Can't be use with customLdifFiles
-# Same format as customLdifFiles
-# customLdifCm: my-custom-ldif-cm
 
 # Custom openldap configuration files used to override default settings
-# DO NOT FORGET to put the Root Organisation object as it won't be created while using customLdifFiles
 # can not get loaded if TLS is required ldap_bind: Confidentiality required (13) additional info: TLS confidentiality required
-# Files that chage the general config or create ACL are not allowed here 
+# DO NOT FORGET to put the Root Organisation object as it won't be created while using customLdifFiles
+# Files that chage the general config or create ACL are not allowed here, insufficient permissions, they get hendled via the ldap-configuration secret
 customLdifFiles:
   00-root.ldif: |-
     dn: dc=schule-sh,dc=de
@@ -127,27 +108,7 @@ customLdifFiles:
     objectClass: organization
     o: SPSH
 
-
-# Custom openldap ACLs
-# If not defined, the following default ACLs are applied:
-# customAcls: |-
-#   dn: olcDatabase={2}mdb,cn=config
-#   changetype: modify
-#   replace: olcAccess
-#   olcAccess: {0}to *
-#     by dn.exact=gidNumber=0+uidNumber=1001,cn=peercred,cn=external,cn=auth manage
-#     by * break
-#   olcAccess: {1}to attrs=userPassword,shadowLastChange
-#     by self write
-#     by dn="{{ include "global.bindDN" . }}" write
-#     by anonymous auth by * none
-#   olcAccess: {2}to *
-#     by dn="{{ include "global.bindDN" . }}" write
-#     by self read
-#     by * none
-
 replicaCount: 1
-
 
 # have to work on this
 replication:
@@ -163,17 +124,12 @@ replication:
 # dev = enabled to false? 
 persistence:
   enabled: false
-  # enabled: true
-  # storageClass: "standard-singlewriter"
+  # the existing claim, shall we create that per spsh-pp-release OR in the infa-dbp repository
   # existingClaim: openldap-pvc
   accessModes:
     - ReadWriteOnce
   size: 8Gi
   storageClass: ""
-
-customLivenessProbe: {}
-customReadinessProbe: {}
-customStartupProbe: {}
 
 resources:
   limits:
@@ -194,11 +150,6 @@ podSecurityContext:
     drop: ["ALL"]
   seccompProfile:
     type: "RuntimeDefault"
-
-containerSecurityContext:
-  enabled: false
-  runAsUser: 1001
-  runAsNonRoot: true
 
 existingConfigmap:
 command: []
@@ -238,8 +189,6 @@ serviceAccount:
   annotations: {}  
 
 kubeVersion: ""
-nameOverride: ""
-fullnameOverride: ""
 commonLabels: {}
 commonAnnotations: {}
 clusterDomain: cluster.local
@@ -290,13 +239,13 @@ initSchema:
 ## 'initTlsSecret' init container parameters
 ## need a secret with tls.crt, tls.key and ca.crt keys with associated files
 initTLSSecret:
-  tls_enabled: false
+  tls_enabled: true
   image:
     registry: docker.io
     repository: alpine/openssl
     tag: latest
     pullPolicy: IfNotPresent
-  secret: "dbildungs-iam-ldap-tls" 
+  # secret: "dbildungs-iam-ldap-tls" 
   resources:
     limits: {}
     requests: {}
@@ -331,7 +280,9 @@ startupProbe:
   timeoutSeconds: 1
   successThreshold: 1
   failureThreshold: 30
-
+customLivenessProbe: {}
+customReadinessProbe: {}
+customStartupProbe: {}
 
 ## phpldapadmin
 ## For more parameters check following file: ./charts/phpldapadmin/values.yaml

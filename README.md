@@ -49,8 +49,6 @@ Parameters related to the configuration of the application.
 | `initTLSSecret.secret`                       | Secret containing TLS cert and key must contain the keys tls.key , tls.crt and ca.crt                                                                       | `""`                |
 | `customSchemaFiles` | Custom openldap schema files used in addition to default schemas                                                                    | `""`                |
 | `customLdifFiles`                       | Custom openldap configuration files used to override default settings                                                                      | `""`                |
-| `customLdifCm`                       | Existing configmap with custom ldif. Can't be use with customLdifFiles                                                            | `""`                |
-| `customAcls`                       | Custom openldap ACLs. Overrides default ones.                                                                      | `""`                |
 | `replication.enabled`              | Enable the multi-master replication | `true` |
 | `replication.retry`              | retry period for replication in sec | `60` |
 | `replication.timeout`              | timeout for replication  in sec| `1` |
@@ -91,7 +89,6 @@ Parameters related to Kubernetes.
 | `service.enableLdapPort`                 | Enable LDAP port on the service and headless service                                                                                | `true`              |
 | `service.enableSslLdapPort`                 | Enable SSL LDAP port on the service and headless service                                                                         | `true`              |
 | `service.ldapPortNodePort`                 | Nodeport of External service port for LDAP if service.type is NodePort                                                                                                            | `nil`               |
-| `service.loadBalancerIP`           | IP address to assign to load balancer (if supported)                                                                                      | `""`                |
 | `service.loadBalancerSourceRanges` | List of IP CIDRs allowed access to load balancer (if supported)                                                                           | `[]`                |
 | `service.sslLdapPortNodePort`                 | Nodeport of External service port for SSL if service.type is NodePort                                                                                                            | `nil`               |
 | `service.type`                     | Service type can be ClusterIP, NodePort, LoadBalancer                                                                                                                              | `ClusterIP`         |
@@ -107,7 +104,6 @@ Parameters related to Kubernetes.
 | `customStartupProbe`                     | Startup probe configuration                                                                                                               | `[see values.yaml]` |
 | `resources`                        | Container resource requests and limits in yaml                                                                                            | `{}`                |
 | `podSecurityContext`              | Enabled OPENLDAP  pods' Security Context | `true` |``
-| `containerSecurityContext`              | Set OPENLDAP  pod's Security Context fsGroup | `true` |
 | `existingConfigmap`              | existingConfigmap The name of an existing ConfigMap with your custom configuration for OPENLDAP  | `` |
 | `podLabels`              | podLabels Extra labels for OPENLDAP  pods| `{}` |
 | `podAnnotations`              | podAnnotations Extra annotations for OPENLDAP  pods | `{}` |

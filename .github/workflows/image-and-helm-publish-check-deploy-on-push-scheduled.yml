@@ -133,7 +133,7 @@ jobs:
       - create_branch_identifier
       - release_helm
       - build_image_on_push
-    uses: dBildungsplattform/spsh-app-deploy/.github/workflows/deploy.yml@4 # Branch name needs to get used here
+    uses: dBildungsplattform/spsh-app-deploy/.github/workflows/deploy.yml@DBP-799-openldap-image-helm-chart # Branch name needs to get used here
     with:
       dbildungs_iam_server_branch: ${{ needs.branch_meta.outputs.ticket }}
       schulportal_client_branch: ${{ needs.branch_meta.outputs.ticket }}
