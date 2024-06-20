@@ -1,0 +1,19 @@
+{{- if (gt (.Values.readOnlyReplicaCount | int) 0) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "openldap.fullname" . }}-readonly
+  labels:
+    app: {{ template "openldap.name" . }}
+    chart: {{ template "openldap.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.extraLabels }}
+{{ toYaml .Values.extraLabels | indent 4 }}
+{{- end }}
+data:
+  # replication
+  readonly.ldif: |
+    dn: olcDatabase={2}mdb,cn=config
+    olcReadonly: TRUE
+{{- end }}

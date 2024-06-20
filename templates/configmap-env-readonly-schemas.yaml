@@ -1,0 +1,23 @@
+#
+# A ConfigMap spec for openldap slapd that map directly to env variables in the Pod.
+# List of environment variables supported is from the docker image:
+# https://hub.docker.com/r/bitnami/openldap/
+# Note that passwords are defined as secrets
+#
+{{- if (gt (.Values.readOnlyReplicaCount | int) 0) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "openldap.fullname" . }}-env-readonly-schemas
+  labels:
+    app: {{ template "openldap.name" . }}
+    chart: {{ template "openldap.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.extraLabels }}
+{{ toYaml .Values.extraLabels | indent 4 }}
+{{- end }}
+data:
+  LDAP_EXTRA_SCHEMAS: {{ print "cosine,inetorgperson,nis," (include "openldap.schemaFiles" .) ",readonly"}}
+{{ toYaml .Values.env | indent 2 }}
+{{- end }}

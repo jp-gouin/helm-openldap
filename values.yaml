@@ -51,6 +51,9 @@ extraDeploy: []
 
 replicaCount: 3
 
+# Note: you need replication enabled to use readonly replicas!
+readOnlyReplicaCount: 1
+
 image:
   # From repository https://hub.docker.com/r/bitnami/openldap/
   #repository: bitnami/openldap
