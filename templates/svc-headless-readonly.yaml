@@ -10,12 +10,12 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   ports:
-  {{- if .Values.service.enableLdapPort }}
+  {{- if .Values.serviceReadOnly.enableLdapPort }}
   - port: {{ .Values.global.ldapPort }}
     name: ldap-port
     targetPort: ldap-port
   {{- end }}
-  {{- if .Values.service.enableSslLdapPort }}
+  {{- if .Values.serviceReadOnly.enableSslLdapPort }}
   - port: {{ .Values.global.sslLdapPort }}
     name: ssl-ldap-port
     targetPort: ssl-ldap-port

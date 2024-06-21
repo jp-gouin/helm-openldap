@@ -99,6 +99,30 @@ service:
   type: ClusterIP
   sessionAffinity: None
 
+# Service for read only cluster pods (if enabled)
+serviceReadOnly:
+  annotations: {}
+  ## If service type NodePort, define the value here
+  #ldapPortNodePort:
+  #sslLdapPortNodePort:
+
+  # Disable if you do not want to expose port on service
+  enableLdapPort: true
+  enableSslLdapPort: true
+
+  ## List of IP addresses at which the service is available
+  ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+  ##
+  externalIPs: []
+
+  ## Define a static clusterIP
+  #clusterIP:
+  #loadBalancerIP:
+  #loadBalancerSourceRanges: []
+  type: ClusterIP
+  sessionAffinity: None
+
+
 # Default configuration for openldap as environment variables. These get injected directly in the container.
 # Use the env variables from https://hub.docker.com/r/bitnami/openldap/
 # Be careful, do not modify the following values unless you know exactly what your are doing
