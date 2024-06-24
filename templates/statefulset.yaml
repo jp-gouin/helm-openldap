@@ -186,6 +186,8 @@ spec:
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
+            - name: LDAP_EXTRA_SCHEMAS
+              value: {{ print "cosine,inetorgperson,nis," (include "openldap.schemaFiles" .)}}
           envFrom:
             {{- if .Values.extraEnvVarsCM }}
             - configMapRef:
@@ -193,8 +195,6 @@ spec:
             {{- end }}
             - configMapRef:
                 name: {{ template "openldap.fullname" . }}-env
-            - configMapRef:
-                name: {{ template "openldap.fullname" . }}-env-schemas
             {{- if .Values.extraEnvVarsSecret }}
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
