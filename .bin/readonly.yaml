@@ -1,0 +1,30 @@
+persistence:
+  accessModes:
+  - ReadWriteOnce
+  enabled: true
+  size: 1Gi
+ltb-passwd:
+  enabled : false
+phpldapadmin:
+  enabled: false
+replicaCount: 3
+readOnlyReplicaCount: 1
+replication:
+  clusterName: cluster.local
+  enabled: true
+  interval: "00:00:00:10"
+  retry: 60
+  starttls: critical
+  timeout: 1
+  tls_reqcert: never
+initTLSSecret:
+  tls_enabled: true
+  secret: "custom-cert" 
+service:
+  ldapPortNodePort: 30389
+  sslLdapPortNodePort: 30636
+  type: NodePort
+serviceReadOnly:
+  ldapPortNodePort: 31389
+  sslLdapPortNodePort: 31636
+  type: NodePort
