@@ -14,3 +14,5 @@ jobs:
     uses: ./.github/workflows/ci-other.yml
   call-ci-ha:
     uses: ./.github/workflows/ci-ha.yml
+  call-ci-readonly:
+    uses: ./.github/workflows/ci-readonly.yml
