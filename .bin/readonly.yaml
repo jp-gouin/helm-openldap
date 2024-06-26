@@ -1,0 +1,113 @@
+customSchemaFiles:
+  00-memberof.ldif: |-
+    # Load memberof module
+    dn: cn=module,cn=config
+    cn: module
+    objectClass: olcModuleList
+    olcModuleLoad: memberof
+    olcModulePath: /opt/bitnami/openldap/lib/openldap
+
+    dn: olcOverlay=memberof,olcDatabase={2}mdb,cn=config
+    changetype: add
+    objectClass: olcOverlayConfig
+    objectClass: olcMemberOf
+    olcOverlay: memberof
+    olcMemberOfRefint: TRUE
+    
+  10_owncloud_schema.ldif: |-
+    # This LDIF files describes the ownCloud schema and can be used to
+    # add two optional attributes: ownCloudQuota and ownCloudUUID
+    # The ownCloudUUID is used to store a unique, non-reassignable, persistent identifier for users and groups
+    dn: cn=owncloud,cn=schema,cn=config
+    objectClass: olcSchemaConfig
+    cn: owncloud
+    olcObjectIdentifier: ownCloudOid 1.3.6.1.4.1.39430
+    olcAttributeTypes: ( ownCloudOid:1.1.1 NAME 'ownCloudQuota'
+      DESC 'User Quota (e.g. 2 GB)'
+      EQUALITY caseExactMatch
+      SUBSTR caseIgnoreSubstringsMatch
+      SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
+    olcAttributeTypes: ( ownCloudOid:1.1.2 NAME 'ownCloudUUID'
+      DESC 'A non-reassignable and persistent account ID)'
+      EQUALITY uuidMatch
+      SUBSTR caseIgnoreSubstringsMatch
+      SYNTAX 1.3.6.1.1.16.1 SINGLE-VALUE )
+    olcObjectClasses: ( ownCloudOid:1.2.1 NAME 'ownCloud'
+      DESC 'ownCloud LDAP Schema'
+      AUXILIARY
+      MAY ( ownCloudQuota $ ownCloudUUID ) )
+customLdifFiles:
+  00-root.ldif: |-
+    # Root creation
+    dn: dc=example,dc=org
+    objectClass: dcObject
+    objectClass: organization
+    o: Example, Inc
+  01-default-group.ldif: |-
+    dn: cn=myGroup,dc=example,dc=org
+    cn: myGroup
+    gidnumber: 500
+    objectclass: posixGroup
+    objectclass: top
+  02-default-user.ldif: |-
+    dn: cn=Jean Dupond,dc=example,dc=org
+    cn: Jean Dupond
+    gidnumber: 500
+    givenname: Jean
+    homedirectory: /home/users/jdupond
+    objectclass: inetOrgPerson
+    objectclass: posixAccount
+    objectClass: ownCloud
+    objectclass: top
+    sn: Dupond
+    uid: jdupond
+    uidnumber: 1000
+    userpassword: {MD5}KOULhzfBhPTq9k7a9XfCGw==
+  03-test-memberof.ldif: |-
+    dn: ou=Group,dc=example,dc=org
+    objectclass: organizationalUnit
+    ou: Group
+
+    dn: ou=People,dc=example,dc=org
+    objectclass: organizationalUnit
+    ou: People
+
+    dn: uid=test1,ou=People,dc=example,dc=org
+    objectclass: account
+    uid: test1
+
+    dn: cn=testgroup,ou=Group,dc=example,dc=org
+    objectclass: groupOfNames
+    cn: testgroup
+    member: uid=test1,ou=People,dc=example,dc=org
+
+persistence:
+  accessModes:
+  - ReadWriteOnce
+  enabled: true
+  size: 1Gi
+ltb-passwd:
+  enabled : false
+phpldapadmin:
+  enabled: false
+replicaCount: 3
+readOnlyReplicaCount: 1
+replication:
+  clusterName: cluster.local
+  enabled: true
+  interval: "00:00:00:10"
+  retry: 60
+  starttls: critical
+  timeout: 1
+  tls_reqcert: never
+initTLSSecret:
+  tls_enabled: true
+  secret: "custom-cert" 
+service:
+  ldapPortNodePort: 30389
+  sslLdapPortNodePort: 30636
+  type: NodePort
+serviceReadOnly:
+  ldapPortNodePort: 31389
+  sslLdapPortNodePort: 31636
+  type: NodePort

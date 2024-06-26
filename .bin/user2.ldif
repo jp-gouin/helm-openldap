@@ -1,0 +1,17 @@
+dn: uid=ro,ou=users,dc=example,dc=org
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: posixAccount
+objectClass: top
+uid: ro
+givenName: u
+sn: u
+cn: u
+displayName: U
+description: User to test that readonly cluster cannot be used to add more users.
+mail: u@example.org
+uidNumber: 21000
+gidNumber: 31000
+homeDirectory: /home/u
+userPassword:: p1NTSEF9TXJEcXpFNGdKbXZxbVRVTGhvWEZ1VzJBbkV3NWFLK3J3WTIvbHc9PQ==
