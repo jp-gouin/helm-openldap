@@ -175,7 +175,7 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
             - name: LDAP_EXTRA_SCHEMAS
-              value: {{ print "cosine,inetorgperson,nis," (include "openldap.schemaFiles" .) ",readonly"}}              
+              value: {{ print "cosine,inetorgperson,nis," (include "openldap.schemaFilesReadOnly" .)}}              
           envFrom:
             {{- if .Values.extraEnvVarsCM }}
             - configMapRef:
@@ -237,7 +237,7 @@ spec:
               mountPath: /bitnami/openldap/
             - name: certs
               mountPath: /opt/bitnami/openldap/certs
-            {{- range $file := (include "openldap.builtinSchemaFiles" . | split ",") }}
+            {{- range $file := (include "openldap.builtinSchemaFilesReadOnly" . | split ",") }}
             - name: replication-acls
               mountPath: /opt/bitnami/openldap/etc/schema/{{ $file }}.ldif
               subPath: {{ $file }}.ldif
@@ -249,10 +249,6 @@ spec:
               subPath: {{ $file }}.ldif
             {{- end }}
 {{- end }}
-            - name: readonly-ldif
-              mountPath: /opt/bitnami/openldap/etc/schema/readonly.ldif
-              subPath: readonly.ldif
-
 {{- if or (.Values.customLdifFiles) (.Values.customLdifCm) }}
             - name: custom-ldif-files
               mountPath: /ldifs/
