@@ -28,31 +28,35 @@ jobs:
     - name: verify deployment
       shell: bash
       run: |
-          echo "test access to openldap database"
-          sleep 10
-          LDAPTLS_REQCERT=never ldapsearch -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org'
+        echo "test access to openldap database"
+        sleep 10
+        LDAPTLS_REQCERT=never ldapsearch -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org'
     - name: verify certs
       shell: bash
       run: |
-          echo "verify certificate"
-          echo | openssl s_client -showcerts -servername example.com -connect localhost:30636 2>/dev/null | openssl x509 -inform pem -noout -text > /tmp/test-cert.txt
-          if ! grep -q "CN = example.com" /tmp/test-cert.txt; then  echo exit 1; fi
+        echo "verify certificate"
+        echo | openssl s_client -showcerts -servername example.com -connect localhost:30636 2>/dev/null | openssl x509 -inform pem -noout -text > /tmp/test-cert.txt
+        if ! grep -q "CN = example.com" /tmp/test-cert.txt; then  echo exit 1; fi
     - name: test write on main cluster
       shell: bash
       run: |
-          echo "Write test to openldap database"
-          LDAPTLS_REQCERT=never ldapadd -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -f  .bin/user.ldif
-          LDAPTLS_REQCERT=never ldapsearch -o nettimeout=20 -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org' > /tmp/test-write.txt
-          if ! grep  "Einstein" /tmp/test-write.txt; then echo 'no Einstein entry found' ; fi
-          if ! grep  "objectClass: ownCloud" /tmp/test-write.txt; then  echo 'no ownCloud entry found'; fi
+        echo "Write test to openldap database"
+        LDAPTLS_REQCERT=never ldapadd -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -f  .bin/user.ldif
+        LDAPTLS_REQCERT=never ldapsearch -o nettimeout=20 -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org' > /tmp/test-write.txt
+        if ! grep  "Einstein" /tmp/test-write.txt; then echo 'no Einstein entry found' ; fi
+        if ! grep  "objectClass: ownCloud" /tmp/test-write.txt; then  echo 'no ownCloud entry found'; fi
     - name: test memberOf on main cluster
       shell: bash
       run: |
-          echo "MemberOf test to openldap database"
-          LDAPTLS_REQCERT=never ldapsearch -o nettimeout=20 -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org' "(memberOf=cn=testgroup,ou=Group,dc=example,dc=org)" > /tmp/test-write.txt
-          if [ $(grep "numResponses" /tmp/test-write.txt | cut -d ":" -f 2 | tr -d ' ') -ne 2 ]; then exit 1 ; fi
-          if ! grep -q "uid=test1,ou=People,dc=example,dc=org" /tmp/test-write.txt; then  echo exit 1; fi
+        echo "MemberOf test to openldap database"
+        LDAPTLS_REQCERT=never ldapsearch -o nettimeout=20 -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:30636 -b 'dc=example,dc=org' "(memberOf=cn=testgroup,ou=Group,dc=example,dc=org)" > /tmp/test-write.txt
+        if [ $(grep "numResponses" /tmp/test-write.txt | cut -d ":" -f 2 | tr -d ' ') -ne 2 ]; then exit 1 ; fi
+        if ! grep -q "uid=test1,ou=People,dc=example,dc=org" /tmp/test-write.txt; then  echo exit 1; fi
     - name: test write on readonly replica
+      shell: bash
       run: |
-          echo "Write test to openldap readonly replica"
-          LDAPTLS_REQCERT=never ldapadd -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:31636 -f .bin/user.ldif
+        echo "Ensure readonly replica does not have mirror mode enabled"
+        kubectl exec openldap-stack-ha-readonly-0 -- bash -c "/opt/bitnami/openldap/bin/ldapmodify -Y EXTERNAL -H ldapi:/// -f /opt/bitnami/openldap/etc/schema/readonlyremovemirror.ldif"
+
+        echo "Write test to openldap readonly replica"
+        if LDAPTLS_REQCERT=never ldapadd -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:31636 -f .bin/user2.ldif; then echo exit 1; fi
