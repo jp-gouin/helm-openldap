@@ -13,7 +13,7 @@ A clear and concise description of what the bug is.
 **Logs**
 Include logs of `openldap`, try to include logs of the first start of the `openldap-0` container.
 
-*Hint* you can use 'kubectl logs <pod_name> --previous' to get the log of the previous execution of the pod
+*Hint* you can use `kubectl logs <pod_name> --previous` to get the log of the previous execution of the pod
 
 **To Reproduce**
 Steps to reproduce the behavior:
