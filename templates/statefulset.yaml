@@ -178,6 +178,8 @@ spec:
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
           env:
+            - name: LDAP_EXTRA_SCHEMAS
+              value: {{ print "cosine,inetorgperson,nis," (include "openldap.schemaFiles" .) }}
             - name: POD_NAME
               valueFrom:
                 fieldRef:
@@ -193,8 +195,6 @@ spec:
             {{- end }}
             - configMapRef:
                 name: {{ template "openldap.fullname" . }}-env
-            - configMapRef:
-                name: {{ template "openldap.fullname" . }}-env-schemas
             {{- if .Values.extraEnvVarsSecret }}
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}

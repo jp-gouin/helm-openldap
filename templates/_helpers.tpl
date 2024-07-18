@@ -61,11 +61,6 @@ Generate olcServerID list
     {{- $index1 := $index0 | add1 }}
     olcServerID: {{ $index1 }} ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389
   {{- end -}}
-{{- $readonlyNodeCount := .Values.readOnlyReplicaCount | int }}
-  {{- range $index0 := until $readonlyNodeCount }}
-    {{- $index1 := $index0 | add $nodeCount | add 1 }}
-    olcServerID: {{ $index1 }} ldap://{{ $name }}-readonly-{{ $index0 }}.{{ $name }}-headless-readonly.{{ $namespace }}.svc.{{ $cluster }}:1389
-  {{- end -}}
 {{- end -}}
 
 {{/*
@@ -86,11 +81,6 @@ Generate olcSyncRepl list
     {{- $index1 := $index0 | add1 }}
     olcSyncRepl: rid=00{{ $index1 }} provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389 binddn="cn={{ $bindDNUser }},cn=config" bindmethod=simple credentials={{ $configPassword }} searchbase="cn=config" type=refreshAndPersist retry="{{ $retry }} +" timeout={{ $timeout }} starttls={{ $starttls }} tls_reqcert={{ $tls_reqcert }}
   {{- end -}}
-{{- $readonlyNodeCount := .Values.readOnlyReplicaCount | int }}
-  {{- range $index0 := until $readonlyNodeCount }}
-    {{- $index1 := $index0 | add $nodeCount | add 1 }}
-    olcSyncRepl: rid=00{{ $index1 }} provider=ldap://{{ $name }}-readonly-{{ $index0 }}.{{ $name }}-headless-readonly.{{ $namespace }}.svc.{{ $cluster }}:1389 binddn="cn={{ $bindDNUser }},cn=config" bindmethod=simple credentials={{ $configPassword }} searchbase="cn=config" type=refreshAndPersist retry="{{ $retry }} +" timeout={{ $timeout }} starttls={{ $starttls }} tls_reqcert={{ $tls_reqcert }}
-  {{- end -}}
 {{- end -}}
 
 {{/*
@@ -109,29 +99,11 @@ Generate olcSyncRepl list
 {{- $tls_reqcert := .Values.replication.tls_reqcert }}
 {{- $interval := .Values.replication.interval }}
 {{- $nodeCount := .Values.replicaCount | int }}
-{{- $readonlyNodeCount := .Values.readOnlyReplicaCount | int }}
   {{- range $index0 := until $nodeCount }}
     {{- $index1 := $index0 | add1 }}
     olcSyncrepl:
       rid=10{{ $index1 }}
       provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389
-      binddn={{ printf "cn=%s,%s" $bindDNUser $domain }}
-      bindmethod=simple
-      credentials={{ $adminPassword }}
-      searchbase={{ $domain }}
-      type=refreshAndPersist
-      interval={{ $interval }}
-      network-timeout=0
-      retry="{{ $retry }} +"
-      timeout={{ $timeout }}
-      starttls={{ $starttls }}
-      tls_reqcert={{ $tls_reqcert }}
-  {{- end -}}
-  {{- range $index0 := until $readonlyNodeCount }}
-    {{- $index1 := $index0 | add $nodeCount | add 1 }}
-    olcSyncrepl:
-      rid=10{{ $index1 }}
-      provider=ldap://{{ $name }}-readonly-{{ $index0 }}.{{ $name }}-headless-readonly.{{ $namespace }}.svc.{{ $cluster }}:1389
       binddn={{ printf "cn=%s,%s" $bindDNUser $domain }}
       bindmethod=simple
       credentials={{ $adminPassword }}

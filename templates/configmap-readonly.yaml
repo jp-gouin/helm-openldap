@@ -12,8 +12,11 @@ metadata:
 {{ toYaml .Values.extraLabels | indent 4 }}
 {{- end }}
 data:
-  # replication
   readonly.ldif: |
     dn: olcDatabase={2}mdb,cn=config
-    olcReadonly: TRUE
+    changetype: modify
+    add: olcAccess
+    olcAccess: to *
+      by dn.exact="{{ include "global.bindDN" . }}" write
+      by * read
 {{- end }}
