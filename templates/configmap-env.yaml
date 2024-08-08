@@ -18,7 +18,6 @@ metadata:
 {{- end }}
 data:
   LDAP_ROOT: {{ include "global.baseDomain" . }}
-  LDAP_EXTRA_SCHEMAS: {{ print "cosine,inetorgperson,nis," (include "openldap.schemaFiles" .) }}
   {{- if .Values.users }}
   LDAP_USERS: {{ .Values.users }}
   {{- end }}

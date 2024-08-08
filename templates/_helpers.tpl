@@ -61,6 +61,11 @@ Generate olcServerID list
     {{- $index1 := $index0 | add1 }}
     olcServerID: {{ $index1 }} ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389
   {{- end -}}
+{{- $readonlyNodeCount := .Values.readOnlyReplicaCount | int }}
+  {{- range $index0 := until $readonlyNodeCount }}
+    {{- $index1 := $index0 | add $nodeCount | add 1 }}
+    olcServerID: {{ $index1 }} ldap://{{ $name }}-readonly-{{ $index0 }}.{{ $name }}-headless-readonly.{{ $namespace }}.svc.{{ $cluster }}:1389
+  {{- end -}}
 {{- end -}}
 
 {{/*
@@ -79,8 +84,8 @@ Generate olcSyncRepl list
 {{- $nodeCount := .Values.replicaCount | int }}
   {{- range $index0 := until $nodeCount }}
     {{- $index1 := $index0 | add1 }}
-    olcSyncRepl: rid=00{{ $index1 }} provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389 binddn="cn={{ $bindDNUser }},cn=config" bindmethod=simple credentials={{ $configPassword }} searchbase="cn=config" type=refreshAndPersist retry="{{ $retry }} +" timeout={{ $timeout }} starttls={{ $starttls }} tls_reqcert={{ $tls_reqcert }}
-  {{- end -}}
+    olcSyncRepl: rid=00{{ $index1 }} provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389 binddn="cn={{ $bindDNUser }},cn=config" bindmethod=simple credentials={{ $configPassword }} searchbase="cn=config" type=refreshOnly retry="{{ $retry }} +" timeout={{ $timeout }} starttls={{ $starttls }} tls_reqcert={{ $tls_reqcert }}
+  {{- end -}} 
 {{- end -}}
 
 {{/*
@@ -99,6 +104,7 @@ Generate olcSyncRepl list
 {{- $tls_reqcert := .Values.replication.tls_reqcert }}
 {{- $interval := .Values.replication.interval }}
 {{- $nodeCount := .Values.replicaCount | int }}
+{{- $readonlyNodeCount := .Values.readOnlyReplicaCount | int }}
   {{- range $index0 := until $nodeCount }}
     {{- $index1 := $index0 | add1 }}
     olcSyncrepl:
@@ -108,13 +114,14 @@ Generate olcSyncRepl list
       bindmethod=simple
       credentials={{ $adminPassword }}
       searchbase={{ $domain }}
-      type=refreshAndPersist
+      type=refreshOnly
       interval={{ $interval }}
       network-timeout=0
       retry="{{ $retry }} +"
       timeout={{ $timeout }}
       starttls={{ $starttls }}
       tls_reqcert={{ $tls_reqcert }}
+      exattrs=olcMirrorMode,olcMultiProvider
   {{- end -}}
 {{- end -}}
 
@@ -175,13 +182,21 @@ Cannot return list => return string comma separated
 {{- define "openldap.builtinSchemaFiles" -}}
   {{- $schemas := "" -}}
   {{- if .Values.replication.enabled -}}
-    {{- $schemas = "syncprov,serverid,csyncprov,rep,bsyncprov,brep,acls" -}}
+    {{- $schemas = "syncprov,serverid,csyncprov,rep,mirrorcfg,bsyncprov,brep,mirrormdb,acls" -}}
   {{- else -}}
     {{- $schemas = "acls" -}}
   {{- end -}}
   {{- print $schemas -}}
 {{- end -}}
-
+{{- define "openldap.builtinSchemaFilesReadOnly" -}}
+  {{- $schemas := "" -}}
+  {{- if .Values.replication.enabled -}}
+    {{- $schemas = "serverid,readonlybrep,readonlyrep,readonlyremovemirror" -}}
+  {{- else -}}
+    {{- $schemas = "" -}}
+  {{- end -}}
+  {{- print $schemas -}}
+{{- end -}}
 {{/*
 Return the list of custom schema files to use
 Cannot return list => return string comma separated
@@ -204,6 +219,16 @@ Cannot return list => return string comma separated
   {{- end -}}
   {{- print $schemas -}}
 {{- end -}}
+
+{{- define "openldap.schemaFilesReadOnly" -}}
+  {{- $schemas := (include "openldap.builtinSchemaFilesReadOnly" .) -}}
+  {{- $custom_schemas := (include "openldap.customSchemaFiles" .) -}}
+  {{- if gt (len $custom_schemas) 0 -}}
+    {{- $schemas = print $schemas "," $custom_schemas -}}
+  {{- end -}}
+  {{- print $schemas -}}
+{{- end -}}
+
 
 {{/*
 Return the proper base domain
