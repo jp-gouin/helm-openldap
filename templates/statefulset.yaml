@@ -52,12 +52,12 @@ spec:
               if [ "$host" = "{{ template "openldap.fullname" . }}-0" ]
               then
                 echo "This is the main openldap so let's init all additional schemas and ldifs here"
-                cp -p -f /cm-schemas-acls/*.ldif /custom_config/ 
+                cp -p -f /cm-schemas-acls/*.ldif /custom_config/
                 if [ -d /cm-schemas ]; then
-                  cp -p -f /cm-schemas/*.ldif /custom-schemas/ 
+                  cp -p -f /cm-schemas/*.ldif /custom-schemas/
                 fi
                 if [ -d /cm-ldifs ]; then
-                  cp -p -f /cm-ldifs/*.ldif /custom-ldifs/ 
+                  cp -p -f /cm-ldifs/*.ldif /custom-ldifs/
                 fi
               else
                 cp -p -f /cm-schemas-acls/*.ldif /custom_config/
@@ -141,7 +141,6 @@ spec:
             - mountPath: /bitnami
               name: data
       {{- end }}
-    
       serviceAccountName: {{ template "openldap.serviceAccountName" . }}
       {{- include "openldap.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.hostAliases }}
@@ -174,6 +173,12 @@ spec:
         - name: {{ .Chart.Name }}
           image: {{ include "openldap.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.command }}
+          command: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.args }}
+          args: {{ toYaml . | nindent 12}}
+          {{- end }}
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
@@ -216,6 +221,8 @@ spec:
             timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
             successThreshold: {{ .Values.livenessProbe.successThreshold }}
             failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          {{- else if .Values.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
@@ -226,6 +233,8 @@ spec:
             timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
             successThreshold: {{ .Values.readinessProbe.successThreshold }}
             failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          {{- else if .Values.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.startupProbe.enabled }}
           startupProbe:
