@@ -65,7 +65,7 @@ data:
     dn: olcDatabase={2}mdb,cn=config
     changetype: modify
     add: olcSyncrepl
-    {{- include "olcSyncRepls2" . }}
+    {{- include "olcSyncRepls2ReadOnly" . }}
   # TODO - currently this needs to be executed manually e.g. via kubectl exec in each read only replica
   # need to see if there is a way to make olcMultiProvider not be propagated from main cluster to readonly replicas.
   readonlyremovemirror.ldif: |
@@ -76,11 +76,12 @@ data:
     dn: olcDatabase={0}config,cn=config
     changetype: modify
     delete: olcMultiProvider
+    
   readonlyrep.ldif: |
     dn: olcDatabase={0}config,cn=config
     changetype: modify
     add: olcSyncRepl
-    {{- include "olcSyncRepls" . }}
+    {{- include "olcSyncReplsReadOnly" . }}
   # acls
   acls.ldif: |
 {{- if .Values.customAcls }}

@@ -88,6 +88,23 @@ Generate olcSyncRepl list
   {{- end -}} 
 {{- end -}}
 
+{{- define "olcSyncReplsReadOnly" -}}
+{{- $name := (include "openldap.fullname" .) }}
+{{- $namespace := .Release.Namespace }}
+{{- $bindDNUser := .Values.global.adminUser }}
+{{- $cluster := .Values.replication.clusterName }}
+{{- $configPassword :=  ternary .Values.global.configPassword "%%CONFIG_PASSWORD%%" (empty .Values.global.existingSecret) }}
+{{- $retry := .Values.replication.retry }}
+{{- $timeout := .Values.replication.timeout }}
+{{- $starttls := .Values.replication.starttls }}
+{{- $tls_reqcert := .Values.replication.tls_reqcert }}
+{{- $nodeCount := .Values.replicaCount | int }}
+  {{- range $index0 := until $nodeCount }}
+    {{- $index1 := $index0 | add1 }}
+    olcSyncRepl: rid=00{{ $index1 }} provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389 binddn="cn={{ $bindDNUser }},cn=config" bindmethod=simple credentials={{ $configPassword }} searchbase="cn=config" type=refreshOnly retry="{{ $retry }} +" timeout={{ $timeout }} starttls={{ $starttls }} tls_reqcert={{ $tls_reqcert }}
+  {{- end -}} 
+{{- end -}}
+
 {{/*
 Generate olcSyncRepl list
 */}}
@@ -104,7 +121,39 @@ Generate olcSyncRepl list
 {{- $tls_reqcert := .Values.replication.tls_reqcert }}
 {{- $interval := .Values.replication.interval }}
 {{- $nodeCount := .Values.replicaCount | int }}
-{{- $readonlyNodeCount := .Values.readOnlyReplicaCount | int }}
+  {{- range $index0 := until $nodeCount }}
+    {{- $index1 := $index0 | add1 }}
+    olcSyncrepl:
+      rid=10{{ $index1 }}
+      provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389
+      binddn={{ printf "cn=%s,%s" $bindDNUser $domain }}
+      bindmethod=simple
+      credentials={{ $adminPassword }}
+      searchbase={{ $domain }}
+      type=refreshOnly
+      interval={{ $interval }}
+      network-timeout=0
+      retry="{{ $retry }} +"
+      timeout={{ $timeout }}
+      starttls={{ $starttls }}
+      tls_reqcert={{ $tls_reqcert }}
+      exattrs=olcMirrorMode,olcMultiProvider
+  {{- end -}}
+{{- end -}}
+
+{{- define "olcSyncRepls2ReadOnly" -}}
+{{- $name := (include "openldap.fullname" .) }}
+{{- $domain := (include "global.baseDomain" .) }}
+{{- $bindDNUser := .Values.global.adminUser }} 
+{{- $namespace := .Release.Namespace }}
+{{- $cluster := .Values.replication.clusterName }}
+{{- $adminPassword := ternary .Values.global.adminPassword "%%ADMIN_PASSWORD%%" (empty .Values.global.existingSecret) }}
+{{- $retry := .Values.replication.retry }}
+{{- $timeout := .Values.replication.timeout }}
+{{- $starttls := .Values.replication.starttls }}
+{{- $tls_reqcert := .Values.replication.tls_reqcert }}
+{{- $interval := .Values.replication.interval }}
+{{- $nodeCount := .Values.replicaCount | int }}
   {{- range $index0 := until $nodeCount }}
     {{- $index1 := $index0 | add1 }}
     olcSyncrepl:
