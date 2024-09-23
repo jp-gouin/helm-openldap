@@ -63,6 +63,12 @@ Generate olcServerID list
   {{- end -}}
 {{- end -}}
 
+{{- define "openldap.replication.tls_cacert" -}}
+{{- if .Values.replication.tls_cacert -}}
+{{- printf "tls_cacert=%s" .Values.replication.tls_cacert -}}
+{{- end -}}
+{{- end -}}
+
 {{/*
 Generate olcSyncRepl list
 */}}
@@ -76,10 +82,11 @@ Generate olcSyncRepl list
 {{- $timeout := .Values.replication.timeout }}
 {{- $starttls := .Values.replication.starttls }}
 {{- $tls_reqcert := .Values.replication.tls_reqcert }}
+{{- $tls_cacert := (include "openldap.replication.tls_cacert" .) }}
 {{- $nodeCount := .Values.replicaCount | int }}
   {{- range $index0 := until $nodeCount }}
     {{- $index1 := $index0 | add1 }}
-    olcSyncRepl: rid=00{{ $index1 }} provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389 binddn="cn={{ $bindDNUser }},cn=config" bindmethod=simple credentials={{ $configPassword }} searchbase="cn=config" type=refreshAndPersist retry="{{ $retry }} +" timeout={{ $timeout }} starttls={{ $starttls }} tls_reqcert={{ $tls_reqcert }}
+    olcSyncRepl: rid=00{{ $index1 }} provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389 binddn="cn={{ $bindDNUser }},cn=config" bindmethod=simple credentials={{ $configPassword }} searchbase="cn=config" type=refreshAndPersist retry="{{ $retry }} +" timeout={{ $timeout }} starttls={{ $starttls }} tls_reqcert={{ $tls_reqcert }} {{ $tls_cacert }}
   {{- end -}}
 {{- end -}}
 
@@ -97,6 +104,7 @@ Generate olcSyncRepl list
 {{- $timeout := .Values.replication.timeout }}
 {{- $starttls := .Values.replication.starttls }}
 {{- $tls_reqcert := .Values.replication.tls_reqcert }}
+{{- $tls_cacert := (include "openldap.replication.tls_cacert" .) }}
 {{- $interval := .Values.replication.interval }}
 {{- $nodeCount := .Values.replicaCount | int }}
   {{- range $index0 := until $nodeCount }}
@@ -115,6 +123,7 @@ Generate olcSyncRepl list
       timeout={{ $timeout }}
       starttls={{ $starttls }}
       tls_reqcert={{ $tls_reqcert }}
+      {{ $tls_cacert }}
   {{- end -}}
 {{- end -}}
 

@@ -238,6 +238,7 @@ replication:
   interval: 00:00:00:10
   starttls: "critical"
   tls_reqcert: "never"
+  # tls_cacert: "/etc/ssl/certs/ca-certificates.crt"
 ## Persist data to a persistent volume
 persistence:
   enabled: true
