@@ -133,6 +133,7 @@ Parameters related to Kubernetes.
 | `service.loadBalancerSourceRanges` | List of IP CIDRs allowed access to load balancer (if supported)                                                                           | `[]`                |
 | `service.sslLdapPortNodePort`      | Nodeport of External service port for SSL if service.type is NodePort                                                                     | `nil`               |
 | `service.type`                     | Service type can be ClusterIP, NodePort, LoadBalancer                                                                                     | `ClusterIP`         |
+| `service.ipFamilyPolicy`           | Represents the dual-stack-ness requested or required by this Service.                                                                     | `SingleStack`       |
 | `persistence.enabled`              | Whether to use PersistentVolumes or not                                                                                                   | `false`             |
 | `persistence.storageClass`         | Storage class for PersistentVolumes.                                                                                                      | `<unset>`           |
 | `persistence.existingClaim`        | Add existing Volumes Claim.                                                                                                               | `<unset>`           |
