@@ -176,6 +176,8 @@ spec:
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
+            - name: LDAP_EXTRA_SCHEMAS
+              value: {{ print "cosine,inetorgperson,nis," (include "openldap.schemaFilesReadOnly" .)}}              
           envFrom:
             {{- if .Values.extraEnvVarsCM }}
             - configMapRef:
@@ -250,7 +252,6 @@ spec:
               subPath: {{ $file }}.ldif
             {{- end }}
 {{- end }}
-
 {{- if or (.Values.customLdifFiles) (.Values.customLdifCm) }}
             - name: custom-ldif-files
               mountPath: /ldifs/
