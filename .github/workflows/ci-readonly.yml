@@ -55,8 +55,5 @@ jobs:
     - name: test write on readonly replica
       shell: bash
       run: |
-        echo "Ensure readonly replica does not have mirror mode enabled"
-        kubectl exec openldap-stack-ha-readonly-0 -- bash -c "/opt/bitnami/openldap/bin/ldapmodify -Y EXTERNAL -H ldapi:/// -f /opt/bitnami/openldap/etc/schema/readonlyremovemirror.ldif"
-
         echo "Write test to openldap readonly replica"
         if LDAPTLS_REQCERT=never ldapadd -x -D 'cn=admin,dc=example,dc=org' -w Not@SecurePassw0rd -H ldaps://localhost:31636 -f .bin/user2.ldif; then echo exit 1; fi
