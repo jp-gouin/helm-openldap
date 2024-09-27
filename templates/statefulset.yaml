@@ -179,7 +179,7 @@ spec:
           {{- end }}
           env:
             - name: LDAP_EXTRA_SCHEMAS
-              value: {{ print "cosine,inetorgperson,nis," (include "openldap.schemaFiles" .) }}
+              value: {{ print "cosine,inetorgperson,nis," (include "openldap.schemaFiles" (dict "context" . )) }}
             - name: POD_NAME
               valueFrom:
                 fieldRef:

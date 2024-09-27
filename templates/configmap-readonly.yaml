@@ -15,8 +15,6 @@ data:
   readonly.ldif: |
     dn: olcDatabase={2}mdb,cn=config
     changetype: modify
-    add: olcAccess
-    olcAccess: to *
-      by dn.exact="{{ include "global.bindDN" . }}" write
-      by * read
+    replace: olcReadOnly
+    olcReadOnly: TRUE
 {{- end }}
