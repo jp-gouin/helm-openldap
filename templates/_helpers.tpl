@@ -79,30 +79,8 @@ Generate olcSyncRepl list
 {{- $nodeCount := .Values.replicaCount | int }}
   {{- range $index0 := until $nodeCount }}
     {{- $index1 := $index0 | add1 }}
-<<<<<<< HEAD
     olcSyncRepl: rid=00{{ $index1 }} provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389 binddn="cn={{ $bindDNUser }},cn=config" bindmethod=simple credentials={{ $configPassword }} searchbase="cn=config" type=refreshAndPersist retry="{{ $retry }} +" timeout={{ $timeout }} starttls={{ $starttls }} tls_reqcert={{ $tls_reqcert }}
   {{- end -}}
-=======
-    olcSyncRepl: rid=00{{ $index1 }} provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389 binddn="cn={{ $bindDNUser }},cn=config" bindmethod=simple credentials={{ $configPassword }} searchbase="cn=config" type=refreshOnly retry="{{ $retry }} +" timeout={{ $timeout }} starttls={{ $starttls }} tls_reqcert={{ $tls_reqcert }}
-  {{- end -}} 
-{{- end -}}
-
-{{- define "olcSyncReplsReadOnly" -}}
-{{- $name := (include "openldap.fullname" .) }}
-{{- $namespace := .Release.Namespace }}
-{{- $bindDNUser := .Values.global.adminUser }}
-{{- $cluster := .Values.replication.clusterName }}
-{{- $configPassword :=  ternary .Values.global.configPassword "%%CONFIG_PASSWORD%%" (empty .Values.global.existingSecret) }}
-{{- $retry := .Values.replication.retry }}
-{{- $timeout := .Values.replication.timeout }}
-{{- $starttls := .Values.replication.starttls }}
-{{- $tls_reqcert := .Values.replication.tls_reqcert }}
-{{- $nodeCount := .Values.replicaCount | int }}
-  {{- range $index0 := until $nodeCount }}
-    {{- $index1 := $index0 | add1 }}
-    olcSyncRepl: rid=00{{ $index1 }} provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389 binddn="cn={{ $bindDNUser }},cn=config" bindmethod=simple credentials={{ $configPassword }} searchbase="cn=config" type=refreshOnly retry="{{ $retry }} +" timeout={{ $timeout }} starttls={{ $starttls }} tls_reqcert={{ $tls_reqcert }}
-  {{- end -}} 
->>>>>>> b3c79d4c96d71ea8aba375df8339aff84a5b6864
 {{- end -}}
 
 {{/*
@@ -139,42 +117,6 @@ Generate olcSyncRepl list
       tls_reqcert={{ $tls_reqcert }}
       exattrs=olcMirrorMode,olcMultiProvider
   {{- end -}}
-<<<<<<< HEAD
-=======
-{{- end -}}
-
-{{- define "olcSyncRepls2ReadOnly" -}}
-{{- $name := (include "openldap.fullname" .) }}
-{{- $domain := (include "global.baseDomain" .) }}
-{{- $bindDNUser := .Values.global.adminUser }} 
-{{- $namespace := .Release.Namespace }}
-{{- $cluster := .Values.replication.clusterName }}
-{{- $adminPassword := ternary .Values.global.adminPassword "%%ADMIN_PASSWORD%%" (empty .Values.global.existingSecret) }}
-{{- $retry := .Values.replication.retry }}
-{{- $timeout := .Values.replication.timeout }}
-{{- $starttls := .Values.replication.starttls }}
-{{- $tls_reqcert := .Values.replication.tls_reqcert }}
-{{- $interval := .Values.replication.interval }}
-{{- $nodeCount := .Values.replicaCount | int }}
-  {{- range $index0 := until $nodeCount }}
-    {{- $index1 := $index0 | add1 }}
-    olcSyncrepl:
-      rid=10{{ $index1 }}
-      provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389
-      binddn={{ printf "cn=%s,%s" $bindDNUser $domain }}
-      bindmethod=simple
-      credentials={{ $adminPassword }}
-      searchbase={{ $domain }}
-      type=refreshOnly
-      interval={{ $interval }}
-      network-timeout=0
-      retry="{{ $retry }} +"
-      timeout={{ $timeout }}
-      starttls={{ $starttls }}
-      tls_reqcert={{ $tls_reqcert }}
-      exattrs=olcMirrorMode,olcMultiProvider
-  {{- end -}}
->>>>>>> b3c79d4c96d71ea8aba375df8339aff84a5b6864
 {{- end -}}
 
 {{/*
@@ -233,7 +175,6 @@ Cannot return list => return string comma separated
 */}}
 {{- define "openldap.builtinSchemaFiles" -}}
   {{- $schemas := "" -}}
-<<<<<<< HEAD
   {{- $context := index . "context" -}}
   {{- $mode := index . "mode" -}}
   {{- if $context.Values.replication.enabled -}}
@@ -242,10 +183,6 @@ Cannot return list => return string comma separated
     {{- else -}}
       {{- $schemas = "syncprov,serverid,csyncprov,rep,bsyncprov,brep,acls" -}}
     {{- end -}}
-=======
-  {{- if .Values.replication.enabled -}}
-    {{- $schemas = "syncprov,serverid,csyncprov,rep,mirrorcfg,bsyncprov,brep,mirrormdb,acls" -}}
->>>>>>> b3c79d4c96d71ea8aba375df8339aff84a5b6864
   {{- else -}}
     {{- $schemas = "acls" -}}
   {{- end -}}
