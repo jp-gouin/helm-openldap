@@ -1,7 +1,7 @@
 name: 'Setup env'
 description: 'Greet someone'
 inputs:
-  install-chaos: 
+  install-chaos:
     description: 'Setup ChaosMesh'
     required: true
     default: false
@@ -18,14 +18,14 @@ runs:
     - name: setup cluster
       shell: bash
       run: |
-        curl -Lo /tmp/kind https://kind.sigs.k8s.io/dl/v0.23.0/kind-linux-amd64
+        curl -Lo /tmp/kind https://kind.sigs.k8s.io/dl/v0.24.0/kind-linux-amd64
         chmod +x /tmp/kind
         curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
         sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
         rm -f kubectl
         sudo apt update
         sudo apt-get install -y ldap-utils
-        /tmp/kind create cluster --config=$GITHUB_WORKSPACE/.bin/kind-conf.yml --image=kindest/node:v1.29.4@sha256:3abb816a5b1061fb15c6e9e60856ec40d56b7b52bcea5f5f1350bc6e2320b6f8
+        /tmp/kind create cluster --config=$GITHUB_WORKSPACE/.bin/kind-conf.yml --image=kindest/node:v1.31.0@sha256:53df588e04085fd41ae12de0c3fe4c72f7013bba32a20e7325357a1ac94ba865
         kubectl apply -f https://projectcontour.io/quickstart/contour.yaml
         kubectl patch daemonsets -n projectcontour envoy -p '{"spec":{"template":{"spec":{"nodeSelector":{"ingress-ready":"true"}}}}}'
     - name: setup chaos mesh

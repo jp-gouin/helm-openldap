@@ -23,7 +23,7 @@ data:
   LDAP_USERS: {{ .Values.users }}
   {{- end }}
   {{- if .Values.userPasswords }}
-  LDAP_PASSWORDS: {{ .Values.userPasswords }}
+  LDAP_PASSWORDS: "{{ .Values.userPasswords }}"
   {{- end }}
   {{- if .Values.group }}
   LDAP_GROUP: {{ .Values.group }}
