@@ -188,8 +188,6 @@ spec:
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
-            - name: LDAP_EXTRA_SCHEMAS
-              value: {{ print "cosine,inetorgperson,nis," (include "openldap.schemaFiles" .)}}
           envFrom:
             {{- if .Values.extraEnvVarsCM }}
             - configMapRef:
@@ -251,13 +249,13 @@ spec:
               mountPath: /bitnami/openldap/
             - name: certs
               mountPath: /opt/bitnami/openldap/certs
-            {{- range $file := (include "openldap.builtinSchemaFiles" . | split ",") }}
+            {{- range $file :=  (include "openldap.builtinSchemaFiles" (dict "context" . ) | split ",") }}
             - name: replication-acls
               mountPath: /opt/bitnami/openldap/etc/schema/{{ $file }}.ldif
               subPath: {{ $file }}.ldif
             {{- end }}
 {{- if .Values.customSchemaFiles}}
-            {{- range $file := (include "openldap.customSchemaFiles" . | split ",") }}
+            {{- range $file := (include "openldap.customSchemaFiles" (dict "context" . ) | split ",") }}
             - name: custom-schema-files
               mountPath: /opt/bitnami/openldap/etc/schema/{{ $file }}.ldif
               subPath: {{ $file }}.ldif
