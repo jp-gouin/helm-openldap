@@ -63,7 +63,7 @@ spec:
           {{- end }}
           volumeMounts:
     {{- if .Values.customSchemaFiles }}
-      {{- range $file := (include "openldap.customSchemaFiles" . | split ",") }}
+      {{- range $file := (include "openldap.customSchemaFiles" (dict "context" . ) | split ",") }}
             - name: cm-custom-schema-files
               mountPath: /cm-schemas/{{ $file }}.ldif
               subPath: {{ $file }}.ldif
@@ -246,7 +246,7 @@ spec:
               mountPath: /opt/bitnami/openldap/etc/schema/readonly.ldif
               subPath: readonly.ldif
 {{- if .Values.customSchemaFiles}}
-            {{- range $file := (include "openldap.customSchemaFiles" . | split ",") }}
+            {{- range $file := (include "openldap.customSchemaFiles" (dict "context" . ) | split ",") }}
             - name: custom-schema-files
               mountPath: /opt/bitnami/openldap/etc/schema/{{ $file }}.ldif
               subPath: {{ $file }}.ldif

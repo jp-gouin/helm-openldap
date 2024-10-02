@@ -75,7 +75,7 @@ spec:
           {{- end }}
           volumeMounts:
     {{- if .Values.customSchemaFiles }}
-      {{- range $file := (include "openldap.customSchemaFiles" . | split ",") }}
+      {{- range $file := (include "openldap.customSchemaFiles" (dict "context" . ) | split ",") }}
             - name: cm-custom-schema-files
               mountPath: /cm-schemas/{{ $file }}.ldif
               subPath: {{ $file }}.ldif
