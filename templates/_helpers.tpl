@@ -108,14 +108,13 @@ Generate olcSyncRepl list
       bindmethod=simple
       credentials={{ $adminPassword }}
       searchbase={{ $domain }}
-      type=refreshOnly
+      type=refreshAndPersist
       interval={{ $interval }}
       network-timeout=0
       retry="{{ $retry }} +"
       timeout={{ $timeout }}
       starttls={{ $starttls }}
       tls_reqcert={{ $tls_reqcert }}
-      exattrs=olcMirrorMode,olcMultiProvider
   {{- end -}}
 {{- end -}}
 
@@ -179,7 +178,7 @@ Cannot return list => return string comma separated
   {{- $mode := index . "mode" -}}
   {{- if $context.Values.replication.enabled -}}
     {{- if $mode -}}
-      {{- $schemas = "brep,readonly,acls" -}}
+      {{- $schemas = "brep,readonly" -}}
     {{- else -}}
       {{- $schemas = "syncprov,serverid,csyncprov,rep,bsyncprov,brep,acls" -}}
     {{- end -}}
@@ -188,15 +187,7 @@ Cannot return list => return string comma separated
   {{- end -}}
   {{- print $schemas -}}
 {{- end -}}
-{{- define "openldap.builtinSchemaFilesReadOnly" -}}
-  {{- $schemas := "" -}}
-  {{- if .Values.replication.enabled -}}
-    {{- $schemas = "serverid,readonlybrep,readonlyrep,readonlyremovemirror" -}}
-  {{- else -}}
-    {{- $schemas = "" -}}
-  {{- end -}}
-  {{- print $schemas -}}
-{{- end -}}
+
 {{/*
 Return the list of custom schema files to use
 Cannot return list => return string comma separated
@@ -222,16 +213,6 @@ Cannot return list => return string comma separated
   {{- end -}}
   {{- print $schemas -}}
 {{- end -}}
-
-{{- define "openldap.schemaFilesReadOnly" -}}
-  {{- $schemas := (include "openldap.builtinSchemaFilesReadOnly" .) -}}
-  {{- $custom_schemas := (include "openldap.customSchemaFiles" .) -}}
-  {{- if gt (len $custom_schemas) 0 -}}
-    {{- $schemas = print $schemas "," $custom_schemas -}}
-  {{- end -}}
-  {{- print $schemas -}}
-{{- end -}}
-
 
 {{/*
 Return the proper base domain

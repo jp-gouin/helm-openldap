@@ -49,7 +49,10 @@ spec:
             - sh
             - -c
             - |
-              cp -p -f /cm-schemas-acls/brep.ldif /custom_config/
+              cp -p -f /cm-schemas-acls/*.ldif /custom_config/ 
+              if [ -d /cm-schemas ]; then
+                cp -p -f /cm-schemas/*.ldif /custom-schemas/ 
+              fi
               echo "let the replication takes care of everything :)"
             {{- if .Values.global.existingSecret }}
               sed -i -e "s/%%CONFIG_PASSWORD%%/${LDAP_CONFIG_ADMIN_PASSWORD}/g" /custom_config/*
@@ -175,9 +178,7 @@ spec:
                   fieldPath: metadata.name
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
-            {{- end }}
-            - name: LDAP_EXTRA_SCHEMAS
-              value: {{ print "cosine,inetorgperson,nis," (include "openldap.schemaFilesReadOnly" .)}}              
+            {{- end }}         
           envFrom:
             {{- if .Values.extraEnvVarsCM }}
             - configMapRef:
