@@ -1,3 +1,5 @@
+global:
+  configUser: "adminConfig"
 logLevel: debug
 resources: 
   limits:
