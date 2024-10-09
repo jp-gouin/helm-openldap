@@ -99,6 +99,12 @@ service:
   type: ClusterIP
   sessionAffinity: None
 
+  ## Represents the dual-stack-ness requested or required by this Service. Possible values are
+  ## SingleStack, PreferDualStack or RequireDualStack.
+  ## The ipFamilies and clusterIPs fields depend on the value of this field.
+  ## Ref: https://kubernetes.io/docs/concepts/services-networking/dual-stack/
+  ipFamilyPolicy: SingleStack
+
 # Service for read only cluster pods (if enabled)
 serviceReadOnly:
   annotations: {}
@@ -125,6 +131,12 @@ serviceReadOnly:
   #loadBalancerSourceRanges: []
   type: ClusterIP
   sessionAffinity: None
+
+  ## Represents the dual-stack-ness requested or required by this Service. Possible values are
+  ## SingleStack, PreferDualStack or RequireDualStack.
+  ## The ipFamilies and clusterIPs fields depend on the value of this field.
+  ## Ref: https://kubernetes.io/docs/concepts/services-networking/dual-stack/
+  ipFamilyPolicy: SingleStack
 
 
 # Default configuration for openldap as environment variables. These get injected directly in the container.

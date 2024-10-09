@@ -18,6 +18,7 @@ metadata:
 {{- end }}
 spec:
   type: {{ .Values.serviceReadOnly.type }}
+  ipFamilyPolicy: {{ .Values.serviceReadOnly.ipFamilyPolicy }}
   {{- if and (eq .Values.serviceReadOnly.type "LoadBalancer") .Values.serviceReadOnly.loadBalancerIP }}
   loadBalancerIP: {{ .Values.serviceReadOnly.loadBalancerIP }}
   {{- end }}
