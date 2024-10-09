@@ -32,5 +32,4 @@ data:
   LDAP_TLS_CA_FILE: /opt/bitnami/openldap/certs/ca.crt
   LDAP_CONFIG_ADMIN_ENABLED: "yes"
   LDAP_CONFIG_ADMIN_USERNAME: "{{ .Values.global.configUser }}"
-  {{- end }}
 {{ toYaml .Values.env | indent 2 }}
