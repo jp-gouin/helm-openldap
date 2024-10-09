@@ -1,0 +1,58 @@
+{{- if (gt (.Values.readOnlyReplicaCount | int) 0) }}
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.serviceReadOnly.annotations }}
+  annotations:
+{{ toYaml .Values.serviceReadOnly.annotations | indent 4 }}
+{{- end }}
+  name: {{ template "openldap.fullname" . }}-readonly
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: {{ template "openldap.fullname" . }}
+    chart: {{ template "openldap.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.extraLabels }}
+{{ toYaml .Values.extraLabels | indent 4 }}
+{{- end }}
+spec:
+  type: {{ .Values.serviceReadOnly.type }}
+  ipFamilyPolicy: {{ .Values.serviceReadOnly.ipFamilyPolicy }}
+  {{- if and (eq .Values.serviceReadOnly.type "LoadBalancer") .Values.serviceReadOnly.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.serviceReadOnly.loadBalancerIP }}
+  {{- end }}
+  {{- if and (eq .Values.serviceReadOnly.type "LoadBalancer") .Values.serviceReadOnly.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{ toYaml .Values.serviceReadOnly.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  {{- if and (eq .Values.serviceReadOnly.type "ClusterIP") .Values.serviceReadOnly.clusterIP }}
+  clusterIP: {{ .Values.serviceReadOnly.clusterIP }}
+  {{- end }}
+  ports:
+    {{- if .Values.serviceReadOnly.enableLdapPort }}
+    - name: ldap-port
+      protocol: TCP
+      port: {{ .Values.global.ldapPort }}
+      targetPort: ldap-port
+      {{- if and (or (eq .Values.serviceReadOnly.type "NodePort") (eq .Values.serviceReadOnly.type "LoadBalancer")) (not (empty .Values.serviceReadOnly.ldapPortNodePort)) }}
+      nodePort: {{ .Values.serviceReadOnly.ldapPortNodePort }}
+      {{- else if eq .Values.serviceReadOnly.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- if .Values.serviceReadOnly.enableSslLdapPort }}
+    - name: ssl-ldap-port
+      protocol: TCP
+      port: {{ .Values.global.sslLdapPort }}
+      targetPort: ssl-ldap-port
+      {{- if and (or (eq .Values.serviceReadOnly.type "NodePort") (eq .Values.serviceReadOnly.type "LoadBalancer")) (not (empty .Values.serviceReadOnly.sslLdapPortNodePort)) }}
+      nodePort: {{ .Values.serviceReadOnly.sslLdapPortNodePort }}
+      {{- else if eq .Values.serviceReadOnly.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+  sessionAffinity: {{ .Values.service.sessionAffinity }}
+  selector:
+    app.kubernetes.io/component: {{ template "openldap.fullname" . }}-readonly
+    release: {{ .Release.Name }}
+{{- end }}

@@ -1,3 +1,4 @@
+
 ** Please be patient while the chart is being deployed **
 
 OpenLDAP-Stack-HA has been installed. You can access the server from within the k8s cluster using:

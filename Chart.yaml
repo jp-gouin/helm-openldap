@@ -13,7 +13,7 @@ dependencies:
       - bitnami-common
     version: ~2
 home: https://www.openldap.org
-version: 4.2.6
+version: 4.3.0
 appVersion: 2.6.7
 description: Community developed LDAP software
 icon: https://raw.githubusercontent.com/jp-gouin/helm-openldap/master/logo.png

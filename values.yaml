@@ -19,7 +19,6 @@ global:
   ## Default Passwords to use, stored as a secret. Not used if existingSecret is set.
   adminUser: "admin"
   adminPassword: Not@SecurePassw0rd
-  configUserEnabled: true
   configUser: "admin"
   configPassword: Not@SecurePassw0rd
   ldapPort: 389
@@ -51,13 +50,16 @@ extraDeploy: []
 
 replicaCount: 3
 
+# Note: you need replication enabled to use readonly replicas!
+readOnlyReplicaCount: 0
+
 image:
   # From repository https://hub.docker.com/r/bitnami/openldap/
   #repository: bitnami/openldap
   #tag: 2.6.3
   # Temporary fix
   repository: jpgouin/openldap
-  tag: 2.6.7-fix
+  tag: 2.6.8-fix
   pullPolicy: Always
   pullSecrets: []
 
@@ -95,6 +97,46 @@ service:
   #loadBalancerSourceRanges: []
   type: ClusterIP
   sessionAffinity: None
+
+  ## Represents the dual-stack-ness requested or required by this Service. Possible values are
+  ## SingleStack, PreferDualStack or RequireDualStack.
+  ## The ipFamilies and clusterIPs fields depend on the value of this field.
+  ## Ref: https://kubernetes.io/docs/concepts/services-networking/dual-stack/
+  ipFamilyPolicy: SingleStack
+
+# Service for read only cluster pods (if enabled)
+serviceReadOnly:
+  annotations: {}
+  ## If service type NodePort, define the value here
+  #ldapPortNodePort:
+  #sslLdapPortNodePort:
+
+  # Disable if you do not want to expose port on service
+  enableLdapPort: true
+  enableSslLdapPort: true
+
+  # Control ports used in statefulset
+  headlessEnableLdapPort: true
+  headlessEnableSslLdapPort: true
+
+  ## List of IP addresses at which the service is available
+  ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+  ##
+  externalIPs: []
+
+  ## Define a static clusterIP
+  #clusterIP:
+  #loadBalancerIP:
+  #loadBalancerSourceRanges: []
+  type: ClusterIP
+  sessionAffinity: None
+
+  ## Represents the dual-stack-ness requested or required by this Service. Possible values are
+  ## SingleStack, PreferDualStack or RequireDualStack.
+  ## The ipFamilies and clusterIPs fields depend on the value of this field.
+  ## Ref: https://kubernetes.io/docs/concepts/services-networking/dual-stack/
+  ipFamilyPolicy: SingleStack
+
 
 # Default configuration for openldap as environment variables. These get injected directly in the container.
 # Use the env variables from https://hub.docker.com/r/bitnami/openldap/

@@ -69,7 +69,7 @@ Generate olcSyncRepl list
 {{- define "olcSyncRepls" -}}
 {{- $name := (include "openldap.fullname" .) }}
 {{- $namespace := .Release.Namespace }}
-{{- $bindDNUser := .Values.global.adminUser }}
+{{- $bindDNUser := ternary .Values.global.configUser }}
 {{- $cluster := .Values.replication.clusterName }}
 {{- $configPassword :=  ternary .Values.global.configPassword "%%CONFIG_PASSWORD%%" (empty .Values.global.existingSecret) }}
 {{- $retry := .Values.replication.retry }}
@@ -174,8 +174,14 @@ Cannot return list => return string comma separated
 */}}
 {{- define "openldap.builtinSchemaFiles" -}}
   {{- $schemas := "" -}}
-  {{- if .Values.replication.enabled -}}
-    {{- $schemas = "syncprov,serverid,csyncprov,rep,bsyncprov,brep,acls" -}}
+  {{- $context := index . "context" -}}
+  {{- $mode := index . "mode" -}}
+  {{- if $context.Values.replication.enabled -}}
+    {{- if $mode -}}
+      {{- $schemas = "brep,readonly" -}}
+    {{- else -}}
+      {{- $schemas = "syncprov,serverid,csyncprov,rep,bsyncprov,brep,acls" -}}
+    {{- end -}}
   {{- else -}}
     {{- $schemas = "acls" -}}
   {{- end -}}
@@ -187,8 +193,9 @@ Return the list of custom schema files to use
 Cannot return list => return string comma separated
 */}}
 {{- define "openldap.customSchemaFiles" -}}
+  {{- $context := index . "context" -}}
   {{- $schemas := "" -}}
-  {{- $schemas := ((join "," (.Values.customSchemaFiles | keys | sortAlpha))  | replace ".ldif" "") -}}
+  {{- $schemas := ((join "," ($context.Values.customSchemaFiles | keys | sortAlpha))  | replace ".ldif" "") -}}
   {{- print $schemas -}}
 {{- end -}}
 
@@ -197,6 +204,8 @@ Return the list of all schema files to use
 Cannot return list => return string comma separated
 */}}
 {{- define "openldap.schemaFiles" -}}
+  {{- $context := index . "context" -}}
+  {{- $mode := index . "mode" -}}
   {{- $schemas := (include "openldap.builtinSchemaFiles" .) -}}
   {{- $custom_schemas := (include "openldap.customSchemaFiles" .) -}}
   {{- if gt (len $custom_schemas) 0 -}}
@@ -236,7 +245,7 @@ Return the server name
 {{- end -}}
 
 {{/*
-Return the bdmin indDN
+Return the admin bindDN
 */}}
 {{- define "global.bindDN" -}}
 {{- printf "cn=%s,%s" .Values.global.adminUser (include "global.baseDomain" .) -}}

@@ -1,9 +1,10 @@
+{{- if (gt (.Values.readOnlyReplicaCount | int) 0) }}
 apiVersion: {{ include "common.capabilities.statefulset.apiVersion" . }}
 kind: StatefulSet
 metadata:
-  name:  {{ template "openldap.fullname" . }}
+  name:  {{ template "openldap.fullname" . }}-readonly
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: {{ template "openldap.fullname" . }}
+    app.kubernetes.io/component: {{ template "openldap.fullname" . }}-readonly
     chart: {{ template "openldap.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -14,11 +15,11 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.readOnlyReplicaCount }}
   selector:
     matchLabels: {{ include "common.labels.matchLabels" . | nindent 6 }}
-      app.kubernetes.io/component: {{ template "openldap.fullname" . }}
-  serviceName: {{ template "openldap.fullname" . }}-headless
+      app.kubernetes.io/component: {{ template "openldap.fullname" . }}-readonly
+  serviceName: {{ template "openldap.fullname" . }}-headless-readonly
   {{- if .Values.updateStrategy }}
   updateStrategy:
 {{ toYaml .Values.updateStrategy | nindent 4 }}
@@ -34,7 +35,7 @@ spec:
         checksum/configmap-customldif: {{ include (print $.Template.BasePath "/configmap-customldif.yaml") . | sha256sum }}
         {{- end }}
       labels: {{- include "common.labels.standard" . | nindent 8 }}
-        app.kubernetes.io/component: {{ template "openldap.fullname" . }}
+        app.kubernetes.io/component: {{ template "openldap.fullname" . }}-readonly
         release: {{ .Release.Name }}
         {{- if .Values.podLabels }}
         {{- include "common.tplvalues.render" (dict "value" .Values.podLabels "context" $) | nindent 8 }}
@@ -48,21 +49,11 @@ spec:
             - sh
             - -c
             - |
-              host=$(hostname)
-              if [ "$host" = "{{ template "openldap.fullname" . }}-0" ]
-              then
-                echo "This is the main openldap so let's init all additional schemas and ldifs here"
-                cp -p -f /cm-schemas-acls/*.ldif /custom_config/
-                if [ -d /cm-schemas ]; then
-                  cp -p -f /cm-schemas/*.ldif /custom-schemas/
-                fi
-                if [ -d /cm-ldifs ]; then
-                  cp -p -f /cm-ldifs/*.ldif /custom-ldifs/
-                fi
-              else
-                cp -p -f /cm-schemas-acls/*.ldif /custom_config/
-                echo "let the replication takes care of everything :)"
+              cp -p -f /cm-schemas-acls/*.ldif /custom_config/ 
+              if [ -d /cm-schemas ]; then
+                cp -p -f /cm-schemas/*.ldif /custom-schemas/ 
               fi
+              echo "let the replication takes care of everything :)"
             {{- if .Values.global.existingSecret }}
               sed -i -e "s/%%CONFIG_PASSWORD%%/${LDAP_CONFIG_ADMIN_PASSWORD}/g" /custom_config/*
               sed -i -e "s/%%ADMIN_PASSWORD%%/${LDAP_ADMIN_PASSWORD}/g" /custom_config/*
@@ -90,9 +81,9 @@ spec:
               mountPath: /custom-ldifs/
     {{- end }}
             - name: cm-replication-acls
-              mountPath: "/cm-schemas-acls"
+              mountPath: /cm-schemas-acls
             - name: replication-acls
-              mountPath: "/custom_config"
+              mountPath: /custom_config
     {{- if .Values.global.existingSecret }}
           envFrom:
           - secretRef:
@@ -141,6 +132,7 @@ spec:
             - mountPath: /bitnami
               name: data
       {{- end }}
+    
       serviceAccountName: {{ template "openldap.serviceAccountName" . }}
       {{- include "openldap.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.hostAliases }}
@@ -150,8 +142,8 @@ spec:
       affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.affinity "context" $) | nindent 8 }}
       {{- else }}
       affinity:
-        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAffinityPreset "component" "openldap" "context" $) | nindent 10 }}
-        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAntiAffinityPreset "component" "openldap" "context" $) | nindent 10 }}
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAffinityPreset "component" "openldap-readonly" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAntiAffinityPreset "component" "openldap-readonly" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.nodeAffinityPreset.type "key" .Values.nodeAffinityPreset.key "values" .Values.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
       {{- if .Values.nodeSelector }}
@@ -173,18 +165,12 @@ spec:
         - name: {{ .Chart.Name }}
           image: {{ include "openldap.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- with .Values.command }}
-          command: {{ toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.args }}
-          args: {{ toYaml . | nindent 12}}
-          {{- end }}
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
           env:
             - name: LDAP_EXTRA_SCHEMAS
-              value: {{ print "cosine,inetorgperson,nis," (include "openldap.schemaFiles" (dict "context" . )) }}
+              value: {{ print "cosine,inetorgperson,nis," (include "openldap.schemaFiles" (dict "context" . "mode" "readonly")) }}
             - name: POD_NAME
               valueFrom:
                 fieldRef:
@@ -192,7 +178,7 @@ spec:
                   fieldPath: metadata.name
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
-            {{- end }}
+            {{- end }}         
           envFrom:
             {{- if .Values.extraEnvVarsCM }}
             - configMapRef:
@@ -223,8 +209,6 @@ spec:
             timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
             successThreshold: {{ .Values.livenessProbe.successThreshold }}
             failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
-          {{- else if .Values.customLivenessProbe }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
@@ -235,8 +219,6 @@ spec:
             timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
             successThreshold: {{ .Values.readinessProbe.successThreshold }}
             failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
-          {{- else if .Values.customReadinessProbe }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.startupProbe.enabled }}
           startupProbe:
@@ -258,11 +240,12 @@ spec:
               mountPath: /bitnami/openldap/
             - name: certs
               mountPath: /opt/bitnami/openldap/certs
-            {{- range $file :=  (include "openldap.builtinSchemaFiles" (dict "context" . ) | split ",") }}
             - name: replication-acls
-              mountPath: /opt/bitnami/openldap/etc/schema/{{ $file }}.ldif
-              subPath: {{ $file }}.ldif
-            {{- end }}
+              mountPath: /opt/bitnami/openldap/etc/schema/brep.ldif
+              subPath: brep.ldif
+            - name: readonly-ldif
+              mountPath: /opt/bitnami/openldap/etc/schema/readonly.ldif
+              subPath: readonly.ldif
 {{- if .Values.customSchemaFiles}}
             {{- range $file := (include "openldap.customSchemaFiles" (dict "context" . ) | split ",") }}
             - name: custom-schema-files
@@ -326,6 +309,9 @@ spec:
           emptyDir:
             medium: Memory
 {{- end }}
+        - name: readonly-ldif
+          configMap:
+            name: {{ template "openldap.fullname" . }}-readonly
         - name: certs
           emptyDir:
             medium: Memory
@@ -372,4 +358,5 @@ spec:
 {{- else if (not .Values.persistence.enabled) }}
         - name: data
           emptyDir: {}
+{{- end }}
 {{- end }}
