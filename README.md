@@ -9,7 +9,7 @@ This version now use the [Bitnami Openldap](https://hub.docker.com/r/bitnami/ope
 
 More detail on the container image can be found [here](https://github.com/bitnami/containers/tree/main/bitnami/openldap)
 
-The chart now support `Bitnami/Openldap 2.6.6`. 
+The chart now support `Bitnami/Openldap 2.x`. 
 
 Due to #115, the chart does not fully support scaling the `openldap` cluster. To scale the cluster please follow [scaling your cluster](#scaling-your-cluster)
 - This will be fixed in priority
@@ -24,6 +24,8 @@ This chart will do the following:
 * Instantiate 3 instances of OpenLDAP server with multi-master replication
 * A phpldapadmin to administrate the OpenLDAP server
 * ltb-passwd for self service password
+
+**Now provide read-only feature !** [more details](#read-only)
 
 ## TL;DR
 
@@ -54,7 +56,6 @@ Global parameters to configure the deployment of the application.
 | `global.existingSecret`                     | Use existing secret for credentials - the expected keys are LDAP_ADMIN_PASSWORD and LDAP_CONFIG_ADMIN_PASSWORD                                         | `""`                |
 | `global.adminUser`                     | Openldap database admin user                                                                                                                        | `admin`                 |
 | `global.adminPassword`                     | Administration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
-| `global.configUserEnabled`                     |  Whether to create a configuration admin user                                                                                                                       | `true`                 |
 | `global.configUser`                     |  Openldap configuration admin user                                                                                                                       | `admin`                 |
 | `global.configPassword`                     | Configuration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
 | `global.ldapPort`                     | Ldap port                                                                                                                         | `389`                 |
@@ -67,6 +68,7 @@ Parameters related to the configuration of the application.
 | Parameter                          | Description                                                                                                                               | Default             |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | `replicaCount`                     | Number of replicas                                                                                                                        | `3`                 |
+| `readOnlyReplicaCount`                     | Number of read-only replicas                                                                                                                       | `0`                 |
 | `users`          | User list to create (comma separated list) , can't be use with customLdifFiles | "" |
 | `userPasswords`          | User password to create (comma seprated list)  | "" |
 | `group`          | Group to create and add list of user above | "" |
@@ -133,6 +135,16 @@ Parameters related to Kubernetes.
 | `service.loadBalancerSourceRanges` | List of IP CIDRs allowed access to load balancer (if supported)                                                                           | `[]`                |
 | `service.sslLdapPortNodePort`                 | Nodeport of External service port for SSL if service.type is NodePort                                                                                                            | `nil`               |
 | `service.type`                     | Service type can be ClusterIP, NodePort, LoadBalancer                                                                                                                              | `ClusterIP`         |
+| `serviceReadOnly.annotations`              | Annotations to add to the service                                                                                                         | `{}`                |
+| `serviceReadOnly.externalIPs`              | Service external IP addresses                                                                                                             | `[]`                |
+| `serviceReadOnly.enableLdapPort`                 | Enable LDAP port on the service and headless service                                                                                | `true`              |
+| `serviceReadOnly.enableSslLdapPort`                 | Enable SSL LDAP port on the service and headless service                                                                         | `true`              |
+| `serviceReadOnly.ldapPortNodePort`                 | Nodeport of External service port for LDAP if service.type is NodePort                                                                                                            | `nil`               |
+| `serviceReadOnly.clusterIP`                 | Static cluster IP to assign to the service (if supported)                                                            | `nil`              |
+| `serviceReadOnly.loadBalancerIP`           | IP address to assign to load balancer (if supported)                                                                                      | `""`                |
+| `serviceReadOnly.loadBalancerSourceRanges` | List of IP CIDRs allowed access to load balancer (if supported)                                                                           | `[]`                |
+| `serviceReadOnly.sslLdapPortNodePort`                 | Nodeport of External service port for SSL if service.type is NodePort                                                                                                            | `nil`               |
+| `serviceReadOnly.type`                     | Service type can be ClusterIP, NodePort, LoadBalancer                                                                                                                              | `ClusterIP`         |
 | `persistence.enabled`              | Whether to use PersistentVolumes or not                                                                                                   | `false`             |
 | `persistence.storageClass`         | Storage class for PersistentVolumes.                                                                                                      | `<unset>`           |
 | `persistence.existingClaim`        | Add existing Volumes Claim. | `<unset>`           |
@@ -260,6 +272,21 @@ your
 line
 EOF
 ```
+
+## Read Only
+
+By setting `readOnlyReplicaCount` to `1` or more, you turn on the `read-only` cluster.
+
+This create a `read-only` statefullset that replicates data against the main nodes. 
+> [!WARNING]  
+> Schemas are not replicated, so make sure every schemas are defined in `customSchemaFiles`
+
+Main nodes are not aware of the `read-only` cluster so that failures in `read-only` nodes don't have any impact on the `main` cluster. 
+
+This feature uses the `olcReadOnly: TRUE` directive 
+> This directive puts the database into "read-only" mode. Any attempts to modify the database will return an "unwilling to perform" error. 
+> If set on a consumer, modifications sent by syncrepl will still occur.
+
 
 ## Troubleshoot
 

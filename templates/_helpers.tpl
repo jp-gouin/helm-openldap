@@ -69,7 +69,7 @@ Generate olcSyncRepl list
 {{- define "olcSyncRepls" -}}
 {{- $name := (include "openldap.fullname" .) }}
 {{- $namespace := .Release.Namespace }}
-{{- $bindDNUser := .Values.global.configUser }}
+{{- $bindDNUser := ternary .Values.global.configUser }}
 {{- $cluster := .Values.replication.clusterName }}
 {{- $configPassword :=  ternary .Values.global.configPassword "%%CONFIG_PASSWORD%%" (empty .Values.global.existingSecret) }}
 {{- $retry := .Values.replication.retry }}
