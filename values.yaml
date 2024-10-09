@@ -51,6 +51,9 @@ extraDeploy: []
 
 replicaCount: 3
 
+# Note: you need replication enabled to use readonly replicas!
+readOnlyReplicaCount: 0
+
 image:
   # From repository https://hub.docker.com/r/bitnami/openldap/
   #repository: bitnami/openldap
@@ -83,6 +86,39 @@ service:
   # Disable if you do not want to expose port on service
   enableLdapPort: true
   enableSslLdapPort: true
+
+  ## List of IP addresses at which the service is available
+  ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+  ##
+  externalIPs: []
+
+  ## Define a static clusterIP
+  #clusterIP:
+  #loadBalancerIP:
+  #loadBalancerSourceRanges: []
+  type: ClusterIP
+  sessionAffinity: None
+
+  ## Represents the dual-stack-ness requested or required by this Service. Possible values are
+  ## SingleStack, PreferDualStack or RequireDualStack.
+  ## The ipFamilies and clusterIPs fields depend on the value of this field.
+  ## Ref: https://kubernetes.io/docs/concepts/services-networking/dual-stack/
+  ipFamilyPolicy: SingleStack
+
+# Service for read only cluster pods (if enabled)
+serviceReadOnly:
+  annotations: {}
+  ## If service type NodePort, define the value here
+  #ldapPortNodePort:
+  #sslLdapPortNodePort:
+
+  # Disable if you do not want to expose port on service
+  enableLdapPort: true
+  enableSslLdapPort: true
+
+  # Control ports used in statefulset
+  headlessEnableLdapPort: true
+  headlessEnableSslLdapPort: true
 
   ## List of IP addresses at which the service is available
   ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips

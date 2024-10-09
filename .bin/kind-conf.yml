@@ -20,5 +20,9 @@ nodes:
     hostPort: 30636
   - containerPort: 30389
     hostPort: 30389
+  - containerPort: 31389
+    hostPort: 31389
+  - containerPort: 31636
+    hostPort: 31636
 - role: worker
 - role: worker
