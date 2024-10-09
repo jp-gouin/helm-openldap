@@ -48,21 +48,6 @@ The following table lists the configurable parameters of the openldap chart and 
 
 Global parameters to configure the deployment of the application.
 
-<<<<<<< HEAD
-| Parameter                          | Description                                                                                                    | Default              |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------- |
-| `global.imageRegistry`             | Global image registry                                                                                          | `""`                 |
-| `global.imagePullSecrets`          | Global list of imagePullSecrets                                                                                | `[]`                 |
-| `global.ldapDomain`                | Domain LDAP can be explicit `dc=example,dc=org` or domain based `example.org`                                  | `example.org`        |
-| `global.existingSecret`            | Use existing secret for credentials - the expected keys are LDAP_ADMIN_PASSWORD and LDAP_CONFIG_ADMIN_PASSWORD | `""`                 |
-| `global.adminUser`                 | Openldap database admin user                                                                                   | `admin`              |
-| `global.adminPassword`             | Administration password of Openldap                                                                            | `Not@SecurePassw0rd` |
-| `global.configUserEnabled`         | Whether to create a configuration admin user                                                                   | `true`               |
-| `global.configUser`                | Openldap configuration admin user                                                                              | `admin`              |
-| `global.configPassword`            | Configuration password of Openldap                                                                             | `Not@SecurePassw0rd` |
-| `global.ldapPort`                  | Ldap port                                                                                                      | `389`                |
-| `global.sslLdapPort`               | Ldaps port                                                                                                     | `636`                |
-=======
 | Parameter                          | Description                                                                                                                               | Default             |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | `global.imageRegistry`                     | Global image registry                                                                                                                        | `""`                 |
@@ -75,20 +60,11 @@ Global parameters to configure the deployment of the application.
 | `global.configPassword`                     | Configuration password of Openldap                                                                                                                        | `Not@SecurePassw0rd`                 |
 | `global.ldapPort`                     | Ldap port                                                                                                                         | `389`                 |
 | `global.sslLdapPort`                     | Ldaps port                                                                                                                         | `636`                 |
->>>>>>> feat/add-readonly-replicas
 
 ### Application parameters
 
 Parameters related to the configuration of the application.
 
-<<<<<<< HEAD
-| Parameter                          | Description                                                                                                                                                      | Default             |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| `replicaCount`                     | Number of replicas                                                                                                                                               | `3`                 |
-| `users`                            | User list to create (comma separated list) , can't be use with customLdifFiles                                                                                   | ""                  |
-| `userPasswords`                    | User password to create (comma seprated list)                                                                                                                    | ""                  |
-| `group`                            | Group to create and add list of user above                                                                                                                       | ""                  |
-=======
 | Parameter                          | Description                                                                                                                               | Default             |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | `replicaCount`                     | Number of replicas                                                                                                                        | `3`                 |
@@ -96,7 +72,6 @@ Parameters related to the configuration of the application.
 | `users`          | User list to create (comma separated list) , can't be use with customLdifFiles | "" |
 | `userPasswords`          | User password to create (comma seprated list)  | "" |
 | `group`          | Group to create and add list of user above | "" |
->>>>>>> feat/add-readonly-replicas
 | `env`                              | List of key value pairs as env variables to be sent to the docker image. See https://github.com/bitnami/containers/tree/main/bitnami/openldap for available ones | `[see values.yaml]` |
 | `initTLSSecret.tls_enabled`        | Set to enable TLS/LDAPS with custom certificate - Please also set `initTLSSecret.secret`, otherwise it will not take effect                                      | `false`             |
 | `initTLSSecret.secret`             | Secret containing TLS cert and key must contain the keys tls.key , tls.crt and ca.crt                                                                            | `""`                |
@@ -161,6 +136,7 @@ Parameters related to Kubernetes.
 <<<<<<< HEAD
 | `service.sslLdapPortNodePort`      | Nodeport of External service port for SSL if service.type is NodePort                                                                     | `nil`               |
 | `service.type`                     | Service type can be ClusterIP, NodePort, LoadBalancer                                                                                     | `ClusterIP`         |
+<<<<<<< HEAD
 =======
 | `service.sslLdapPortNodePort`                 | Nodeport of External service port for SSL if service.type is NodePort                                                                                                            | `nil`               |
 | `service.type`                     | Service type can be ClusterIP, NodePort, LoadBalancer                                                                                                                              | `ClusterIP`         |
@@ -175,6 +151,9 @@ Parameters related to Kubernetes.
 | `serviceReadOnly.sslLdapPortNodePort`                 | Nodeport of External service port for SSL if service.type is NodePort                                                                                                            | `nil`               |
 | `serviceReadOnly.type`                     | Service type can be ClusterIP, NodePort, LoadBalancer                                                                                                                              | `ClusterIP`         |
 >>>>>>> feat/add-readonly-replicas
+=======
+| `service.ipFamilyPolicy`           | Represents the dual-stack-ness requested or required by this Service.                                                                     | `SingleStack`       |
+>>>>>>> 7b0d8eaebe79626bfd1a58308d0bda16c9682b90
 | `persistence.enabled`              | Whether to use PersistentVolumes or not                                                                                                   | `false`             |
 | `persistence.storageClass`         | Storage class for PersistentVolumes.                                                                                                      | `<unset>`           |
 | `persistence.existingClaim`        | Add existing Volumes Claim.                                                                                                               | `<unset>`           |
