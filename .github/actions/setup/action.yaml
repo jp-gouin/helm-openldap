@@ -1,7 +1,7 @@
 name: 'Setup env'
 description: 'Greet someone'
 inputs:
-  install-chaos: 
+  install-chaos:
     description: 'Setup ChaosMesh'
     required: true
     default: false

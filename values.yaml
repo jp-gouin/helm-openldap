@@ -138,7 +138,6 @@ serviceReadOnly:
   ## Ref: https://kubernetes.io/docs/concepts/services-networking/dual-stack/
   ipFamilyPolicy: SingleStack
 
-
 # Default configuration for openldap as environment variables. These get injected directly in the container.
 # Use the env variables from https://hub.docker.com/r/bitnami/openldap/
 # Be careful, do not modify the following values unless you know exactly what your are doing
