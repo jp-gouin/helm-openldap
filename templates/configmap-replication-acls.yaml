@@ -43,8 +43,8 @@ data:
     add: olcSyncRepl
     {{- include "olcSyncRepls" . }}
     -
-    add: olcMirrorMode
-    olcMirrorMode: TRUE
+    add: olcMultiProvider
+    olcMultiProvider: TRUE
   bsyncprov.ldif: |
     dn: olcOverlay=syncprov,olcDatabase={2}mdb,cn=config
     objectClass: olcOverlayConfig
@@ -59,8 +59,8 @@ data:
 
     dn: olcDatabase={2}mdb,cn=config
     changetype: modify
-    add: olcMirrorMode
-    olcMirrorMode: TRUE
+    add: olcMultiProvider
+    olcMultiProvider: TRUE
   # acls
   acls.ldif: |
 {{- if .Values.customAcls }}
