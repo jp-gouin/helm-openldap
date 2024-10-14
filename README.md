@@ -84,6 +84,7 @@ Parameters related to the configuration of the application.
 | `replication.timeout`       | timeout for replication  in sec                                                                                                                                  | `1`                 |
 | `replication.starttls`      | starttls replication                                                                                                                                             | `critical`          |
 | `replication.tls_reqcert`   | tls certificate validation for replication                                                                                                                       | `never`             |
+| `replication.tls_cacert`    | Specifies the file that contains certificates for all Certificate Authorities used in replication.                                                                | `nil`               |
 | `replication.interval`      | interval for replication                                                                                                                                         | `00:00:00:10`       |
 | `replication.clusterName`   | Set the clustername for replication                                                                                                                              | "cluster.local"     |
 
