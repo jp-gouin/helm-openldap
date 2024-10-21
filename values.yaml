@@ -237,7 +237,9 @@ replication:
   timeout: 1
   interval: 00:00:00:10
   starttls: "critical"
-  tls_reqcert: "never"
+  # override the tls_reqcert parameter (default if never and demand when initTLSSecret.tls_enabled = true )
+  # tls_reqcert: "never"
+  # override the location of tls_cacert to trust (allowed when initTLSSecret.tls_enabled = true )
   # tls_cacert: "/etc/ssl/certs/ca-certificates.crt"
 ## Persist data to a persistent volume
 persistence:

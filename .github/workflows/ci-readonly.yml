@@ -16,9 +16,7 @@ jobs:
     - name: setup certs
       shell: bash
       run: |
-        openssl req -x509 -newkey rsa:4096 -nodes -subj '/CN=example.com' -keyout tls.key -out tls.crt -days 365
-        cp tls.crt ca.crt
-        kubectl create secret generic custom-cert --from-file=./tls.crt --from-file=./tls.key --from-file=./ca.crt
+        kubectl apply -f $GITHUB_WORKSPACE/.bin/certificate.yaml
     - name: deploy openldap-stack-ha
       shell: bash
       run: |

@@ -28,6 +28,7 @@ runs:
         /tmp/kind create cluster --config=$GITHUB_WORKSPACE/.bin/kind-conf.yml --image=kindest/node:v1.31.0@sha256:53df588e04085fd41ae12de0c3fe4c72f7013bba32a20e7325357a1ac94ba865
         kubectl apply -f https://projectcontour.io/quickstart/contour.yaml
         kubectl patch daemonsets -n projectcontour envoy -p '{"spec":{"template":{"spec":{"nodeSelector":{"ingress-ready":"true"}}}}}'
+        kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.1.1/cert-manager.yaml
     - name: setup chaos mesh
       if: ${{ inputs.install-chaos == 'true' }}
       shell: bash
