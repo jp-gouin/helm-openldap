@@ -143,7 +143,7 @@ serviceReadOnly:
 env:
  BITNAMI_DEBUG: "true"
  LDAP_LOGLEVEL: "256"
- LDAP_TLS_ENFORCE: "false"
+ LDAP_REQUIRE_TLS: "false"
  LDAPTLS_REQCERT: "never"
  LDAP_ENABLE_TLS: "yes"
  LDAP_SKIP_DEFAULT_TREE: "no"
