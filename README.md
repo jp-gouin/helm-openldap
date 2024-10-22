@@ -319,6 +319,12 @@ All internal configuration like `cn=config` , `cn=module{0},cn=config` cannot be
 
 ## Changelog/Updating
 
+### To 4.x 
+- Extra schema are supported (examples can be found [here](https://github.com/jp-gouin/helm-openldap/tree/master/advanced_examples) and [here](https://github.com/jp-gouin/helm-openldap/blob/master/.bin/myval.yaml)
+- Feature read-only nodes
+- TLS can be enforced for the replication
+- Use a forked version of Bitnami available [here](https://github.com/jp-gouin/openldap-container) because of this [issue](https://github.com/bitnami/containers/pull/53960)
+
 ### To 4.0.0
 
 This major update switch the base image from [Osixia](https://github.com/osixia/docker-openldap) to [Bitnami Openldap](https://github.com/bitnami/containers/tree/main/bitnami/openldap)
