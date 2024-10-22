@@ -44,7 +44,16 @@ jobs:
       run: |
           echo "verify certificate"
           echo | openssl s_client -showcerts -servername example.com -connect localhost:30636 2>/dev/null | openssl x509 -inform pem -noout -text > /tmp/test-cert.txt
-          if ! grep -q "CN = example.com" /tmp/test-cert.txt; then  echo exit 1; fi
+          if ! grep -q "CN = Self-Signed CA" /tmp/test-cert.txt; then exit 1; fi
+    - name: fetch logs
+      shell: bash
+      run: |
+          echo "kubectl logs openldap-0"
+          kubectl logs openldap-0
+          echo "kubectl logs openldap-1"
+          kubectl logs openldap-1
+          echo "kubectl logs openldap-2"
+          kubectl logs openldap-2
     - name: apply chaos tests
       shell: bash
       run: |
