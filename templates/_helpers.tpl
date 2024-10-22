@@ -64,8 +64,24 @@ Generate olcServerID list
 {{- end -}}
 
 {{- define "openldap.replication.tls_cacert" -}}
-{{- if .Values.replication.tls_cacert -}}
-{{- printf "tls_cacert=%s" .Values.replication.tls_cacert -}}
+{{- if .Values.initTLSSecret.tls_enabled -}}
+  {{- if .Values.replication.tls_cacert -}}
+    {{- printf "tls_cacert=%s" .Values.replication.tls_cacert -}}
+  {{- else }}
+    {{- printf "tls_cacert=/opt/bitnami/openldap/certs/ca.crt" -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "openldap.replication.tls_reqcert" -}}
+{{- if .Values.initTLSSecret.tls_enabled -}}
+  {{- if .Values.replication.tls_reqcert -}}
+    {{- printf "tls_cacert=%s" .Values.replication.tls_reqcert -}}
+  {{- else }}
+    {{- printf "tls_reqcert=demand" -}}
+  {{- end -}}
+{{- else }}
+  {{- printf "tls_reqcert=never" -}}
 {{- end -}}
 {{- end -}}
 
@@ -81,12 +97,12 @@ Generate olcSyncRepl list
 {{- $retry := .Values.replication.retry }}
 {{- $timeout := .Values.replication.timeout }}
 {{- $starttls := .Values.replication.starttls }}
-{{- $tls_reqcert := .Values.replication.tls_reqcert }}
+{{- $tls_reqcert := (include "openldap.replication.tls_reqcert" .) }}
 {{- $tls_cacert := (include "openldap.replication.tls_cacert" .) }}
 {{- $nodeCount := .Values.replicaCount | int }}
   {{- range $index0 := until $nodeCount }}
     {{- $index1 := $index0 | add1 }}
-    olcSyncRepl: rid=00{{ $index1 }} provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389 binddn="cn={{ $bindDNUser }},cn=config" bindmethod=simple credentials={{ $configPassword }} searchbase="cn=config" type=refreshAndPersist retry="{{ $retry }} +" timeout={{ $timeout }} starttls={{ $starttls }} tls_reqcert={{ $tls_reqcert }} {{ $tls_cacert }}
+    olcSyncRepl: rid=00{{ $index1 }} provider=ldap://{{ $name }}-{{ $index0 }}.{{ $name }}-headless.{{ $namespace }}.svc.{{ $cluster }}:1389 binddn="cn={{ $bindDNUser }},cn=config" bindmethod=simple credentials={{ $configPassword }} searchbase="cn=config" type=refreshAndPersist retry="{{ $retry }} +" timeout={{ $timeout }} starttls={{ $starttls }} {{ $tls_reqcert }} {{ $tls_cacert }}
   {{- end -}}
 {{- end -}}
 
@@ -103,7 +119,7 @@ Generate olcSyncRepl list
 {{- $retry := .Values.replication.retry }}
 {{- $timeout := .Values.replication.timeout }}
 {{- $starttls := .Values.replication.starttls }}
-{{- $tls_reqcert := .Values.replication.tls_reqcert }}
+{{- $tls_reqcert := (include "openldap.replication.tls_reqcert" .) }}
 {{- $tls_cacert := (include "openldap.replication.tls_cacert" .) }}
 {{- $interval := .Values.replication.interval }}
 {{- $nodeCount := .Values.replicaCount | int }}
@@ -122,7 +138,7 @@ Generate olcSyncRepl list
       retry="{{ $retry }} +"
       timeout={{ $timeout }}
       starttls={{ $starttls }}
-      tls_reqcert={{ $tls_reqcert }}
+      {{ $tls_reqcert }}
       {{ $tls_cacert }}
   {{- end -}}
 {{- end -}}
