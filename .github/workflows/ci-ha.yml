@@ -48,12 +48,12 @@ jobs:
     - name: fetch logs
       shell: bash
       run: |
-          echo "kubectl logs openldap-0"
-          kubectl logs openldap-0
-          echo "kubectl logs openldap-1"
-          kubectl logs openldap-1
-          echo "kubectl logs openldap-2"
-          kubectl logs openldap-2
+          echo "kubectl logs openldap-stack-ha-0"
+          kubectl logs openldap-stack-ha-0
+          echo "kubectl logs openldap-stack-ha-1"
+          kubectl logs openldap-stack-ha-1
+          echo "kubectl logs openldap-stack-ha-2"
+          kubectl logs openldap-stack-ha-2
     - name: apply chaos tests
       shell: bash
       run: |

@@ -31,11 +31,11 @@ kind: Certificate
 metadata:
   name: custom-cert
 spec:
-  commonName: openldap.default.svc
+  commonName: openldap-stack-ha.default.svc
   dnsNames:
-    - "openldap.default.svc"
-    - "openldap.default.svc.cluster.local"
-    - "*.openldap-headless.default.svc.cluster.local"
+    - "openldap-stack-ha.default.svc"
+    - "openldap-stack-ha.default.svc.cluster.local"
+    - "*.openldap-stack-ha-headless.default.svc.cluster.local"
   secretName: custom-cert
   issuerRef:
     name: selfsigned-ca
