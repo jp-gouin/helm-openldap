@@ -6,20 +6,20 @@
 # Please, note that this will override the image parameters, including dependencies, configured to use the global value
 # Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
 global:
-  imageRegistry: ""
+  imageRegistry: ''
   ## E.g.
   ## imagePullSecrets:
   ##   - myRegistryKeySecretName
   ##
   #imagePullSecrets: [""]
   ## ldapDomain , can be explicit (e.g dc=toto,c=ca) or domain based (e.g example.com)
-  ldapDomain: "example.org"
+  ldapDomain: 'example.org'
   # Specifies an existing secret to be used for admin and config user passwords. The expected key are LDAP_ADMIN_PASSWORD and LDAP_CONFIG_ADMIN_PASSWORD.
   # existingSecret: ""
   ## Default Passwords to use, stored as a secret. Not used if existingSecret is set.
-  adminUser: "admin"
+  adminUser: 'admin'
   adminPassword: Not@SecurePassw0rd
-  configUser: "admin"
+  configUser: 'admin'
   configPassword: Not@SecurePassw0rd
   ldapPort: 389
   sslLdapPort: 636
@@ -28,13 +28,13 @@ global:
 
 ## @param kubeVersion Override Kubernetes version
 ##
-kubeVersion: ""
+kubeVersion: ''
 ## @param nameOverride String to partially override common.names.fullname
 ##
-nameOverride: ""
+nameOverride: ''
 ## @param fullnameOverride String to fully override common.names.fullname
 ##
-fullnameOverride: ""
+fullnameOverride: ''
 ## @param commonLabels Labels to add to all deployed objects
 ##
 commonLabels: {}
@@ -68,7 +68,7 @@ image:
 logLevel: info
 
 initSchema:
-  image: 
+  image:
     repository: debian
     tag: latest
     pullPolicy: Always
@@ -141,23 +141,23 @@ serviceReadOnly:
 # Use the env variables from https://hub.docker.com/r/bitnami/openldap/
 # Be careful, do not modify the following values unless you know exactly what your are doing
 env:
- # set this to "true" to enable bootstrap debugging
- BITNAMI_DEBUG: "false"
- # higher -> less verbose. See https://www.openldap.org/doc/admin26/slapdconfig.html
- LDAP_LOGLEVEL: "256"
- LDAP_REQUIRE_TLS: "false"
- LDAPTLS_REQCERT: "never"
- LDAP_ENABLE_TLS: "yes"
- LDAP_SKIP_DEFAULT_TREE: "no"
- LDAP_ALLOW_ANON_BINDING: no
- LDAP_CONFIG_ADMIN_ENABLED: no
+  # set this to "true" to enable bootstrap debugging
+  BITNAMI_DEBUG: 'false'
+  # higher -> less verbose. See https://www.openldap.org/doc/admin26/slapdconfig.html
+  LDAP_LOGLEVEL: '256'
+  LDAP_REQUIRE_TLS: 'false'
+  LDAPTLS_REQCERT: 'never'
+  LDAP_ENABLE_TLS: 'yes'
+  LDAP_SKIP_DEFAULT_TREE: 'no'
+  LDAP_ALLOW_ANON_BINDING: 'no'
+  LDAP_CONFIG_ADMIN_ENABLED: 'no'
 
 # Pod Disruption Budget for Stateful Set
 # Disabled by default, to ensure backwards compatibility
 pdb:
   enabled: false
   minAvailable: 1
-  maxUnavailable: ""
+  maxUnavailable: ''
 
 ## User list to create (comma separated list) , can't be use with customLdifFiles
 ## Default set by bitnami image
@@ -168,7 +168,7 @@ pdb:
 # userPasswords: bitnami1, bitnami2
 
 ## Group to create and add list of user above
-  ## Default set by bitnami image
+## Default set by bitnami image
 # group: readers
 
 # Custom openldap schema files used to be used in addition to default schemas
@@ -235,11 +235,11 @@ pdb:
 replication:
   enabled: true
   # Enter the name of your cluster, defaults to "cluster.local"
-  clusterName: "cluster.local"
+  clusterName: 'cluster.local'
   retry: 60
   timeout: 1
   interval: 00:00:00:10
-  starttls: "critical"
+  starttls: 'critical'
   # override the tls_reqcert parameter (default if never and demand when initTLSSecret.tls_enabled = true )
   # tls_reqcert: "never"
   # override the location of tls_cacert to trust (allowed when initTLSSecret.tls_enabled = true )
@@ -259,7 +259,7 @@ persistence:
   accessModes:
     - ReadWriteOnce
   size: 8Gi
-  storageClass: ""
+  storageClass: ''
 
 ## @param customLivenessProbe Custom livenessProbe that overrides the default one
 ##
@@ -321,7 +321,7 @@ podAnnotations: {}
 ## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
 ##
-podAffinityPreset: ""
+podAffinityPreset: ''
 ## @param podAntiAffinityPreset Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
 ##
@@ -332,10 +332,10 @@ podAntiAffinityPreset: soft
 nodeAffinityPreset:
   ## @param nodeAffinityPreset.type Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
   ##
-  type: ""
+  type: ''
   ## @param nodeAffinityPreset.key Node label key to match. Ignored if `affinity` is set
   ##
-  key: ""
+  key: ''
   ## @param nodeAffinityPreset.values Node label values to match. Ignored if `affinity` is set
   ## E.g.
   ## values:
@@ -366,11 +366,11 @@ updateStrategy:
   type: RollingUpdate
 ## @param priorityClassName OPENLDAP  pods' priorityClassName
 ##
-priorityClassName: ""
+priorityClassName: ''
 ## @param schedulerName Name of the k8s scheduler (other than default) for OPENLDAP  pods
 ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
 ##
-schedulerName: ""
+schedulerName: ''
 ## @param lifecycleHooks for the OPENLDAP  container(s) to automate configuration before or after startup
 ##
 lifecycleHooks: {}
@@ -425,14 +425,14 @@ serviceAccount:
   ## @param serviceAccount.name The name of the ServiceAccount to use.
   ## If not set and create is true, a name is generated using the common.names.fullname template
   ##
-  name: ""
+  name: ''
   ## @param serviceAccount.automountServiceAccountToken Allows auto mount of ServiceAccountToken on the serviceAccount created
   ## Can be set to false if pods using this serviceAccount do not need to use K8s API
   ##
   automountServiceAccountToken: false
   ## @param serviceAccount.annotations Additional custom annotations for the ServiceAccount
   ##
-  annotations: {}  
+  annotations: {}
 
 ## @section Init Container Parameters
 
@@ -458,7 +458,7 @@ initTLSSecret:
     ##
     pullPolicy: IfNotPresent
   # The name of a kubernetes.io/tls type secret to use for TLS
-  secret: "" 
+  secret: ''
   ## init-tls-secret container's resource requests and limits
   ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
   ## @param initTlsSecret.resources.limits The resources limits for the init container
@@ -493,8 +493,8 @@ volumePermissions:
     tag: 10-debian-10
     pullPolicy: IfNotPresent
 
-  ## Command to execute during the volumePermission startup
-    command: [ 'sh', '-c', 'chmod -R g+rwX /bitnami' ]
+    ## Command to execute during the volumePermission startup
+    command: ['sh', '-c', 'chmod -R g+rwX /bitnami']
   ## command: {}
   ## Init container's resource requests and limits
   ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
@@ -525,7 +525,6 @@ updateReplication:
     ##   memory: 1Gi
     limits: {}
     requests: {}
-
 
 ## Configure extra options for liveness, readiness, and startup probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
@@ -561,7 +560,7 @@ test:
 ## ltb-passwd
 # For more parameters check following file: ./charts/ltb-passwd/values.yaml
 ltb-passwd:
-  enabled : true
+  enabled: true
   image:
     tag: 5.2.3
   ingress:
@@ -573,19 +572,19 @@ ltb-passwd:
     pathType: Prefix
     ## Ingress Host
     hosts:
-    - "ssl-ldap2.example"
+      - 'ssl-ldap2.example'
     ## Ingress cert
     tls: []
     # - secretName: ssl-ldap2.example
     #   hosts:
     #   - ssl-ldap2.example
   # ldap:
-    # if you want to restrict search base tree for users instead of complete domain
-    # searchBase: "ou=....,dc=mydomain,dc=com"
-    # if you want to use a dedicated bindDN for the search with less permissions instead of cn=admin one
-    # bindDN: "cn=....,dc=mydomain,dc=com"
-    # if you want to use a specific key of the credentials secret instead of the default one (LDAP_ADMIN_PASSWORD)
-    # passKey: LDAP_MY_KEY
+  # if you want to restrict search base tree for users instead of complete domain
+  # searchBase: "ou=....,dc=mydomain,dc=com"
+  # if you want to use a dedicated bindDN for the search with less permissions instead of cn=admin one
+  # bindDN: "cn=....,dc=mydomain,dc=com"
+  # if you want to use a specific key of the credentials secret instead of the default one (LDAP_ADMIN_PASSWORD)
+  # passKey: LDAP_MY_KEY
 
 ## phpldapadmin
 ## For more parameters check following file: ./charts/phpldapadmin/values.yaml
@@ -594,7 +593,7 @@ phpldapadmin:
   image:
     tag: 0.9.0
   env:
-    PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT: "never"
+    PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT: 'never'
   ingress:
     enabled: true
     annotations: {}
@@ -604,7 +603,7 @@ phpldapadmin:
     pathType: Prefix
     ## Ingress Host
     hosts:
-    - phpldapadmin.example
+      - phpldapadmin.example
     ## Ingress cert
     tls: []
     # - secretName: phpldapadmin.example
