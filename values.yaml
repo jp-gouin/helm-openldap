@@ -141,13 +141,16 @@ serviceReadOnly:
 # Use the env variables from https://hub.docker.com/r/bitnami/openldap/
 # Be careful, do not modify the following values unless you know exactly what your are doing
 env:
- BITNAMI_DEBUG: "true"
+ # set this to "true" to enable bootstrap debugging
+ BITNAMI_DEBUG: "false"
+ # higher -> less verbose. See https://www.openldap.org/doc/admin26/slapdconfig.html
  LDAP_LOGLEVEL: "256"
  LDAP_REQUIRE_TLS: "false"
  LDAPTLS_REQCERT: "never"
  LDAP_ENABLE_TLS: "yes"
  LDAP_SKIP_DEFAULT_TREE: "no"
-
+ LDAP_ALLOW_ANON_BINDING: no
+ LDAP_CONFIG_ADMIN_ENABLED: no
 
 # Pod Disruption Budget for Stateful Set
 # Disabled by default, to ensure backwards compatibility
