@@ -150,7 +150,6 @@ env:
  LDAP_ENABLE_TLS: "yes"
  LDAP_SKIP_DEFAULT_TREE: "no"
  LDAP_ALLOW_ANON_BINDING: 'no'
- LDAP_CONFIG_ADMIN_ENABLED: 'no'
 
 
 # Pod Disruption Budget for Stateful Set
