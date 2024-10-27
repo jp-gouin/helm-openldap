@@ -76,7 +76,7 @@ Generate olcServerID list
 {{- define "openldap.replication.tls_reqcert" -}}
 {{- if .Values.initTLSSecret.tls_enabled -}}
   {{- if .Values.replication.tls_reqcert -}}
-    {{- printf "tls_cacert=%s" .Values.replication.tls_reqcert -}}
+    {{- printf "tls_reqcert=%s" .Values.replication.tls_reqcert -}}
   {{- else }}
     {{- printf "tls_reqcert=demand" -}}
   {{- end -}}
