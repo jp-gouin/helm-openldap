@@ -182,22 +182,6 @@ spec:
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
-          command:
-            - sh
-            - -c
-            - |
-              host=$(hostname)
-              if [ "$host" = "{{ template "openldap.fullname" . }}-0" ]
-              then
-                echo "This is the first openldap pod so let's init all additional schemas and ldifs here"
-              else
-                echo "This is not the first openldap pod so let's not init anything"
-                unset LDAP_CONFIGURE_PPOLICY LDAP_PPOLICY_HASH_CLEARTEXT
-                export LDAP_SKIP_DEFAULT_TREE=yes
-              fi
-
-              /opt/bitnami/scripts/openldap/entrypoint.sh /opt/bitnami/scripts/openldap/run.sh
-   
           env:
             - name: LDAP_EXTRA_SCHEMAS
               value: {{ print "cosine,inetorgperson,nis," (include "openldap.schemaFiles" (dict "context" . )) }}

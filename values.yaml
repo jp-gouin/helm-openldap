@@ -302,7 +302,21 @@ containerSecurityContext:
 existingConfigmap:
 ## @param command Override default container command (useful when using custom images)
 ##
-command: []
+command:
+  - sh
+  - -c
+  - |
+    host=$(hostname)
+    if [ "$host" = "{{ template "openldap.fullname" . }}-0" ]
+    then
+      echo "This is the first openldap pod so let's init all additional schemas and ldifs here"
+    else
+      echo "This is not the first openldap pod so let's not init anything"
+      unset LDAP_CONFIGURE_PPOLICY LDAP_PPOLICY_HASH_CLEARTEXT
+      export LDAP_SKIP_DEFAULT_TREE=yes
+    fi
+
+    exec /opt/bitnami/scripts/openldap/entrypoint.sh
 ## @param args Override default container args (useful when using custom images)
 ##
 args: []
