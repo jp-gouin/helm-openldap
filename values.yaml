@@ -307,7 +307,7 @@ command:
   - -c
   - |
     host=$(hostname)
-    if [ "$host" = "{{ template "openldap.fullname" . }}-0" ]
+    if [[ "$host" = *-0 ]]
     then
       echo "This is the first openldap pod so let's init all additional schemas and ldifs here"
     else
