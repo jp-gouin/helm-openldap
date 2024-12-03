@@ -138,6 +138,7 @@ Parameters related to Kubernetes.
 | `service.type`                             | Service type can be ClusterIP, NodePort, LoadBalancer                                                             | `ClusterIP`         |
 | `service.sslLdapPortNodePort`              | Nodeport of External service port for SSL if service.type is NodePort                                             | `nil`               |
 | `service.ipFamilyPolicy`                   | Represents the dual-stack-ness requested or required by this Service.                                             | `SingleStack`       |
+| `service.externalTrafficPolicy`            | Sets the externalTrafficPolicy for this Service.                                                                  | `Cluster`           |
 | `serviceReadOnly.annotations`              | Annotations to add to the service                                                                                 | `{}`                |
 | `serviceReadOnly.externalIPs`              | Service external IP addresses                                                                                     | `[]`                |
 | `serviceReadOnly.enableLdapPort`           | Enable LDAP port on the service and headless service                                                              | `true`              |
@@ -149,6 +150,7 @@ Parameters related to Kubernetes.
 | `serviceReadOnly.sslLdapPortNodePort`      | Nodeport of External service port for SSL if service.type is NodePort                                             | `nil`               |
 | `serviceReadOnly.type`                     | Service type can be ClusterIP, NodePort, LoadBalancer                                                             | `ClusterIP`         |
 | `serviceReadOnly.ipFamilyPolicy`                   | Represents the dual-stack-ness requested or required by this Service.                                             | `SingleStack`       |
+| `serviceReadOnly.externalTrafficPolicy`    | Sets the externalTrafficPolicy for this Service.                                                                  | `Cluster`           |
 | `persistence.enabled`                      | Whether to use PersistentVolumes or not                                                                           | `false`             |
 | `persistence.storageClass`                 | Storage class for PersistentVolumes.                                                                              | `<unset>`           |
 | `persistence.existingClaim`                | Add existing Volumes Claim.                                                                                       | `<unset>`           |

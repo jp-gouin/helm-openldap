@@ -51,6 +51,7 @@ spec:
       {{- end }}
     {{- end }}
   sessionAffinity: {{ .Values.service.sessionAffinity }}
+  externalTrafficPolicy: {{ .Values.service.externalTrafficPolicy }}
   selector:
     app.kubernetes.io/component: {{ template "openldap.fullname" . }}
     release: {{ .Release.Name }}
