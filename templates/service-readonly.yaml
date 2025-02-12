@@ -52,7 +52,7 @@ spec:
       {{- end }}
     {{- end }}
   sessionAffinity: {{ .Values.serviceReadOnly.sessionAffinity }}
-  {{- if ne .Values.serviceReadOnly.type "ClusterIP" -}}
+  {{- if ne .Values.serviceReadOnly.type "ClusterIP" }}
   externalTrafficPolicy: {{ .Values.serviceReadOnly.externalTrafficPolicy }}
   {{- end }}
   selector:

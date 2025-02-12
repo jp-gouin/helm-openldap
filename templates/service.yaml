@@ -51,7 +51,7 @@ spec:
       {{- end }}
     {{- end }}
   sessionAffinity: {{ .Values.service.sessionAffinity }}
-  {{- if ne .Values.service.type "ClusterIP" -}}
+  {{- if ne .Values.service.type "ClusterIP" }}
   externalTrafficPolicy: {{ .Values.service.externalTrafficPolicy }}
   {{- end }}
   selector:
