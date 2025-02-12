@@ -51,7 +51,8 @@ spec:
       {{- end }}
     {{- end }}
   sessionAffinity: {{ .Values.service.sessionAffinity }}
+  {{- if ne .Values.service.type "ClusterIP" -}}
   externalTrafficPolicy: {{ .Values.service.externalTrafficPolicy }}
-  selector:
+  {{- end }}  selector:
     app.kubernetes.io/component: {{ template "openldap.fullname" . }}
     release: {{ .Release.Name }}
